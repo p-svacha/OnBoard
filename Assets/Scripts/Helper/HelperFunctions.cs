@@ -643,7 +643,7 @@ public static class HelperFunctions
         int numChildren = obj.transform.childCount;
         for (int i = skipElements; i < numChildren; i++) GameObject.DestroyImmediate(obj.transform.GetChild(skipElements).gameObject);
     }
-    
+
     public static Sprite TextureToSprite(Texture tex) => TextureToSprite((Texture2D)tex);
     public static Sprite TextureToSprite(Texture2D tex)
     {
@@ -731,9 +731,33 @@ public static class HelperFunctions
     /// <summary>
     /// Returns is the mouse is currently hovering over a UI element.
     /// </summary>
-    public static bool IsMouseOverUi(params GameObject[] excludedButtons)
+    public static bool IsMouseOverUi()
     {
         return EventSystem.current.IsPointerOverGameObject();
+    }
+
+    public static bool IsPointerOverUIWithComponent<T>() where T : UnityEngine.Component
+    {
+        EventSystem eventSystem = EventSystem.current;
+        GraphicRaycaster raycaster = Object.FindFirstObjectByType<GraphicRaycaster>();
+
+        PointerEventData pointerEventData = new PointerEventData(eventSystem)
+        {
+            position = Input.mousePosition
+        };
+
+        List<RaycastResult> results = new List<RaycastResult>();
+        raycaster.Raycast(pointerEventData, results);
+
+        foreach (var result in results)
+        {
+            if (result.gameObject.GetComponent<T>() != null)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /// <summary>

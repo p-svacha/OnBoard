@@ -17,7 +17,7 @@ public static class BoardTileDefs
         {
             DefName = "TokenTile",
             Label = "token tile",
-            Description = "A tile that adds a specific kind of token to your bag.",
+            Description = "A tile that adds a specific kind of token to your pouch.",
             BoardTileClass = typeof(BoardTile_TokenTile),
         }
     };

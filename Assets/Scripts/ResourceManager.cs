@@ -42,10 +42,23 @@ public static class ResourceManager
         if (CachedPrefabs.TryGetValue(resourcePath, out GameObject obj)) return obj;
 
         // not yet cached
-        GameObject loadedPrefabs = Resources.Load<GameObject>(resourcePath);
-        if (loadedPrefabs == null) throw new System.Exception($"Failed to load GameObject {resourcePath}.");
-        CachedPrefabs.Add(resourcePath, loadedPrefabs);
-        return loadedPrefabs;
+        GameObject loadedPrefab = Resources.Load<GameObject>(resourcePath);
+        if (loadedPrefab == null) throw new System.Exception($"Failed to load GameObject {resourcePath}.");
+        CachedPrefabs.Add(resourcePath, loadedPrefab);
+        return loadedPrefab;
+    }
+
+    private static Dictionary<string, Sprite> CachedSprites = new Dictionary<string, Sprite>();
+    public static Sprite LoadSprite(string resourcePath)
+    {
+        // cached
+        if (CachedSprites.TryGetValue(resourcePath, out Sprite obj)) return obj;
+
+        // not yet cached
+        Sprite loadedSprite = Resources.Load<Sprite>(resourcePath);
+        if (loadedSprite == null) throw new System.Exception($"Failed to load Sprite {resourcePath}.");
+        CachedSprites.Add(resourcePath, loadedSprite);
+        return loadedSprite;
     }
 
     public static void ClearCache()

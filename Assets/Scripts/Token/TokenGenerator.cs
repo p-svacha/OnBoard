@@ -18,7 +18,12 @@ public static class TokenGenerator
         Token newToken = tokenObject.AddComponent<Token>();
         newToken.Init(shape, color, size, scale);
 
-        if(hidden) newToken.Hide();
+        // Tooltip
+        TooltipTarget3D tooltipTarget = tokenObject.AddComponent<TooltipTarget3D>();
+        tooltipTarget.Title = newToken.LabelCap;
+        tooltipTarget.Text = newToken.Description;
+
+        if (hidden) newToken.Hide();
 
         return newToken;
     }

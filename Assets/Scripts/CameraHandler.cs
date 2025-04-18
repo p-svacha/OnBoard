@@ -23,6 +23,9 @@ public class CameraHandler : MonoBehaviour
     private const float RMB_ROTATE_SPEED = 0.15f;
     private Vector3 lastMousePos;
 
+    // Freeze (disable all movement)
+    public bool IsFrozen { get; private set; }
+
     // Pan animation
     public bool IsPanning { get; private set; }
     private float PanDuration;
@@ -107,8 +110,9 @@ public class CameraHandler : MonoBehaviour
         bool isUiElementFocussed = EventSystem.current.currentSelectedGameObject != null;
         if (isUiElementFocussed) return;
 
-        bool canMoveCamera = !InUnbreakableFollow && !IsPanning;
+        bool canMoveCamera = !InUnbreakableFollow && !IsPanning && !IsFrozen;
         bool isMouseOverUi = HelperFunctions.IsMouseOverUi();
+        bool canZoomCamera = !IsFrozen && !isMouseOverUi;
 
         float moveSpeed = MOVE_SPEED;
         if (Input.GetKey(KeyCode.LeftShift)) moveSpeed = SHIFT_MOVE_SPEED;
@@ -179,12 +183,12 @@ public class CameraHandler : MonoBehaviour
         }
 
         // === ZOOM (Mouse Scroll) ===
-        if (!isMouseOverUi && Input.mouseScrollDelta.y < 0 && !Input.GetKey(KeyCode.LeftControl) && !Input.GetKey(KeyCode.LeftAlt) && !Input.GetKey(KeyCode.LeftShift)) // Scroll down - Zoom out
+        if (canZoomCamera && Input.mouseScrollDelta.y < 0 && !Input.GetKey(KeyCode.LeftControl) && !Input.GetKey(KeyCode.LeftAlt) && !Input.GetKey(KeyCode.LeftShift)) // Scroll down - Zoom out
         {
             CurrentZoom += ZOOM_SPEED;
             UpdatePosition();
         }
-        if (!isMouseOverUi && Input.mouseScrollDelta.y > 0 && !Input.GetKey(KeyCode.LeftControl) && !Input.GetKey(KeyCode.LeftAlt) && !Input.GetKey(KeyCode.LeftShift)) // Scroll up - Zoom in
+        if (canZoomCamera && Input.mouseScrollDelta.y > 0 && !Input.GetKey(KeyCode.LeftControl) && !Input.GetKey(KeyCode.LeftAlt) && !Input.GetKey(KeyCode.LeftShift)) // Scroll up - Zoom in
         {
             CurrentZoom -= ZOOM_SPEED;
             UpdatePosition();
@@ -203,6 +207,15 @@ public class CameraHandler : MonoBehaviour
 
         // Always track the last mouse position (end of frame)
         lastMousePos = Input.mousePosition;
+    }
+
+    public void Freeze()
+    {
+        IsFrozen = true;
+    }
+    public void Unfreeze()
+    {
+        IsFrozen = false;
     }
 
     private void MoveForward(float speed)
@@ -238,7 +251,7 @@ public class CameraHandler : MonoBehaviour
         FollowedEntity = null;
     }
 
-    private void UpdatePosition()
+    public void UpdatePosition()
     {
         CurrentZoom = Mathf.Clamp(CurrentZoom, MIN_ZOOM_HEIGHT, MAX_ZOOM_HEIGHT);
 

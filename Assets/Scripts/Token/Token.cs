@@ -51,4 +51,18 @@ public class Token : MonoBehaviour
 
     public string Label => $"{Size.Label} {Color.Label} {Shape.Label}";
     public string LabelCap => Label.CapitalizeFirst();
+
+    public string Description
+    {
+        get
+        {
+            string desc = "Does nothing";
+            if (Color.Resource != null)
+            {
+                int amount = Color.ResourceBaseAmount * Size.EffectMultiplier;
+                desc = $"{amount} {(amount == 1 ? Color.Resource.LabelCap : Color.Resource.LabelPluralCap)}";
+            }
+            return desc;
+        }
+    }
 }

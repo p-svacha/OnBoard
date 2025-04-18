@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class Game : MonoBehaviour
 {
+    public static Game Instance;
+
     /// <summary>
     /// List of all meeples the player controls.
     /// </summary>
@@ -16,9 +18,9 @@ public class Game : MonoBehaviour
     public int DrawAmount;
 
     /// <summary>
-    /// The contents of the token bag.
+    /// The contents of the token pouch.
     /// </summary>
-    public List<Token> TokenBag;
+    public List<Token> TokenPouch;
 
     /// <summary>
     /// The collecion of all board segments that make up the board.
@@ -45,10 +47,20 @@ public class Game : MonoBehaviour
     /// </summary>
     public GameState GameState;
 
+    /// <summary>
+    /// Returns if the player is currently looking at the contents of the token pouch.
+    /// </summary>
+    public bool IsTokenPouchOpen { get; private set; }
+
     // Visual
     private List<BoardTile> CurrentlyHighlightedMovementTargets;
 
     #region Initialization
+
+    private void Awake()
+    {
+        Instance = this;
+    }
 
     void Start()
     {
@@ -70,7 +82,7 @@ public class Game : MonoBehaviour
 
         CreateInitialBoard();
         AddStartingMeeple();
-        AddStartingTokensToBag();
+        AddStartingTokensToPouch();
         CameraHandler.Instance.SetPosition(Meeples[0].transform.position);
 
         Turn = 0;
@@ -89,15 +101,15 @@ public class Game : MonoBehaviour
         AddPlayerMeeple(Board[0].Tiles.Last());
     }
 
-    private void AddStartingTokensToBag()
+    private void AddStartingTokensToPouch()
     {
-        TokenBag = new List<Token>();
-        AddTokenToBag(TokenShapeDefOf.Pebble, TokenColorDefOf.White, TokenSizeDefOf.Small);
-        AddTokenToBag(TokenShapeDefOf.Pebble, TokenColorDefOf.White, TokenSizeDefOf.Small);
-        AddTokenToBag(TokenShapeDefOf.Pebble, TokenColorDefOf.White, TokenSizeDefOf.Small);
-        AddTokenToBag(TokenShapeDefOf.Pebble, TokenColorDefOf.White, TokenSizeDefOf.Small);
-        AddTokenToBag(TokenShapeDefOf.Pebble, TokenColorDefOf.Black, TokenSizeDefOf.Small);
-        AddTokenToBag(TokenShapeDefOf.Pebble, TokenColorDefOf.Black, TokenSizeDefOf.Small);
+        TokenPouch = new List<Token>();
+        AddTokenToPouch(TokenShapeDefOf.Pebble, TokenColorDefOf.White, TokenSizeDefOf.Small);
+        AddTokenToPouch(TokenShapeDefOf.Pebble, TokenColorDefOf.White, TokenSizeDefOf.Small);
+        AddTokenToPouch(TokenShapeDefOf.Pebble, TokenColorDefOf.White, TokenSizeDefOf.Small);
+        AddTokenToPouch(TokenShapeDefOf.Pebble, TokenColorDefOf.White, TokenSizeDefOf.Small);
+        AddTokenToPouch(TokenShapeDefOf.Pebble, TokenColorDefOf.Black, TokenSizeDefOf.Small);
+        AddTokenToPouch(TokenShapeDefOf.Pebble, TokenColorDefOf.Black, TokenSizeDefOf.Small);
         DrawAmount = 4;
     }
 
@@ -109,7 +121,7 @@ public class Game : MonoBehaviour
     {
         WorldManager.UpdateHoveredObjects();
 
-        if (Input.GetKeyDown(KeyCode.Space) && GameState == GameState.WaitingForDraw) StartTurn();
+        if (Input.GetKeyDown(KeyCode.Space) && GameState == GameState.WaitingForDraw && !IsTokenPouchOpen) StartTurn();
 
         if (GameState == GameState.Movement)
         {
@@ -182,14 +194,14 @@ public class Game : MonoBehaviour
     }
 
     /// <summary>
-    /// Each turn starts by drawing tokens out of your bag.
+    /// Each turn starts by drawing tokens out of your pouch.
     /// </summary>
     private List<Token> DrawTokens()
     {
         int drawAmount = DrawAmount;
-        int bagSize = TokenBag.Count();
-        if (drawAmount > bagSize) drawAmount = bagSize;
-        List<Token> remainingTokens = new List<Token>(TokenBag);
+        int pouchSize = TokenPouch.Count();
+        if (drawAmount > pouchSize) drawAmount = pouchSize;
+        List<Token> remainingTokens = new List<Token>(TokenPouch);
         List<Token> drawnTokens = new List<Token>();
         for (int i = 0; i < DrawAmount; i++)
         {
@@ -220,10 +232,10 @@ public class Game : MonoBehaviour
         Board.Add(segment);
     }
 
-    public void AddTokenToBag(TokenShapeDef shape, TokenColorDef color, TokenSizeDef size)
+    public void AddTokenToPouch(TokenShapeDef shape, TokenColorDef color, TokenSizeDef size)
     {
         Token newToken = TokenGenerator.GenerateToken(shape, color, size);
-        TokenBag.Add(newToken);
+        TokenPouch.Add(newToken);
     }
 
     public void TeleportMeeple(Meeple meeple, BoardTile tile)
@@ -329,6 +341,93 @@ public class Game : MonoBehaviour
             target.UnhighlightAsMovementOption();
         }
         CurrentlyHighlightedMovementTargets.Clear();
+    }
+
+    #endregion
+
+    #region Menus
+
+    // how far in front of the camera the pouch contents appear
+    private const float TokenDisplayDistance = 4f;
+    // how wide the random spread is (in world units)
+    private const float pouchSpreadRadius = 1.5f;
+    // minimum distance between any two tokens
+    private const float pouchMinSeparation = 0.5f;
+    private List<Token> PouchDisplayTokens = new List<Token>();
+
+
+    public void OpenTokenPouch()
+    {
+        // show your leather‑cloth background
+        IsTokenPouchOpen = true;
+
+        Vector3 center = new Vector3(0, 100f, 0);
+
+        // pre‐generate non‐overlapping 2D offsets
+        var offsets2D = new List<Vector2>();
+        foreach (Token token in TokenPouch)
+        {
+            Vector2 candidate;
+            int attempts = 0;
+            do
+            {
+                candidate = Random.insideUnitCircle * pouchSpreadRadius;
+                attempts++;
+            }
+            // retry up to 10 times to find a spot that’s at least pouchMinSeparation away
+            while (attempts < 10 && offsets2D.Any(o => Vector2.Distance(o, candidate) < pouchMinSeparation));
+            offsets2D.Add(candidate);
+        }
+
+        for (int i = 0; i < TokenPouch.Count; i++)
+        {
+            Token orig = TokenPouch[i];
+
+            // Make a copy so we don't need to move the original token
+            Token token = TokenGenerator.GenerateToken(orig.Shape, orig.Color, orig.Size); 
+
+            // disable physics so it just sits there
+            //token.Freeze();
+
+            // make sure it's visible
+            token.Show();
+
+            // position in world using our 2D offset on the camera‐plane
+            Vector2 c2 = offsets2D[i];
+            Vector3 offset = new Vector3(c2.x, 0.3f, c2.y);
+            token.transform.position = center + offset;
+
+            // optionally face the camera (if your token mesh isn't round)
+            token.transform.rotation = Quaternion.Euler(Random.Range(0f, 360f), Random.Range(0f, 360f), Random.Range(0f, 360f));
+
+            // Save token in display list
+            PouchDisplayTokens.Add(token);
+
+            // Move camera
+            CameraHandler.Instance.Camera.transform.position = new Vector3(0f, 100f + TokenDisplayDistance, 0f);
+            CameraHandler.Instance.Camera.transform.rotation = Quaternion.Euler(90, 0, 0);
+
+            // Freeze camera
+            CameraHandler.Instance.Freeze();
+        }
+    }
+
+    public void CloseTokenPouch()
+    {
+        IsTokenPouchOpen = false;
+
+        // hide everything again so it doesn't clutter the next turn
+        foreach (var token in PouchDisplayTokens)
+        {
+            GameObject.Destroy(token.gameObject);
+        }
+        PouchDisplayTokens.Clear();
+
+        // Unfreeze camera
+        CameraHandler.Instance.Unfreeze();
+        CameraHandler.Instance.UpdatePosition();
+
+        HelperFunctions.UnfocusNonInputUiElements();
     }
 
     #endregion
