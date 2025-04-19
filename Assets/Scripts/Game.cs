@@ -38,6 +38,11 @@ public class Game : MonoBehaviour
     public List<MovementOption> MovementOptions { get; private set; }
 
     /// <summary>
+    /// Flag if all movement has been completed this turn.
+    /// </summary>
+    public bool IsMovementDone { get; private set; }
+
+    /// <summary>
     /// The current turn number.
     /// </summary>
     public int Turn;
@@ -143,6 +148,7 @@ public class Game : MonoBehaviour
     public void StartPreTurn()
     {
         GameUI.Instance.TurnDraw.ShowWaitingText();
+        GameUI.Instance.PostItButton.SetText("Draw");
 
         GameState = GameState.WaitingForDraw;
     }
@@ -155,13 +161,7 @@ public class Game : MonoBehaviour
         TokenPhysicsManager.ThrowTokens(this);
         GameUI.Instance.TurnDraw.ShowTurnDraw(this);
         GameState = GameState.DrawInteraction;
-
-        // Skip draw interaction if the player has no means to change the draw
-        bool playerCanChangeDraw = false;
-        if (!playerCanChangeDraw)
-        {
-            ConfirmDraw();
-        }
+        GameUI.Instance.PostItButton.SetText("Confirm Draw");
     }
 
     /// <summary>
@@ -172,14 +172,24 @@ public class Game : MonoBehaviour
         // Find all initial movement options
         UpdateCurrentMovementOptions();
         HighlightAllMovementOptionTargets();
+        GameUI.Instance.PostItButton.SetText("End\nTurn");
+
+        // Post it button
+        IsMovementDone = (MovementOptions.Count == 0);
+        if (IsMovementDone) GameUI.Instance.PostItButton.Enable();
+        else GameUI.Instance.PostItButton.Disable();
 
         GameState = GameState.Movement;
     }
 
     public void EndMovement()
     {
-        // Currently ending movement ends a turn - this will get replaced so the player can manually end the turn, so they can also use items etc.
-        EndTurn();
+        IsMovementDone = true;
+        UpdateCurrentMovementOptions();
+
+        // Post it button
+        if (IsMovementDone) GameUI.Instance.PostItButton.Enable();
+        else GameUI.Instance.PostItButton.Disable();
     }
 
     public void EndTurn()
