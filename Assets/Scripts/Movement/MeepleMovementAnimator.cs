@@ -10,7 +10,7 @@ public static class MeepleMovementAnimator
     /// <summary>
     /// Animate a meeple along a MovementOption path with a smooth tilt fade‑in/out.
     /// </summary>
-    public static void AnimateMove(MovementOption option, Action onComplete)
+    public static void AnimateMove(MovementOption option, System.Action<MovementOption> onComplete)
     {
         var meeple = option.Meeple;
 
@@ -22,14 +22,15 @@ public static class MeepleMovementAnimator
         // Tiles for logical updates
         var pathTiles = new List<BoardTile>(option.PassedTiles) { option.TargetTile };
 
-        meeple.StartCoroutine(AnimateRoute(meeple, route, pathTiles, onComplete));
+        meeple.StartCoroutine(AnimateRoute(option, meeple, route, pathTiles, onComplete));
     }
 
     private static IEnumerator AnimateRoute(
+        MovementOption option,
         Meeple meeple,
         List<Vector3> route,
         List<BoardTile> pathTiles,
-        Action onComplete)
+        Action<MovementOption> onComplete)
     {
         var tf = meeple.transform;
         var upright = Quaternion.identity;
@@ -78,6 +79,6 @@ public static class MeepleMovementAnimator
             meeple.SetPosition(pathTiles[i]);
         }
 
-        onComplete?.Invoke();
+        onComplete?.Invoke(option);
     }
 }

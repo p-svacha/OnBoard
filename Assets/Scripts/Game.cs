@@ -43,14 +43,19 @@ public class Game : MonoBehaviour
     public bool IsMovementDone { get; private set; }
 
     /// <summary>
+    /// The current chapter of the game.
+    /// </summary>
+    public int Chapter { get; private set; }
+
+    /// <summary>
     /// The current turn number.
     /// </summary>
-    public int Turn;
+    public int Turn { get; private set; }
 
     /// <summary>
     /// The current state of the game.
     /// </summary>
-    public GameState GameState;
+    public GameState GameState { get; private set; }
 
     /// <summary>
     /// Returns if the player is currently looking at the contents of the token pouch.
@@ -182,12 +187,16 @@ public class Game : MonoBehaviour
         GameState = GameState.Movement;
     }
 
-    public void EndMovement()
+    public void OnMovementDone(MovementOption move)
     {
-        IsMovementDone = true;
+        // Exectute OnLandEffect of arrived tile
+        move.TargetTile.OnLand();
+
+        // Update movements
         UpdateCurrentMovementOptions();
 
-        // Post it button
+        // Enable end turn button
+        IsMovementDone = true;
         if (IsMovementDone) GameUI.Instance.PostItButton.Enable();
         else GameUI.Instance.PostItButton.Disable();
     }
@@ -242,10 +251,15 @@ public class Game : MonoBehaviour
         Board.Add(segment);
     }
 
-    public void AddTokenToPouch(TokenShapeDef shape, TokenColorDef color, TokenSizeDef size)
+    public void AddTokenToPouch(TokenShapeDef shape, TokenColorDef color, TokenSizeDef size, bool silent = true)
     {
         Token newToken = TokenGenerator.GenerateToken(shape, color, size);
         TokenPouch.Add(newToken);
+
+        if (!silent)
+        {
+            GameUI.Instance.ItemReceivedDisplay.ShowTokenReceived(newToken);
+        }
     }
 
     public void TeleportMeeple(Meeple meeple, BoardTile tile)
@@ -255,7 +269,7 @@ public class Game : MonoBehaviour
 
     public void ExecuteMovement(MovementOption movement)
     {
-        MeepleMovementAnimator.AnimateMove(movement, onComplete: EndMovement);
+        MeepleMovementAnimator.AnimateMove(movement, onComplete: OnMovementDone);
     }
 
     #endregion
@@ -355,7 +369,7 @@ public class Game : MonoBehaviour
 
     #endregion
 
-    #region Menus
+    #region Pouch Contents Display
 
     // how far in front of the camera the pouch contents appear
     private const float TokenDisplayDistance = 4f;
@@ -394,10 +408,7 @@ public class Game : MonoBehaviour
             Token orig = TokenPouch[i];
 
             // Make a copy so we don't need to move the original token
-            Token token = TokenGenerator.GenerateToken(orig.Shape, orig.Color, orig.Size); 
-
-            // disable physics so it just sits there
-            //token.Freeze();
+            Token token = TokenGenerator.GenerateTokenCopy(orig); 
 
             // make sure it's visible
             token.Show();

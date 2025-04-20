@@ -26,11 +26,16 @@ public class BoardTile_TokenTile : BoardTile
             float x = Mathf.Sin(rad) * TILE_SIZE;
             float y = Mathf.Cos(rad) * TILE_SIZE;
 
-            Token visualToken = TokenGenerator.GenerateToken(AwardedToken.Shape, AwardedToken.Color, AwardedToken.Size);
+            Token visualToken = TokenGenerator.GenerateTokenCopy(AwardedToken);
             visualToken.Show();
             visualToken.Freeze();
             visualToken.transform.SetParent(transform);
             visualToken.transform.localPosition = new Vector3(x * visualToken.transform.localScale.x, 0f, y * visualToken.transform.localScale.z);
         }
+    }
+
+    public override void OnLand()
+    {
+        Game.Instance.AddTokenToPouch(AwardedToken.Shape, AwardedToken.Color, AwardedToken.Size, silent: false);
     }
 }

@@ -12,6 +12,7 @@ public static class WorldManager
     public static int Layer_BoardTile;
     public static int Layer_Meeple;
     public static int Layer_BoardSegment;
+    public static int Layer_PreviewObject;
 
     // Hovered Objects
     public static GameObject HoveredObject { get; private set; }
@@ -24,6 +25,7 @@ public static class WorldManager
         Layer_BoardTile = LayerMask.NameToLayer("BoardTile");
         Layer_Meeple = LayerMask.NameToLayer("Meeple");
         Layer_BoardSegment = LayerMask.NameToLayer("BoardSegment");
+        Layer_PreviewObject = LayerMask.NameToLayer("PreviewObject");
     }
 
     public static void UpdateHoveredObjects()

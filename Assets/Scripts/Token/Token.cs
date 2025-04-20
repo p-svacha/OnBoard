@@ -7,17 +7,21 @@ public class Token : MonoBehaviour
     public TokenShapeDef Shape { get; private set; }
     public TokenColorDef Color { get; private set; }
     public TokenSizeDef Size { get; private set; }
+
+    public int ModelId { get; private set; }
     private float Scale;
 
     public MeshRenderer Renderer;
     public Rigidbody Rigidbody;
     public MeshCollider Collider;
 
-    public void Init(TokenShapeDef shape, TokenColorDef color, TokenSizeDef size, float scale)
+    public void Init(TokenShapeDef shape, TokenColorDef color, TokenSizeDef size, int modelId, float scale)
     {
         Shape = shape;
         Color = color;
         Size = size;
+
+        ModelId = modelId;
         Scale = scale;
 
         Renderer = GetComponent<MeshRenderer>();
