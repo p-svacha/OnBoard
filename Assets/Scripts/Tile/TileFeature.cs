@@ -1,0 +1,58 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+/// <summary>
+/// A tile feature is a component on a board tile containing logic on how the tile behaves.
+/// </summary>
+public abstract class TileFeature : MonoBehaviour
+{
+    public Tile Tile { get; private set; }
+    public TileFeatureDef Def { get; private set; }
+
+    /// <summary>
+    /// Use this to initialize the feature on a tile.
+    /// </summary>
+    public void Init(Tile tile, TileFeatureDef def)
+    {
+        Tile = tile;
+        Def = def;
+    }
+
+    /// <summary>
+    /// Gets executed when initializing the feature with unspecified parameters.
+    /// </summary>
+    public virtual void SetRandomParameters() { }
+
+    /// <summary>
+    /// Function used when initializing a feature to make it visually more interesting.
+    /// </summary>
+    public virtual void InitVisuals() { }
+
+    /// <summary>
+    /// The effect that gets executed when landing on this feature.
+    /// </summary>
+    public virtual void OnLand() { }
+
+    /// <summary>
+    /// The effect that gets executed when passing over this feature.
+    /// </summary>
+    public virtual void OnPass() { }
+
+    /// <summary>
+    /// Remove this feature from the tile and the game.
+    /// </summary>
+    public void Remove()
+    {
+        Tile.RemoveFeature(this);
+    }
+
+    /// <summary>
+    /// Returns if meeples are allowed to always stop on this tile.
+    /// </summary>
+    public virtual bool CanMeepleStopHere()
+    {
+        return Def.MeepleCanStopOn;
+    }
+
+}

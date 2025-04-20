@@ -6,20 +6,22 @@ using UnityEngine;
 public class BoardSegment : MonoBehaviour
 {
     public Game Game;
-    public List<BoardTile> Tiles;
+    public Board Board;
+    public List<Tile> Tiles;
 
-    public void Init(Game game)
+    public void Init(Game game, Board board)
     {
+        Board = board;
         Game = game;
-        Tiles = new List<BoardTile>();
+        Tiles = new List<Tile>();
     }
 
-    public void AddTile(BoardTile tile)
+    public void AddTile(Tile tile)
     {
         Tiles.Add(tile);
     }
 
-    internal BoardTile Last()
+    internal Tile Last()
     {
         throw new NotImplementedException();
     }

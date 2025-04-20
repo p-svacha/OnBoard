@@ -32,6 +32,7 @@ public class UI_ItemReceivedDisplay : MonoBehaviour
 
     public void Close()
     {
+        GameObject.Destroy(PreviewObject);
         gameObject.SetActive(false);
     }
 

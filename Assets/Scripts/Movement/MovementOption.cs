@@ -15,20 +15,20 @@ public class MovementOption
     /// <summary>
     /// The tile on which the meeple stands before doing this movement.
     /// </summary>
-    public BoardTile StartTile;
+    public Tile StartTile;
 
     /// <summary>
     /// The full path of the movement, excluding the tile where the meeple stands before the movement and excluding the tile where the meeple would land.
     /// <br/>These are the tiles, where OnPass gets triggered.
     /// </summary>
-    public List<BoardTile> PassedTiles;
+    public List<Tile> PassedTiles;
 
     /// <summary>
     /// The tile where the meeple would arrive when the movement ends. This is the only tile where OnLand gets triggered.
     /// </summary>
-    public BoardTile TargetTile;
+    public Tile TargetTile;
 
-    public MovementOption(Meeple meeple, BoardTile startTile, List<BoardTile> passedTiles, BoardTile targetTile)
+    public MovementOption(Meeple meeple, Tile startTile, List<Tile> passedTiles, Tile targetTile)
     {
         Meeple = meeple;
         StartTile = startTile;

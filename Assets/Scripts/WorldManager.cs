@@ -17,7 +17,7 @@ public static class WorldManager
     // Hovered Objects
     public static GameObject HoveredObject { get; private set; }
     public static Meeple HoveredMeeple { get; private set; }
-    public static BoardTile HoveredBoardTile { get; private set; }
+    public static Tile HoveredBoardTile { get; private set; }
 
     public static void Initialize()
     {
@@ -32,7 +32,7 @@ public static class WorldManager
     {
         GameObject newHoveredObject = null;
         Meeple newHoveredMeeple = null;
-        BoardTile newHoveredBoardTile = null;
+        Tile newHoveredBoardTile = null;
 
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
@@ -47,7 +47,7 @@ public static class WorldManager
             }
             if (newHoveredObject.layer == Layer_BoardTile)
             {
-                newHoveredBoardTile = newHoveredObject.GetComponent<BoardTile>();
+                newHoveredBoardTile = newHoveredObject.GetComponent<Tile>();
             }
         }
 

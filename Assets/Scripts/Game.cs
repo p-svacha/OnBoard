@@ -25,7 +25,7 @@ public class Game : MonoBehaviour
     /// <summary>
     /// The collecion of all board segments that make up the board.
     /// </summary>
-    public List<BoardSegment> Board;
+    public Board Board;
 
     /// <summary>
     /// The result of the draw of this turn.
@@ -48,6 +48,11 @@ public class Game : MonoBehaviour
     public int Chapter { get; private set; }
 
     /// <summary>
+    /// The current major goal that has to be completed to reach the next chapter.
+    /// </summary>
+    public MajorGoal CurrentMajorGoal { get; private set; }
+
+    /// <summary>
     /// The current turn number.
     /// </summary>
     public int Turn { get; private set; }
@@ -63,7 +68,7 @@ public class Game : MonoBehaviour
     public bool IsTokenPouchOpen { get; private set; }
 
     // Visual
-    private List<BoardTile> CurrentlyHighlightedMovementTargets;
+    private List<Tile> CurrentlyHighlightedMovementTargets;
 
     #region Initialization
 
@@ -74,6 +79,9 @@ public class Game : MonoBehaviour
 
     void Start()
     {
+        // References
+        Board = Board.Instance;
+
         // Load defs
         DefDatabaseRegistry.AddAllDefs();
         DefDatabaseRegistry.ResolveAllReferences();
@@ -93,22 +101,22 @@ public class Game : MonoBehaviour
         CreateInitialBoard();
         AddStartingMeeple();
         AddStartingTokensToPouch();
+        InitializeChapterZero();
         CameraHandler.Instance.SetPosition(Meeples[0].transform.position);
 
-        Turn = 0;
         StartPreTurn();
     }
 
     private void CreateInitialBoard()
     {
-        Board = new List<BoardSegment>();
-        BoardSegment initialSegment = BoardSegmentGenerator.GenerateSegment(this, new Vector2Int(0, 0), numTiles: 10);
+        BoardSegment initialSegment = BoardSegmentGenerator.GenerateStartSegment(this, Board, new Vector2Int(0, 0), numTiles: 10);
         AddBoardSegment(initialSegment);
+        Board.Init(initialSegment.Tiles.Last());
     }
 
     private void AddStartingMeeple()
     {
-        AddPlayerMeeple(Board[0].Tiles.Last());
+        AddPlayerMeeple(Board.StartTile);
     }
 
     private void AddStartingTokensToPouch()
@@ -123,6 +131,14 @@ public class Game : MonoBehaviour
         DrawAmount = 4;
     }
 
+    private void InitializeChapterZero()
+    {
+        Chapter = 0;
+        Turn = 0;
+        CurrentMajorGoal = new MajorGoal_ReachRedFlag(Board.Segments[0].Tiles[0]);
+        GameUI.Instance.ChapterDisplay.UpdateDisplay();
+    }
+
     #endregion
 
     #region Game Loop
@@ -131,16 +147,16 @@ public class Game : MonoBehaviour
     {
         WorldManager.UpdateHoveredObjects();
 
-        if (Input.GetKeyDown(KeyCode.Space) && GameState == GameState.WaitingForDraw && !IsTokenPouchOpen) StartTurn();
+        if (Input.GetKeyDown(KeyCode.Space) && GameState == GameState.PreTurn && !IsTokenPouchOpen) StartTurn();
 
-        if (GameState == GameState.Movement)
+        if (GameState == GameState.MovemingPhase)
         {
             if (Input.GetMouseButtonDown(0))
             {
                 if (WorldManager.HoveredBoardTile != null)
                 {
                     MovementOption movement = MovementOptions.FirstOrDefault(o => o.TargetTile == WorldManager.HoveredBoardTile);
-                    if(movement != null)
+                    if (movement != null)
                     {
                         ExecuteMovement(movement);
                         UnhighlightAllMovementOptionTargets();
@@ -155,7 +171,7 @@ public class Game : MonoBehaviour
         GameUI.Instance.TurnDraw.ShowWaitingText();
         GameUI.Instance.PostItButton.SetText("Draw");
 
-        GameState = GameState.WaitingForDraw;
+        GameState = GameState.PreTurn;
     }
 
     public void StartTurn()
@@ -165,7 +181,7 @@ public class Game : MonoBehaviour
         CurrentDrawResult = new DrawResult(DrawTokens());
         TokenPhysicsManager.ThrowTokens(this);
         GameUI.Instance.TurnDraw.ShowTurnDraw(this);
-        GameState = GameState.DrawInteraction;
+        GameState = GameState.DrawingPhase;
         GameUI.Instance.PostItButton.SetText("Confirm Draw");
     }
 
@@ -184,7 +200,7 @@ public class Game : MonoBehaviour
         if (IsMovementDone) GameUI.Instance.PostItButton.Enable();
         else GameUI.Instance.PostItButton.Disable();
 
-        GameState = GameState.Movement;
+        GameState = GameState.MovemingPhase;
     }
 
     public void OnMovementDone(MovementOption move)
@@ -207,6 +223,18 @@ public class Game : MonoBehaviour
 
         // Collect all tokens off the board
         StartCoroutine(TokenPhysicsManager.CollectTokens(this));
+
+        // Check if major goal is complete
+        if(CurrentMajorGoal.IsComplete)
+        {
+            // Remove old goal related stuff
+            CurrentMajorGoal.OnRemoved();
+
+            // Set new goal
+            Chapter++;
+            CurrentMajorGoal = new MajorGoal_ReachRedFlag();
+            GameUI.Instance.ChapterDisplay.UpdateDisplay();
+        }
 
         // Wait for player to start next turn
         StartPreTurn();
@@ -231,9 +259,11 @@ public class Game : MonoBehaviour
         return drawnTokens;
     }
 
+    #endregion
+
     #region Game Actions
 
-    public Meeple AddPlayerMeeple(BoardTile tile)
+    public Meeple AddPlayerMeeple(Tile tile)
     {
         GameObject meeplePrefab = ResourceManager.LoadPrefab("Prefabs/Meeple");
         GameObject meepleObject = GameObject.Instantiate(meeplePrefab);
@@ -248,7 +278,7 @@ public class Game : MonoBehaviour
 
     public void AddBoardSegment(BoardSegment segment)
     {
-        Board.Add(segment);
+        Board.AddSegment(segment);
     }
 
     public void AddTokenToPouch(TokenShapeDef shape, TokenColorDef color, TokenSizeDef size, bool silent = true)
@@ -262,7 +292,7 @@ public class Game : MonoBehaviour
         }
     }
 
-    public void TeleportMeeple(Meeple meeple, BoardTile tile)
+    public void TeleportMeeple(Meeple meeple, Tile tile)
     {
         meeple.SetPosition(tile);
     }
@@ -272,7 +302,10 @@ public class Game : MonoBehaviour
         MeepleMovementAnimator.AnimateMove(movement, onComplete: OnMovementDone);
     }
 
-    #endregion
+    public void SetMajorGoalAsComplete()
+    {
+        CurrentMajorGoal.SetAsComplete();
+    }
 
     #endregion
 
@@ -292,54 +325,56 @@ public class Game : MonoBehaviour
     {
         List<MovementOption> options = new List<MovementOption>();
 
-        BoardTile startTile = meeple.Tile;
-        List<List<BoardTile>> paths = GetPaths(startTile, prevPosition: null, remainingMovementPoints: CurrentDrawResult.Resources[ResourceDefOf.MovementPoint]);
-        foreach(List<BoardTile> path in paths)
+        Tile startTile = meeple.Tile;
+        List<List<Tile>> paths = GetPaths(startTile, prevPosition: null, remainingMovementPoints: CurrentDrawResult.Resources[ResourceDefOf.MovementPoint]);
+        foreach(List<Tile> path in paths)
         {
-            BoardTile target = path.Last();
+            Tile target = path.Last();
             path.Remove(target);
-            options.Add(new MovementOption(meeple, startTile, new List<BoardTile>(path), target));
+            options.Add(new MovementOption(meeple, startTile, new List<Tile>(path), target));
         }
 
         return options;
     }
 
-    private void RemoveMovementOptionsFor(Meeple meeple)
-    {
-        MovementOptions = MovementOptions.Where(o => o.Meeple != meeple).ToList();
-    }
-
     /// <summary>
-    /// Returns all possible paths of exactly remainingMovementPoints steps starting from position, never immediately back‑racking to prevPosition. 
-    /// Each path is a list of the tiles visited in order(excluding the start tile).
+    /// Returns all possible movement paths starting from `position`.  
+    /// - Any path that uses up exactly `remainingMovementPoints` steps, **or**
+    /// - Any shorter path that ends on a tile where CanMeepleStopHere() is true  
+    /// never immediately back‑tracks to `prevPosition`.
     /// </summary>
-    private List<List<BoardTile>> GetPaths(BoardTile position, BoardTile prevPosition, int remainingMovementPoints)
+    private List<List<Tile>> GetPaths(Tile position, Tile prevPosition, int remainingMovementPoints)
     {
-        var paths = new List<List<BoardTile>>();
+        var paths = new List<List<Tile>>();
 
-        // No movement points --> no valid paths
+        // No movement points → no valid paths
         if (remainingMovementPoints <= 0)
             return paths;
 
-        // Try every connected tile, except the one we just came from
-        foreach (BoardTile next in position.ConnectedTiles)
+        foreach (Tile next in position.ConnectedTiles)
         {
+            // don't immediately reverse
             if (prevPosition != null && next == prevPosition)
                 continue;
 
-            // If this is our last step, yield a single‑step path [next]
+            // 1) full‑length paths (use your last movement point here)
             if (remainingMovementPoints == 1)
             {
-                paths.Add(new List<BoardTile> { next });
+                paths.Add(new List<Tile> { next });
             }
             else
             {
-                // Otherwise, recurse one step deeper
+                // 2) early‑stop paths: you can stop here any time if allowed
+                if (next.CanMeepleStopHere())
+                {
+                    paths.Add(new List<Tile> { next });
+                }
+
+                // 3) longer paths: spend one point and recurse
                 var subPaths = GetPaths(next, position, remainingMovementPoints - 1);
                 foreach (var sub in subPaths)
                 {
-                    // Prepend our current move onto each sub‐path
-                    var path = new List<BoardTile> { next };
+                    var path = new List<Tile> { next };
                     path.AddRange(sub);
                     paths.Add(path);
                 }
@@ -352,7 +387,7 @@ public class Game : MonoBehaviour
     private void HighlightAllMovementOptionTargets()
     {
         CurrentlyHighlightedMovementTargets = MovementOptions.Select(o => o.TargetTile).ToList();
-        foreach (BoardTile target in CurrentlyHighlightedMovementTargets)
+        foreach (Tile target in CurrentlyHighlightedMovementTargets)
         {
             target.HighlightAsMovementOption();
         }
@@ -360,7 +395,7 @@ public class Game : MonoBehaviour
 
     private void UnhighlightAllMovementOptionTargets()
     {
-        foreach (BoardTile target in CurrentlyHighlightedMovementTargets)
+        foreach (Tile target in CurrentlyHighlightedMovementTargets)
         {
             target.UnhighlightAsMovementOption();
         }

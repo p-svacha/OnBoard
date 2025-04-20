@@ -13,6 +13,7 @@ public class GameUI : MonoBehaviour
     public UI_TokenPouchButton TokenPouchButton;
     public UI_PostItButton PostItButton;
     public UI_ItemReceivedDisplay ItemReceivedDisplay;
+    public UI_ChapterDisplay ChapterDisplay;
 
     private void Awake()
     {

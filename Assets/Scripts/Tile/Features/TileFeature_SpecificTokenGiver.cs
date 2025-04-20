@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BoardTile_TokenTile : BoardTile
+public class TileFeature_SpecificTokenGiver : TileFeature
 {
     private const int NUM_VISUAL_TOKENS = 12;
 
@@ -11,7 +11,12 @@ public class BoardTile_TokenTile : BoardTile
     /// </summary>
     public Token AwardedToken { get; private set; }
 
-    protected override void OnInit()
+    public void InitToken(TokenShapeDef shape, TokenColorDef color, TokenSizeDef size)
+    {
+        AwardedToken = TokenGenerator.GenerateToken(shape, color, size);
+    }
+
+    public override void SetRandomParameters()
     {
         AwardedToken = TokenGenerator.GenerateToken(TokenShapeDefOf.Pebble, TokenColorDefOf.White, TokenSizeDefOf.Small);
     }
@@ -23,14 +28,15 @@ public class BoardTile_TokenTile : BoardTile
         {
             float deg = i * degreeStep;
             float rad = deg * Mathf.Deg2Rad;
-            float x = Mathf.Sin(rad) * TILE_SIZE;
-            float y = Mathf.Cos(rad) * TILE_SIZE;
+            float x = Mathf.Sin(rad) * Tile.TILE_SIZE;
+            float y = Mathf.Cos(rad) * Tile.TILE_SIZE;
 
-            Token visualToken = TokenGenerator.GenerateTokenCopy(AwardedToken);
+            Token visualToken = TokenGenerator.GenerateTokenCopy(AwardedToken, randomModel: true);
             visualToken.Show();
             visualToken.Freeze();
             visualToken.transform.SetParent(transform);
             visualToken.transform.localPosition = new Vector3(x * visualToken.transform.localScale.x, 0f, y * visualToken.transform.localScale.z);
+            HelperFunctions.ApplyRandomRotation(visualToken.gameObject);
         }
     }
 

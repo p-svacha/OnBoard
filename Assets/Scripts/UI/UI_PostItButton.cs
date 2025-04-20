@@ -20,9 +20,9 @@ public class UI_PostItButton : MonoBehaviour
     private void EndTurnButton_OnClick()
     {
         if (IsDisabled) return;
-        if (Game.Instance.GameState == GameState.WaitingForDraw) Game.Instance.StartTurn();
-        else if (Game.Instance.GameState == GameState.DrawInteraction) Game.Instance.ConfirmDraw();
-        else if (Game.Instance.GameState == GameState.Movement) Game.Instance.EndTurn();
+        if (Game.Instance.GameState == GameState.PreTurn) Game.Instance.StartTurn();
+        else if (Game.Instance.GameState == GameState.DrawingPhase) Game.Instance.ConfirmDraw();
+        else if (Game.Instance.GameState == GameState.MovemingPhase) Game.Instance.EndTurn();
     }
 
     public void SetText(string text)

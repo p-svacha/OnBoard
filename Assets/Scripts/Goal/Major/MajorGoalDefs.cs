@@ -2,17 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MajorGoalDefs : MonoBehaviour
+public static class MajorGoalDefs
 {
-    // Start is called before the first frame update
-    void Start()
+    public static List<MajorGoalDef> Defs => new List<MajorGoalDef>()
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+        new MajorGoalDef()
+        {
+            DefName = "ReachRedFlag",
+            Description = "Reach the red flag.",
+            MajorGoalClass = typeof(MajorGoal_ReachRedFlag),
+        }
+    };
 }

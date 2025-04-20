@@ -24,10 +24,11 @@ public static class DefDatabaseRegistry
     {
         ClearAllDatabases();
         DefDatabase<ResourceDef>.AddDefs(ResourceDefs.Defs);
-        DefDatabase<BoardTileDef>.AddDefs(BoardTileDefs.Defs);
+        DefDatabase<TileFeatureDef>.AddDefs(TileFeatureDefs.Defs);
         DefDatabase<TokenShapeDef>.AddDefs(TokenShapeDefs.Defs);
         DefDatabase<TokenColorDef>.AddDefs(TokenColorDefs.Defs);
         DefDatabase<TokenSizeDef>.AddDefs(TokenSizeDefs.Defs);
+        DefDatabase<MajorGoalDef>.AddDefs(MajorGoalDefs.Defs);
     }
 
     // Called when a DefDatabase<T> type is accessed for the first time

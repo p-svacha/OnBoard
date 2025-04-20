@@ -12,6 +12,15 @@ using UnityEngine.UI;
 
 public static class HelperFunctions
 {
+    #region GameObject
+
+    public static void ApplyRandomRotation(GameObject obj)
+    {
+        obj.transform.rotation = Quaternion.Euler(Random.Range(0f, 360f), Random.Range(0f, 360f), Random.Range(0f, 360f));
+    }
+
+    #endregion
+
     #region Enum
 
     public static string GetEnumDescription(System.Enum value)

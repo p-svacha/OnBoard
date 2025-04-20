@@ -20,7 +20,7 @@ public static class MeepleMovementAnimator
         route.Add(option.TargetTile.transform.position);
 
         // Tiles for logical updates
-        var pathTiles = new List<BoardTile>(option.PassedTiles) { option.TargetTile };
+        var pathTiles = new List<Tile>(option.PassedTiles) { option.TargetTile };
 
         meeple.StartCoroutine(AnimateRoute(option, meeple, route, pathTiles, onComplete));
     }
@@ -29,7 +29,7 @@ public static class MeepleMovementAnimator
         MovementOption option,
         Meeple meeple,
         List<Vector3> route,
-        List<BoardTile> pathTiles,
+        List<Tile> pathTiles,
         Action<MovementOption> onComplete)
     {
         var tf = meeple.transform;

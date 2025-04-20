@@ -1,18 +1,12 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MajorGoalDef : MonoBehaviour
+public class MajorGoalDef : Def
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    /// <summary>
+    /// The class that will be instantiated when creating a major goal of this type.
+    /// </summary>
+    public Type MajorGoalClass { get; init; } = typeof(MajorGoal);
 }
