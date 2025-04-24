@@ -109,9 +109,9 @@ public class Game : MonoBehaviour
 
     private void CreateInitialBoard()
     {
-        BoardSegment initialSegment = BoardSegmentGenerator.GenerateStartSegment(this, Board, new Vector2Int(0, 0), numTiles: 10);
+        BoardSegment initialSegment = BoardSegmentGenerator.GenerateStartSegment(this, Board, new Vector2Int(0, 0), minTiles: 15, maxTiles: 25);
         AddBoardSegment(initialSegment);
-        Board.Init(initialSegment.Tiles.Last());
+        Board.Init(initialSegment.Tiles.First());
     }
 
     private void AddStartingMeeple()
@@ -135,7 +135,7 @@ public class Game : MonoBehaviour
     {
         Chapter = 0;
         Turn = 0;
-        CurrentMajorGoal = new MajorGoal_ReachRedFlag(Board.Segments[0].Tiles[0]);
+        CurrentMajorGoal = new MajorGoal_ReachRedFlag(Board.Segments[0].Tiles.Last());
         GameUI.Instance.ChapterDisplay.UpdateDisplay();
     }
 

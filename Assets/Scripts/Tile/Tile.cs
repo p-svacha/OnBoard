@@ -9,18 +9,25 @@ public class Tile : MonoBehaviour
 
     public BoardSegment Segment;
     public List<TileFeature> Features;
+
+    // Graph
+    public Vector3 WorldPosition;
+    public float ForwardAngle;
     public List<Tile> ConnectedTiles;
 
     // Visual
-    public const float TILE_SIZE = 4f;
+    public const float TILE_SIZE = BoardSegmentGenerator.TILE_SIZE;
     private GameObject MovementHighlightFx;
 
-    public void Init(Game game, BoardSegment segment)
+    public void Init(Game game, BoardSegment segment, Vector3 worldPosition, float forwardAngle)
     {
         Game = game;
         Segment = segment;
         ConnectedTiles = new List<Tile>();
         Features = new List<TileFeature>();
+
+        WorldPosition = worldPosition;
+        ForwardAngle = forwardAngle;
     }
 
     public void Connect(Tile tile)

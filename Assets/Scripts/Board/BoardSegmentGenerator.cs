@@ -5,11 +5,33 @@ using UnityEngine;
 
 public static class BoardSegmentGenerator
 {
-    public static float BOARD_SEGMENT_SIZE = 50;
-    public static float TILE_GAP = 3f;
+    public const float BOARD_SEGMENT_SIZE = 50;
+    public const float TILE_SIZE = 4f;
+    public const float TILE_GAP = 3f;
+    private const float CONNECT_LINE_WIDTH = 0.1f;
 
-    public static BoardSegment GenerateStartSegment(Game game, Board board, Vector2Int coordinates, int numTiles)
+    private const float MAX_ANGLE_CHANGE = 10f;
+    private const float T_SPLIT_CHANCE = 0.1f;
+    private const float DEAD_END_CHANCE = 0.1f;
+
+    // In generation
+    private static Game Game;
+    private static Board Board;
+    private static BoardSegment Segment;
+    private static int MinTiles;
+    private static int MaxTiles;
+    private static List<Tile> CreatedTiles; // All tiles that have been created so far for a segment
+    private static List<Tile> CurrentPathEnds; // All paths that are currently being expanded
+
+    public static BoardSegment GenerateStartSegment(Game game, Board board, Vector2Int coordinates, int minTiles, int maxTiles)
     {
+        // Save constraints for this segment
+        MinTiles = minTiles;
+        MaxTiles = maxTiles;
+        Game = game;
+        Board = board;
+
+        // Create segment
         MeshBuilder boardBuilder = new MeshBuilder("BoardSegment");
         int submesh = boardBuilder.GetSubmesh(ResourceManager.LoadMaterial("Materials/Board"));
         boardBuilder.BuildPlane(submesh, new Vector3(-(BOARD_SEGMENT_SIZE / 2f), 0f, -(BOARD_SEGMENT_SIZE / 2f)), new Vector3(BOARD_SEGMENT_SIZE, BOARD_SEGMENT_SIZE));
@@ -19,43 +41,111 @@ public static class BoardSegmentGenerator
         boardObject.transform.position = new Vector3(coordinates.x * BOARD_SEGMENT_SIZE, 0f, coordinates.y * BOARD_SEGMENT_SIZE);
         boardObject.GetComponent<MeshRenderer>().material.color = new Color(0.1f, 0.45f, 0.1f);
 
-        BoardSegment boardSegment = boardObject.AddComponent<BoardSegment>();
-        boardSegment.Init(game, board);
+        Segment = boardObject.AddComponent<BoardSegment>();
+        Segment.Init(game, board);
 
-        // Create tiles
-        // Start on connection points and generate tiles from there
-        Vector3 localPos = new Vector3((BOARD_SEGMENT_SIZE / 2f) - (TILE_GAP / 2f), 0.05f, Random.Range(-0.5f, 0.5f));
-        Tile previousTile = null;
-        for(int i = 0; i < numTiles; i++)
+        // Reset generation lists
+        CreatedTiles = new List<Tile>();
+        CurrentPathEnds = new List<Tile>();
+
+        // Create start tile
+        Vector3 startPosition = new Vector3(-(BOARD_SEGMENT_SIZE / 2f) + TILE_SIZE, 0.05f, 0f);
+        float startAngle = HelperFunctions.GetDirectionAngle(Direction.E);
+        Tile startTile = TileGenerator.GenerateTile(game, Segment, startPosition, startAngle);
+        CreatedTiles.Add(startTile);
+
+        // Add initial path
+        CurrentPathEnds.Add(startTile);
+
+        // Keep expanding paths until none left
+        while (CurrentPathEnds.Count > 0) ExpandRandomPath();
+
+        // Add all created tiles to segment
+        foreach (Tile tile in CreatedTiles) Segment.AddTile(tile);
+
+        return Segment;
+    }
+
+    private static void ExpandRandomPath()
+    {
+        // Choose random path
+        Tile chosenPathEnd = CurrentPathEnds.RandomElement();
+        CurrentPathEnds.Remove(chosenPathEnd);
+
+        // Check dead end
+        bool canBeDeadEnd = true;
+        if (CreatedTiles.Count < MinTiles && CurrentPathEnds.Count == 0) canBeDeadEnd = false;
+        bool mustBeDeadEnd = false;
+        if (CreatedTiles.Count >= MaxTiles) mustBeDeadEnd = true;
+        if (mustBeDeadEnd || (canBeDeadEnd && Random.value < DEAD_END_CHANCE))
         {
-            // Generate tile
-            Tile tile = TileGenerator.GenerateTile(game, boardSegment, localPos);
-            boardSegment.AddTile(tile);
-
-            // Connect to previous
-            if (i > 0)
-            {
-                tile.Connect(previousTile);
-                previousTile.Connect(tile);
-            }
-
-            // Add features
-            if (i == numTiles - 1)
-            {
-                tile.AddFeature(TileFeatureDefOf.Start);
-            }
-            if (i == (numTiles - 3))
-            {
-                tile.AddSpecificTokenGiverFeature(TokenShapeDefOf.Pebble, TokenColorDefOf.White, TokenSizeDefOf.Small);
-            }
-
-            // Calculate next pos
-            Vector3 nextPos = localPos + new Vector3(-TILE_GAP, 0f, Random.Range(-0.5f, 0.5f));
-            localPos = nextPos;
-
-            previousTile = tile;
+            return; // Dead end
         }
 
-        return boardSegment;
+        // Check T split
+        if (Random.value < T_SPLIT_CHANCE)
+        {
+            // Calculate split angle
+            float splitAngle = 90f + Random.Range(-MAX_ANGLE_CHANGE, MAX_ANGLE_CHANGE);
+            if (Random.value < 0.5f) splitAngle *= -1;
+            float postSplitAngle = chosenPathEnd.ForwardAngle + splitAngle;
+
+            // Create first tile after t split
+            float xOffsetSplit = Mathf.Sin(postSplitAngle * Mathf.Deg2Rad) * TILE_GAP;
+            float zOffsetSplit = Mathf.Cos(postSplitAngle * Mathf.Deg2Rad) * TILE_GAP;
+            Vector3 tSplitPos = chosenPathEnd.WorldPosition + new Vector3(xOffsetSplit, 0f, zOffsetSplit);
+            Tile tSplitTile = TileGenerator.GenerateTile(Game, Segment, tSplitPos, postSplitAngle);
+            CreatedTiles.Add(tSplitTile);
+            CurrentPathEnds.Add(tSplitTile);
+
+            // Connect
+            ConnectTilesBidirectional(chosenPathEnd, tSplitTile);
+        }
+
+        // Continue path
+        float angleChange = Random.Range(-MAX_ANGLE_CHANGE, MAX_ANGLE_CHANGE);
+        float nextAngle = chosenPathEnd.ForwardAngle + angleChange;
+        float xOffsetNext = Mathf.Sin(nextAngle * Mathf.Deg2Rad) * TILE_GAP;
+        float zOffsetNext = Mathf.Cos(nextAngle * Mathf.Deg2Rad) * TILE_GAP;
+        Vector3 nextPos = chosenPathEnd.WorldPosition + new Vector3(xOffsetNext, 0f, zOffsetNext);
+        Tile nextTile = TileGenerator.GenerateTile(Game, Segment, nextPos, nextAngle);
+        CreatedTiles.Add(nextTile);
+        CurrentPathEnds.Add(nextTile);
+
+        // Connect
+        ConnectTilesBidirectional(chosenPathEnd, nextTile);
+    }
+
+    private static void ConnectTilesBidirectional(Tile t1, Tile t2)
+    {
+        // 1) Connect tiles in graph
+        t1.Connect(t2);
+        t2.Connect(t1);
+
+        // 2) Draw a black line in world space under the board segment
+        var segmentTransform = t1.Segment.transform;
+
+        // Create a new GameObject to hold the LineRenderer
+        GameObject lineObj = new GameObject("ConnectionLine");
+        lineObj.transform.SetParent(segmentTransform, worldPositionStays: true);
+
+        var lr = lineObj.AddComponent<LineRenderer>();
+
+        // --- Configure the LineRenderer ---
+        lr.useWorldSpace = true;
+        lr.positionCount = 2;
+        lr.SetPosition(0, t1.transform.position);
+        lr.SetPosition(1, t2.transform.position);
+
+        // Thin black line
+        lr.startWidth = CONNECT_LINE_WIDTH;
+        lr.endWidth = CONNECT_LINE_WIDTH;
+        lr.startColor = Color.black;
+        lr.endColor = Color.black;
+
+        // Use an unlit color shader so it always shows as solid black
+        var mat = new Material(Shader.Find("Unlit/Color"));
+        mat.color = Color.black;
+        lr.material = mat;
     }
 }

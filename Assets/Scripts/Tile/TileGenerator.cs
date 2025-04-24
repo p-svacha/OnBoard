@@ -5,7 +5,7 @@ using UnityEngine;
 
 public static class TileGenerator
 {
-    public static Tile GenerateTile(Game game, BoardSegment segment, Vector2 localPosition)
+    public static Tile GenerateTile(Game game, BoardSegment segment, Vector3 localPosition, float forwardAngle)
     {
         GameObject tilePrefab = ResourceManager.LoadPrefab("Prefabs/Tile");
         GameObject tileObject = GameObject.Instantiate(tilePrefab, segment.transform);
@@ -13,7 +13,7 @@ public static class TileGenerator
         tileObject.transform.localPosition = localPosition;
         Tile tile = tileObject.AddComponent<Tile>();
 
-        tile.Init(game, segment);
+        tile.Init(game, segment, localPosition, forwardAngle);
 
         return tile;
     }
