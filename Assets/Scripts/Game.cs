@@ -109,7 +109,7 @@ public class Game : MonoBehaviour
 
     private void CreateInitialBoard()
     {
-        BoardSegment initialSegment = BoardSegmentGenerator.GenerateStartSegment(this, Board, new Vector2Int(0, 0), minTiles: 15, maxTiles: 25);
+        BoardSegment initialSegment = BoardSegmentGenerator.GenerateStartSegment(this, Board, new Vector2Int(0, 0), minTiles: 18, maxTiles: 22);
         AddBoardSegment(initialSegment);
         Board.Init(initialSegment.Tiles.First());
     }

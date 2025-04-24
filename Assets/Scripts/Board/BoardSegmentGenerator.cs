@@ -10,9 +10,11 @@ public static class BoardSegmentGenerator
     public const float TILE_GAP = 3f;
     private const float CONNECT_LINE_WIDTH = 0.1f;
 
-    private const float MAX_ANGLE_CHANGE = 10f;
+    private const float MAX_ANGLE_CHANGE = 20f;
     private const float T_SPLIT_CHANCE = 0.1f;
     private const float DEAD_END_CHANCE = 0.1f;
+
+    private const float TOKEN_GIVER_CHANCE = 0.05f;
 
     // In generation
     private static Game Game;
@@ -52,6 +54,7 @@ public static class BoardSegmentGenerator
         Vector3 startPosition = new Vector3(-(BOARD_SEGMENT_SIZE / 2f) + TILE_SIZE, 0.05f, 0f);
         float startAngle = HelperFunctions.GetDirectionAngle(Direction.E);
         Tile startTile = TileGenerator.GenerateTile(game, Segment, startPosition, startAngle);
+        startTile.AddFeature(TileFeatureDefOf.Start);
         CreatedTiles.Add(startTile);
 
         // Add initial path
@@ -95,6 +98,7 @@ public static class BoardSegmentGenerator
             float zOffsetSplit = Mathf.Cos(postSplitAngle * Mathf.Deg2Rad) * TILE_GAP;
             Vector3 tSplitPos = chosenPathEnd.WorldPosition + new Vector3(xOffsetSplit, 0f, zOffsetSplit);
             Tile tSplitTile = TileGenerator.GenerateTile(Game, Segment, tSplitPos, postSplitAngle);
+            AddRandomTileFeaturesTo(tSplitTile);
             CreatedTiles.Add(tSplitTile);
             CurrentPathEnds.Add(tSplitTile);
 
@@ -109,11 +113,20 @@ public static class BoardSegmentGenerator
         float zOffsetNext = Mathf.Cos(nextAngle * Mathf.Deg2Rad) * TILE_GAP;
         Vector3 nextPos = chosenPathEnd.WorldPosition + new Vector3(xOffsetNext, 0f, zOffsetNext);
         Tile nextTile = TileGenerator.GenerateTile(Game, Segment, nextPos, nextAngle);
+        AddRandomTileFeaturesTo(nextTile);
         CreatedTiles.Add(nextTile);
         CurrentPathEnds.Add(nextTile);
 
         // Connect
         ConnectTilesBidirectional(chosenPathEnd, nextTile);
+    }
+
+    private static void AddRandomTileFeaturesTo(Tile tile)
+    {
+        if(Random.value < TOKEN_GIVER_CHANCE)
+        {
+            tile.AddSpecificTokenGiverFeature(TokenShapeDefOf.Pebble, TokenColorDefOf.White, TokenSizeDefOf.Small);
+        }
     }
 
     private static void ConnectTilesBidirectional(Tile t1, Tile t2)
