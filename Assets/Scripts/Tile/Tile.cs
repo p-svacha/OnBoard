@@ -7,7 +7,6 @@ public class Tile : MonoBehaviour
 {
     public Game Game { get; private set; }
 
-    public BoardSegment Segment;
     public List<TileFeature> Features;
 
     // Graph
@@ -19,10 +18,9 @@ public class Tile : MonoBehaviour
     public const float TILE_SIZE = BoardSegmentGenerator.TILE_SIZE;
     private GameObject MovementHighlightFx;
 
-    public void Init(Game game, BoardSegment segment, Vector3 worldPosition, float forwardAngle)
+    public void Init(Game game, Vector3 worldPosition, float forwardAngle)
     {
         Game = game;
-        Segment = segment;
         ConnectedTiles = new List<Tile>();
         Features = new List<TileFeature>();
 

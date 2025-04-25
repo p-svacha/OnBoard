@@ -9,11 +9,12 @@ public class UI_ItemReceivedDisplay : MonoBehaviour
     public TextMeshProUGUI Title;
     public TextMeshProUGUI Subtitle;
     public TextMeshProUGUI Footer;
+    public RawImage TokenDisplayImage;
     public Button OkButton;
 
     private GameObject PreviewObject;
 
-    private void Start()
+    public void Initialize()
     {
         gameObject.SetActive(false);
         OkButton.onClick.AddListener(Close);
@@ -23,8 +24,7 @@ public class UI_ItemReceivedDisplay : MonoBehaviour
     {
         gameObject.SetActive(true);
 
-        PreviewObject = TokenGenerator.GenerateTokenCopy(token, hidden: false, frozen: true).gameObject;
-        InitPreviewObject();
+        PreviewObject = ObjectPreviewManager.ShowToken(TokenDisplayImage, token);
 
         Subtitle.text = "a new token";
         Footer.text = token.Label;
@@ -32,15 +32,8 @@ public class UI_ItemReceivedDisplay : MonoBehaviour
 
     public void Close()
     {
-        GameObject.Destroy(PreviewObject);
+        ObjectPreviewManager.ClearPreview(PreviewObject);
         gameObject.SetActive(false);
-    }
-
-    private void InitPreviewObject()
-    {
-        PreviewObject.layer = WorldManager.Layer_PreviewObject;
-        PreviewObject.transform.rotation = Quaternion.Euler(Random.Range(0f, 360f), Random.Range(0f, 360f), Random.Range(0f, 360f));
-        PreviewObject.AddComponent<SpinPreview>();
-        PreviewObject.transform.position = new Vector3(0f, 200f, 0f);
+        Game.Instance.CompleteCurrentActionPrompt();
     }
 }

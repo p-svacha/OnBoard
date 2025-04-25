@@ -30,5 +30,13 @@ public static class TileFeatureDefs
             TileFeatureClass = typeof(TileFeature_RedFlag),
             MeepleCanStopOn = true
         },
+
+        new TileFeatureDef()
+        {
+            DefName = "TokenBin",
+            Label = "token bin",
+            Description = "When landing on the tile, draft a token from your pouch to discard.",
+            TileFeatureClass = typeof(TileFeature_TokenBin),
+        }
     };
 }

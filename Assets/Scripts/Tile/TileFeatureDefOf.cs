@@ -8,4 +8,5 @@ public static class TileFeatureDefOf
     public static TileFeatureDef Start;
     public static TileFeatureDef SpecificTokenGiver;
     public static TileFeatureDef RedFlag;
+    public static TileFeatureDef TokenBin;
 }

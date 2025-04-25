@@ -5,15 +5,15 @@ using UnityEngine;
 
 public static class TileGenerator
 {
-    public static Tile GenerateTile(Game game, BoardSegment segment, Vector3 localPosition, float forwardAngle)
+    public static Tile GenerateTile(Game game, Board board, Vector3 localPosition, float forwardAngle)
     {
         GameObject tilePrefab = ResourceManager.LoadPrefab("Prefabs/Tile");
-        GameObject tileObject = GameObject.Instantiate(tilePrefab, segment.transform);
+        GameObject tileObject = GameObject.Instantiate(tilePrefab, board.transform);
         tileObject.layer = WorldManager.Layer_BoardTile;
         tileObject.transform.localPosition = localPosition;
         Tile tile = tileObject.AddComponent<Tile>();
 
-        tile.Init(game, segment, localPosition, forwardAngle);
+        tile.Init(game, localPosition, forwardAngle);
 
         return tile;
     }

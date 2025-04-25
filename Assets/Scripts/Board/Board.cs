@@ -6,12 +6,8 @@ public class Board : MonoBehaviour
 {
     public static Board Instance;
 
+    public List<Tile> Tiles = new List<Tile>();
     public Tile StartTile;
-
-    /// <summary>
-    /// The collecion of all board segments that make up the board.
-    /// </summary>
-    public List<BoardSegment> Segments;
 
     private void Awake()
     {
@@ -23,19 +19,13 @@ public class Board : MonoBehaviour
         StartTile = startTile;
     }
 
-    public void AddSegment(BoardSegment segment)
+    public void AddTile(Tile tile)
     {
-        Segments.Add(segment);
+        Tiles.Add(tile);
     }
 
-    public List<Tile> GetAllTiles()
-    {
-        List<Tile> tiles = new List<Tile>();
-        foreach (BoardSegment segment in Segments) tiles.AddRange(segment.Tiles);
-        return tiles;
-    }
     public Tile GetRandomTile()
     {
-        return GetAllTiles().RandomElement();
+        return Tiles.RandomElement();
     }
 }

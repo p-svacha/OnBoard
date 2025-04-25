@@ -5,7 +5,7 @@ using UnityEngine;
 
 public static class BoardSegmentGenerator
 {
-    public const float BOARD_SEGMENT_SIZE = 50;
+    public const float BOARD_SIZE = 500;
     public const float TILE_SIZE = 4f;
     public const float TILE_GAP = 3f;
     private const float CONNECT_LINE_WIDTH = 0.1f;
@@ -15,17 +15,30 @@ public static class BoardSegmentGenerator
     private const float DEAD_END_CHANCE = 0.1f;
 
     private const float TOKEN_GIVER_CHANCE = 0.05f;
+    private const float TOKEN_BIN_CHANCE = 0.05f;
 
     // In generation
     private static Game Game;
     private static Board Board;
-    private static BoardSegment Segment;
     private static int MinTiles;
     private static int MaxTiles;
     private static List<Tile> CreatedTiles; // All tiles that have been created so far for a segment
     private static List<Tile> CurrentPathEnds; // All paths that are currently being expanded
 
-    public static BoardSegment GenerateStartSegment(Game game, Board board, Vector2Int coordinates, int minTiles, int maxTiles)
+    public static Board GenerateBoard(Game game)
+    {
+        MeshBuilder boardBuilder = new MeshBuilder("Board");
+        int submesh = boardBuilder.GetSubmesh(ResourceManager.LoadMaterial("Materials/Board"));
+        boardBuilder.BuildPlane(submesh, new Vector3(-(BOARD_SIZE / 2f), 0f, -(BOARD_SIZE / 2f)), new Vector3(BOARD_SIZE, BOARD_SIZE));
+        GameObject boardObject = boardBuilder.ApplyMesh();
+        boardObject.layer = WorldManager.Layer_BoardSegment;
+        boardObject.GetComponent<MeshRenderer>().material.color = new Color(0.1f, 0.45f, 0.1f);
+
+        Board board = boardObject.AddComponent<Board>();
+        return board;
+    }
+
+    public static void GenerateStartSegment(Game game, Board board, int minTiles, int maxTiles)
     {
         // Save constraints for this segment
         MinTiles = minTiles;
@@ -33,27 +46,14 @@ public static class BoardSegmentGenerator
         Game = game;
         Board = board;
 
-        // Create segment
-        MeshBuilder boardBuilder = new MeshBuilder("BoardSegment");
-        int submesh = boardBuilder.GetSubmesh(ResourceManager.LoadMaterial("Materials/Board"));
-        boardBuilder.BuildPlane(submesh, new Vector3(-(BOARD_SEGMENT_SIZE / 2f), 0f, -(BOARD_SEGMENT_SIZE / 2f)), new Vector3(BOARD_SEGMENT_SIZE, BOARD_SEGMENT_SIZE));
-        GameObject boardObject = boardBuilder.ApplyMesh();
-        boardObject.transform.SetParent(board.transform);
-        boardObject.layer = WorldManager.Layer_BoardSegment;
-        boardObject.transform.position = new Vector3(coordinates.x * BOARD_SEGMENT_SIZE, 0f, coordinates.y * BOARD_SEGMENT_SIZE);
-        boardObject.GetComponent<MeshRenderer>().material.color = new Color(0.1f, 0.45f, 0.1f);
-
-        Segment = boardObject.AddComponent<BoardSegment>();
-        Segment.Init(game, board);
-
         // Reset generation lists
         CreatedTiles = new List<Tile>();
         CurrentPathEnds = new List<Tile>();
 
         // Create start tile
-        Vector3 startPosition = new Vector3(-(BOARD_SEGMENT_SIZE / 2f) + TILE_SIZE, 0.05f, 0f);
+        Vector3 startPosition = new Vector3(0f, 0.05f, 0f);
         float startAngle = HelperFunctions.GetDirectionAngle(Direction.E);
-        Tile startTile = TileGenerator.GenerateTile(game, Segment, startPosition, startAngle);
+        Tile startTile = TileGenerator.GenerateTile(game, Board, startPosition, startAngle);
         startTile.AddFeature(TileFeatureDefOf.Start);
         CreatedTiles.Add(startTile);
 
@@ -64,9 +64,7 @@ public static class BoardSegmentGenerator
         while (CurrentPathEnds.Count > 0) ExpandRandomPath();
 
         // Add all created tiles to segment
-        foreach (Tile tile in CreatedTiles) Segment.AddTile(tile);
-
-        return Segment;
+        foreach (Tile tile in CreatedTiles) Board.AddTile(tile);
     }
 
     private static void ExpandRandomPath()
@@ -97,7 +95,7 @@ public static class BoardSegmentGenerator
             float xOffsetSplit = Mathf.Sin(postSplitAngle * Mathf.Deg2Rad) * TILE_GAP;
             float zOffsetSplit = Mathf.Cos(postSplitAngle * Mathf.Deg2Rad) * TILE_GAP;
             Vector3 tSplitPos = chosenPathEnd.WorldPosition + new Vector3(xOffsetSplit, 0f, zOffsetSplit);
-            Tile tSplitTile = TileGenerator.GenerateTile(Game, Segment, tSplitPos, postSplitAngle);
+            Tile tSplitTile = TileGenerator.GenerateTile(Game, Board, tSplitPos, postSplitAngle);
             AddRandomTileFeaturesTo(tSplitTile);
             CreatedTiles.Add(tSplitTile);
             CurrentPathEnds.Add(tSplitTile);
@@ -112,7 +110,7 @@ public static class BoardSegmentGenerator
         float xOffsetNext = Mathf.Sin(nextAngle * Mathf.Deg2Rad) * TILE_GAP;
         float zOffsetNext = Mathf.Cos(nextAngle * Mathf.Deg2Rad) * TILE_GAP;
         Vector3 nextPos = chosenPathEnd.WorldPosition + new Vector3(xOffsetNext, 0f, zOffsetNext);
-        Tile nextTile = TileGenerator.GenerateTile(Game, Segment, nextPos, nextAngle);
+        Tile nextTile = TileGenerator.GenerateTile(Game, Board, nextPos, nextAngle);
         AddRandomTileFeaturesTo(nextTile);
         CreatedTiles.Add(nextTile);
         CurrentPathEnds.Add(nextTile);
@@ -127,20 +125,21 @@ public static class BoardSegmentGenerator
         {
             tile.AddSpecificTokenGiverFeature(TokenShapeDefOf.Pebble, TokenColorDefOf.White, TokenSizeDefOf.Small);
         }
+        if(Random.value < TOKEN_BIN_CHANCE)
+        {
+            tile.AddFeature(TileFeatureDefOf.TokenBin);
+        }
     }
 
     private static void ConnectTilesBidirectional(Tile t1, Tile t2)
     {
-        // 1) Connect tiles in graph
+        // Connect tiles in graph
         t1.Connect(t2);
         t2.Connect(t1);
 
-        // 2) Draw a black line in world space under the board segment
-        var segmentTransform = t1.Segment.transform;
-
         // Create a new GameObject to hold the LineRenderer
         GameObject lineObj = new GameObject("ConnectionLine");
-        lineObj.transform.SetParent(segmentTransform, worldPositionStays: true);
+        lineObj.transform.SetParent(Board.transform, worldPositionStays: true);
 
         var lr = lineObj.AddComponent<LineRenderer>();
 

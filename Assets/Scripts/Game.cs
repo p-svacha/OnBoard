@@ -67,6 +67,16 @@ public class Game : MonoBehaviour
     /// </summary>
     public bool IsTokenPouchOpen { get; private set; }
 
+    /// <summary>
+    /// The action prompt that is currently shown to the player.
+    /// </summary>
+    public ActionPrompt CurrentActionPrompt { get; private set; }
+
+    /// <summary>
+    /// Returns if an action prompt is currently active.
+    /// </summary>
+    public bool IsShowingActionPrompt => CurrentActionPrompt != null;
+
     // Visual
     private List<Tile> CurrentlyHighlightedMovementTargets;
 
@@ -101,7 +111,7 @@ public class Game : MonoBehaviour
         CreateInitialBoard();
         AddStartingMeeple();
         AddStartingTokensToPouch();
-        InitializeChapterZero();
+        InitializeFirstChapter();
         CameraHandler.Instance.SetPosition(Meeples[0].transform.position);
 
         StartPreTurn();
@@ -109,9 +119,9 @@ public class Game : MonoBehaviour
 
     private void CreateInitialBoard()
     {
-        BoardSegment initialSegment = BoardSegmentGenerator.GenerateStartSegment(this, Board, new Vector2Int(0, 0), minTiles: 18, maxTiles: 22);
-        AddBoardSegment(initialSegment);
-        Board.Init(initialSegment.Tiles.First());
+        Board = BoardSegmentGenerator.GenerateBoard(this);
+        BoardSegmentGenerator.GenerateStartSegment(this, Board, minTiles: 18, maxTiles: 22);
+        Board.Init(Board.Tiles.First());
     }
 
     private void AddStartingMeeple()
@@ -131,11 +141,11 @@ public class Game : MonoBehaviour
         DrawAmount = 4;
     }
 
-    private void InitializeChapterZero()
+    private void InitializeFirstChapter()
     {
-        Chapter = 0;
+        Chapter = 1;
         Turn = 0;
-        CurrentMajorGoal = new MajorGoal_ReachRedFlag(Board.Segments[0].Tiles.Last());
+        CurrentMajorGoal = new MajorGoal_ReachRedFlag(Board.Tiles.Last());
         GameUI.Instance.ChapterDisplay.UpdateDisplay();
     }
 
@@ -149,7 +159,7 @@ public class Game : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Space) && GameState == GameState.PreTurn && !IsTokenPouchOpen) StartTurn();
 
-        if (GameState == GameState.MovemingPhase)
+        if (GameState == GameState.MovingPhase && !IsShowingActionPrompt)
         {
             if (Input.GetMouseButtonDown(0))
             {
@@ -200,15 +210,26 @@ public class Game : MonoBehaviour
         if (IsMovementDone) GameUI.Instance.PostItButton.Enable();
         else GameUI.Instance.PostItButton.Disable();
 
-        GameState = GameState.MovemingPhase;
+        GameState = GameState.MovingPhase;
     }
 
+    /// <summary>
+    /// Gets called when a movement of the player meeple is done and it lands on a tile.
+    /// </summary>
     public void OnMovementDone(MovementOption move)
     {
         // Exectute OnLandEffect of arrived tile
         move.TargetTile.OnLand();
 
-        // Update movements
+        // Show action prompts
+        ShowNextActionPrompt();
+    }
+
+    /// <summary>
+    /// Gets called when all action prompts are completed after a meeple landed on a tile.
+    /// </summary>
+    private void OnActionPromptsDone()
+    {
         UpdateCurrentMovementOptions();
 
         // Enable end turn button
@@ -276,20 +297,21 @@ public class Game : MonoBehaviour
         return newMeeple;
     }
 
-    public void AddBoardSegment(BoardSegment segment)
-    {
-        Board.AddSegment(segment);
-    }
-
-    public void AddTokenToPouch(TokenShapeDef shape, TokenColorDef color, TokenSizeDef size, bool silent = true)
+    public Token AddTokenToPouch(TokenShapeDef shape, TokenColorDef color, TokenSizeDef size)
     {
         Token newToken = TokenGenerator.GenerateToken(shape, color, size);
-        TokenPouch.Add(newToken);
+        AddTokenToPouch(newToken);
+        return newToken;
+    }
+    public void AddTokenToPouch(Token token)
+    {
+        TokenPouch.Add(token);
+    }
 
-        if (!silent)
-        {
-            GameUI.Instance.ItemReceivedDisplay.ShowTokenReceived(newToken);
-        }
+    public void RemoveTokenFromPouch(Token token)
+    {
+        TokenPouch.Remove(token);
+        GameObject.Destroy(token);
     }
 
     public void TeleportMeeple(Meeple meeple, Tile tile)
@@ -307,6 +329,42 @@ public class Game : MonoBehaviour
         CurrentMajorGoal.SetAsComplete();
     }
 
+    #endregion
+
+    #region Action Prompts
+
+    private Queue<ActionPrompt> ActionPromptQueue = new Queue<ActionPrompt>();
+
+    public void QueueActionPrmpt(ActionPrompt prompt)
+    {
+        ActionPromptQueue.Enqueue(prompt);
+    }
+
+    private void ShowNextActionPrompt()
+    {
+        if (ActionPromptQueue.Count == 0)
+        {
+            OnActionPromptsDone();
+            return;
+        }
+
+        CurrentActionPrompt = ActionPromptQueue.Dequeue();
+        CurrentActionPrompt.Show();
+    }
+
+    public void CompleteCurrentActionPrompt()
+    {
+        // Close prompt
+        CurrentActionPrompt.Close();
+        CurrentActionPrompt = null;
+
+        // Update movements
+        UpdateCurrentMovementOptions();
+
+        // Show next prompt
+        ShowNextActionPrompt();
+    }
+    
     #endregion
 
     #region Movement
@@ -484,6 +542,15 @@ public class Game : MonoBehaviour
         CameraHandler.Instance.UpdatePosition();
 
         HelperFunctions.UnfocusNonInputUiElements();
+    }
+
+    #endregion
+
+    #region Getters
+
+    public int GetDraftDrawAmount()
+    {
+        return 3;
     }
 
     #endregion

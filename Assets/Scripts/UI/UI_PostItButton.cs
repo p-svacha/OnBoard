@@ -22,7 +22,7 @@ public class UI_PostItButton : MonoBehaviour
         if (IsDisabled) return;
         if (Game.Instance.GameState == GameState.PreTurn) Game.Instance.StartTurn();
         else if (Game.Instance.GameState == GameState.DrawingPhase) Game.Instance.ConfirmDraw();
-        else if (Game.Instance.GameState == GameState.MovemingPhase) Game.Instance.EndTurn();
+        else if (Game.Instance.GameState == GameState.MovingPhase) Game.Instance.EndTurn();
     }
 
     public void SetText(string text)

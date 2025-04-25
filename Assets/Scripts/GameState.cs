@@ -7,6 +7,6 @@ public enum GameState
     Initializing,
     PreTurn,
     DrawingPhase,
-    MovemingPhase,
+    MovingPhase,
     PostTurn
 }

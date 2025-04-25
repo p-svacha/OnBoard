@@ -42,6 +42,6 @@ public class TileFeature_SpecificTokenGiver : TileFeature
 
     public override void OnLand()
     {
-        Game.Instance.AddTokenToPouch(AwardedToken.Shape, AwardedToken.Color, AwardedToken.Size, silent: false);
+        Game.Instance.QueueActionPrmpt(new ActionPrompt_TokenReceived(AwardedToken.Shape, AwardedToken.Color, AwardedToken.Size));
     }
 }

@@ -4,14 +4,20 @@ using UnityEngine;
 
 public static class TokenPhysicsManager
 {
+    private static List<Token> ThrownTokens;
+
     public static void ThrowTokens(Game game)
     {
+        if (ThrownTokens == null) ThrownTokens = new List<Token>();
+
         foreach (Token token in game.CurrentDrawResult.DrawnTokens)
         {
-            token.transform.position = GetRandomThrowSpawnPosition();
-            token.transform.rotation = Quaternion.Euler(new Vector3(Random.Range(0, 360), Random.Range(0, 360), Random.Range(0, 360)));
-            token.Show();
-            token.Rigidbody.AddForce(GetRandomThrowForceDirection() * GetRandomThrowForce(), ForceMode.Impulse);
+            Token copy = TokenGenerator.GenerateTokenCopy(token);
+            copy.transform.position = GetRandomThrowSpawnPosition();
+            copy.transform.rotation = Quaternion.Euler(new Vector3(Random.Range(0, 360), Random.Range(0, 360), Random.Range(0, 360)));
+            copy.Show();
+            copy.Rigidbody.AddForce(GetRandomThrowForceDirection() * GetRandomThrowForce(), ForceMode.Impulse);
+            ThrownTokens.Add(copy);
         }
     }
 
@@ -49,10 +55,10 @@ public static class TokenPhysicsManager
 
     public static IEnumerator CollectTokens(Game game)
     {
-        var tokens = game.CurrentDrawResult.DrawnTokens;
+        List<Token> collectedTokens = new List<Token>(ThrownTokens);
 
         // 1) disable physics & start each lift+implode
-        foreach (var token in tokens)
+        foreach (Token token in collectedTokens)
         {
             var rb = token.Rigidbody;
             rb.velocity = Vector3.zero;
@@ -66,6 +72,8 @@ public static class TokenPhysicsManager
 
         // 2) wait for all to finish: max lift (1.2s) + max implode (0.3s) + buffer
         yield return new WaitForSeconds(1.6f);
+
+        foreach (Token token in collectedTokens) ThrownTokens.Remove(token);
     }
 
     private static IEnumerator LiftAndImplode(Token token)
