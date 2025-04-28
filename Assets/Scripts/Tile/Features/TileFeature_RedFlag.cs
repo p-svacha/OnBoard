@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class TileFeature_RedFlag : TileFeature
 {
-    public MajorGoal_ReachRedFlag Goal;
+    public ObjectiveGoal_ReachRedFlag Goal;
 
-    public void Init(MajorGoal_ReachRedFlag goal)
+    public void Init(ObjectiveGoal_ReachRedFlag goal)
     {
         Goal = goal;
     }
@@ -19,7 +19,7 @@ public class TileFeature_RedFlag : TileFeature
 
     public override void OnLand()
     {
-        if (Game.Instance.CurrentMajorGoal == Goal)
+        if (Game.Instance.CurrentChapterMission == Goal)
         {
             Game.Instance.SetMajorGoalAsComplete();
         }

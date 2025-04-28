@@ -7,6 +7,16 @@ public class Game : MonoBehaviour
 {
     public static Game Instance;
 
+    #region Static Rules
+
+    private const int NEW_QUEST_INTERVAL = 20;
+    private const int FIRST_NEW_QUEST_TURN = 10;
+
+    private const int NEW_RULE_INTERVAL = 20;
+    private const int FIRST_NEW_RULE_TURN = 20;
+
+    #endregion
+
     /// <summary>
     /// List of all meeples the player controls.
     /// </summary>
@@ -50,7 +60,7 @@ public class Game : MonoBehaviour
     /// <summary>
     /// The current major goal that has to be completed to reach the next chapter.
     /// </summary>
-    public MajorGoal CurrentMajorGoal { get; private set; }
+    public ObjectiveGoal CurrentChapterMission { get; private set; }
 
     /// <summary>
     /// The current turn number.
@@ -145,7 +155,7 @@ public class Game : MonoBehaviour
     {
         Chapter = 1;
         Turn = 0;
-        CurrentMajorGoal = new MajorGoal_ReachRedFlag(Board.Tiles.Last());
+        CurrentChapterMission = new ObjectiveGoal_ReachRedFlag(Board.Tiles.Last());
         GameUI.Instance.ChapterDisplay.UpdateDisplay();
     }
 
@@ -246,14 +256,14 @@ public class Game : MonoBehaviour
         StartCoroutine(TokenPhysicsManager.CollectTokens(this));
 
         // Check if major goal is complete
-        if(CurrentMajorGoal.IsComplete)
+        if(CurrentChapterMission.IsComplete)
         {
             // Remove old goal related stuff
-            CurrentMajorGoal.OnRemoved();
+            CurrentChapterMission.OnRemoved();
 
             // Set new goal
             Chapter++;
-            CurrentMajorGoal = new MajorGoal_ReachRedFlag();
+            CurrentChapterMission = new ObjectiveGoal_ReachRedFlag();
             GameUI.Instance.ChapterDisplay.UpdateDisplay();
         }
 
@@ -326,7 +336,7 @@ public class Game : MonoBehaviour
 
     public void SetMajorGoalAsComplete()
     {
-        CurrentMajorGoal.SetAsComplete();
+        CurrentChapterMission.SetAsComplete();
     }
 
     #endregion
