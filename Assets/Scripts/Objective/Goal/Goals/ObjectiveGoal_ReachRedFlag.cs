@@ -7,9 +7,9 @@ public class ObjectiveGoal_ReachRedFlag : ObjectiveGoal
 {
     private TileFeature_RedFlag RedFlag;
 
-    public ObjectiveGoal_ReachRedFlag(Tile flagTile = null) : base(ObjectiveGoalDefOf.ReachRedFlag)
+    protected override void OnInit()
     {
-        if (flagTile == null) flagTile = Board.Instance.GetRandomTile();
+        Tile flagTile = Board.Instance.GetRandomTile();
         RedFlag = flagTile.AddRedFlag(this);
     }
 

@@ -10,11 +10,14 @@ public abstract class ObjectiveGoal
     public ObjectiveGoalDef Def { get; private set; }
     public bool IsComplete { get; private set; }
 
-    public ObjectiveGoal(ObjectiveGoalDef def)
+
+    public void Init(ObjectiveGoalDef def)
     {
         Def = def;
         IsComplete = false;
+        OnInit();
     }
+    protected virtual void OnInit() { }
 
     public void SetAsComplete()
     {

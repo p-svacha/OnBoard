@@ -5,5 +5,5 @@ using UnityEngine;
 [DefOf]
 public static class ObjectiveRewardDefOf
 {
-    public static ObjectiveRewardDef ReceiveToken;
+    public static ObjectiveRewardDef SpecificToken;
 }

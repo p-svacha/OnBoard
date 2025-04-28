@@ -5,7 +5,7 @@ using UnityEngine;
 public enum GameState
 {
     Initializing,
-    PreTurn,
+    PreDraw,
     DrawingPhase,
     MovingPhase,
     PostTurn

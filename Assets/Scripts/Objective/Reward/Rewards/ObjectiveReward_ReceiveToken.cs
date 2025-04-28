@@ -4,12 +4,8 @@ using UnityEngine;
 
 public class ObjectiveReward_ReceiveToken : ObjectiveReward
 {
-    public ObjectiveReward_ReceiveToken() : base(ObjectiveRewardDefOf.ReceiveToken)
-    {
-    }
-
     public override void ApplyReward()
     {
-        throw new System.NotImplementedException();
+        Game.Instance.QueueActionPrompt(new ActionPrompt_TokenReceived(TokenShapeDefOf.Pebble, TokenColorDefOf.White, TokenSizeDefOf.Small));
     }
 }

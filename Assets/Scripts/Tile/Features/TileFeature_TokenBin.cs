@@ -17,6 +17,6 @@ public class TileFeature_TokenBin : TileFeature
 
     public override void OnLand()
     {
-        Game.Instance.QueueActionPrmpt(new ActionPrompt_DraftTokenToDiscard());
+        Game.Instance.QueueActionPrompt(new ActionPrompt_DraftTokenToDiscard());
     }
 }

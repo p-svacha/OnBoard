@@ -9,11 +9,11 @@ public class Game : MonoBehaviour
 
     #region Static Rules
 
-    private const int NEW_QUEST_INTERVAL = 20;
-    private const int FIRST_NEW_QUEST_TURN = 10;
+    private const int NEW_QUEST_INTERVAL = 3;
+    private const int FIRST_NEW_QUEST_TURN = 3;
 
     private const int NEW_RULE_INTERVAL = 20;
-    private const int FIRST_NEW_RULE_TURN = 20;
+    private const int FIRST_NEW_RULE_TURN = 15;
 
     #endregion
 
@@ -87,6 +87,8 @@ public class Game : MonoBehaviour
     /// </summary>
     public bool IsShowingActionPrompt => CurrentActionPrompt != null;
 
+    public List<Objective> ActiveQuests { get; private set; }
+
     // Visual
     private List<Tile> CurrentlyHighlightedMovementTargets;
 
@@ -124,7 +126,7 @@ public class Game : MonoBehaviour
         InitializeFirstChapter();
         CameraHandler.Instance.SetPosition(Meeples[0].transform.position);
 
-        StartPreTurn();
+        StartTurn();
     }
 
     private void CreateInitialBoard()
@@ -155,7 +157,8 @@ public class Game : MonoBehaviour
     {
         Chapter = 1;
         Turn = 0;
-        CurrentChapterMission = new ObjectiveGoal_ReachRedFlag(Board.Tiles.Last());
+        ActiveQuests = new List<Objective>();
+        CurrentChapterMission = ChapterMissionGenerator.GenerateChapterObectiveGoal(Chapter);
         GameUI.Instance.ChapterDisplay.UpdateDisplay();
     }
 
@@ -167,7 +170,7 @@ public class Game : MonoBehaviour
     {
         WorldManager.UpdateHoveredObjects();
 
-        if (Input.GetKeyDown(KeyCode.Space) && GameState == GameState.PreTurn && !IsTokenPouchOpen) StartTurn();
+        if (Input.GetKeyDown(KeyCode.Space) && GameState == GameState.PreDraw && !IsTokenPouchOpen) DrawInitialTokens();
 
         if (GameState == GameState.MovingPhase && !IsShowingActionPrompt)
         {
@@ -186,17 +189,24 @@ public class Game : MonoBehaviour
         }
     }
 
-    public void StartPreTurn()
-    {
-        GameUI.Instance.TurnDraw.ShowWaitingText();
-        GameUI.Instance.PostItButton.SetText("Draw");
-
-        GameState = GameState.PreTurn;
-    }
-
     public void StartTurn()
     {
         Turn++;
+        GameUI.Instance.TurnDraw.ShowWaitingText();
+        GameUI.Instance.PostItButton.SetText("Draw");
+
+        // Check if time for new quest
+        if ((Turn - FIRST_NEW_QUEST_TURN) % NEW_QUEST_INTERVAL == 0)
+        {
+            ActiveQuests.Add(QuestGenerator.GenerateQuest());
+        }
+        GameUI.Instance.QuestPanel.Refresh();
+
+        GameState = GameState.PreDraw;
+    }
+
+    public void DrawInitialTokens()
+    {
         Debug.Log($"Starting Turn {Turn}.");
         CurrentDrawResult = new DrawResult(DrawTokens());
         TokenPhysicsManager.ThrowTokens(this);
@@ -263,12 +273,12 @@ public class Game : MonoBehaviour
 
             // Set new goal
             Chapter++;
-            CurrentChapterMission = new ObjectiveGoal_ReachRedFlag();
+            CurrentChapterMission = ChapterMissionGenerator.GenerateChapterObectiveGoal(Chapter);
             GameUI.Instance.ChapterDisplay.UpdateDisplay();
         }
 
         // Wait for player to start next turn
-        StartPreTurn();
+        StartTurn();
     }
 
     /// <summary>
@@ -281,7 +291,7 @@ public class Game : MonoBehaviour
         if (drawAmount > pouchSize) drawAmount = pouchSize;
         List<Token> remainingTokens = new List<Token>(TokenPouch);
         List<Token> drawnTokens = new List<Token>();
-        for (int i = 0; i < DrawAmount; i++)
+        for (int i = 0; i < drawAmount; i++)
         {
             Token token = remainingTokens.RandomElement();
             drawnTokens.Add(token);
@@ -345,7 +355,7 @@ public class Game : MonoBehaviour
 
     private Queue<ActionPrompt> ActionPromptQueue = new Queue<ActionPrompt>();
 
-    public void QueueActionPrmpt(ActionPrompt prompt)
+    public void QueueActionPrompt(ActionPrompt prompt)
     {
         ActionPromptQueue.Enqueue(prompt);
     }
