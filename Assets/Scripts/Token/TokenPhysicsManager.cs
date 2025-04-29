@@ -6,10 +6,13 @@ public static class TokenPhysicsManager
 {
     private static List<Token> ThrownTokens;
 
+    public static void Initialize()
+    {
+        ThrownTokens = new List<Token>();
+    }
+
     public static void ThrowTokens(Game game)
     {
-        if (ThrownTokens == null) ThrownTokens = new List<Token>();
-
         foreach (Token token in game.CurrentDrawResult.DrawnTokens)
         {
             Token copy = TokenGenerator.GenerateTokenCopy(token);

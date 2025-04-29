@@ -6,13 +6,12 @@ using UnityEngine.UI;
 
 public class UI_TokenPouchButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
-    private Button Button;
-    private Image Image;
+    [Header("Elements")]
+    public Button Button;
+    public Image Image;
 
     private void Start()
     {
-        Button = GetComponent<Button>();
-        Image = GetComponent<Image>();
         Button.onClick.AddListener(OnClick);
     }
 

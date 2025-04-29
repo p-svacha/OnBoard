@@ -87,6 +87,16 @@ public class Game : MonoBehaviour
     /// </summary>
     public bool IsShowingActionPrompt => CurrentActionPrompt != null;
 
+    /// <summary>
+    /// The current health the player has remaining in half hearts.
+    /// </summary>
+    public int Health { get; private set; }
+
+    /// <summary>
+    /// The maximum health the player can have in half hearts.
+    /// </summary>
+    public int MaxHealth { get; private set; }
+
     public List<Objective> ActiveQuests { get; private set; }
 
     // Visual
@@ -117,6 +127,7 @@ public class Game : MonoBehaviour
         GameState = GameState.Initializing;
 
         WorldManager.Initialize();
+        TokenPhysicsManager.Initialize();
 
         MovementOptions = new List<MovementOption>();
 
@@ -139,6 +150,9 @@ public class Game : MonoBehaviour
     private void AddStartingMeeple()
     {
         AddPlayerMeeple(Board.StartTile);
+        MaxHealth = 6;
+        Health = 6;
+        GameUI.Instance.HealthDisplay.Refresh();
     }
 
     private void AddStartingTokensToPouch()

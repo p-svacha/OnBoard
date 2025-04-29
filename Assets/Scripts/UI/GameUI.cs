@@ -16,6 +16,7 @@ public class GameUI : MonoBehaviour
     public UI_TokenDraftDisplay TokenDraftDisplay;
     public UI_ChapterDisplay ChapterDisplay;
     public UI_QuestPanel QuestPanel;
+    public UI_HealthDisplay HealthDisplay;
 
     private void Awake()
     {
