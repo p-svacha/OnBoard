@@ -48,11 +48,6 @@ public class Game : MonoBehaviour
     public List<MovementOption> MovementOptions { get; private set; }
 
     /// <summary>
-    /// Flag if all movement has been completed this turn.
-    /// </summary>
-    public bool IsMovementDone { get; private set; }
-
-    /// <summary>
     /// The current chapter of the game.
     /// </summary>
     public int Chapter { get; private set; }
@@ -271,17 +266,30 @@ public class Game : MonoBehaviour
     /// </summary>
     public void ConfirmDraw()
     {
-        // Find all initial movement options
+        GameState = GameState.MovingPhase;
+
+        // Set resources for moving phase
+        TotalMovingPhaseResources.Clear();
+        TotalMovingPhaseResources.IncrementMultiple(CurrentDraw.GetMovingPhaseResources()); // Add resources from tokens
+        RemainingMovingPhaseResources = new Dictionary<ResourceDef, int>(TotalMovingPhaseResources);
+
+        // Find initial movement options
+        PrepareNextMovementOptions();
+
+        // UI
+        GameUI.Instance.GameLoopButton.SetText("End\nTurn");
+        GameUI.Instance.TurnPhaseResources.Refresh();
+    }
+
+    private void PrepareNextMovementOptions()
+    {
+        // Find all movement options
         UpdateCurrentMovementOptions();
         HighlightAllMovementOptionTargets();
-        GameUI.Instance.GameLoopButton.SetText("End\nTurn");
 
-        // Post it button
-        IsMovementDone = (MovementOptions.Count == 0);
-        if (IsMovementDone) GameUI.Instance.GameLoopButton.Enable();
+        // Game loop button
+        if (RemainingMovementPoints == 0) GameUI.Instance.GameLoopButton.Enable();
         else GameUI.Instance.GameLoopButton.Disable();
-
-        GameState = GameState.MovingPhase;
     }
 
     /// <summary>
@@ -303,10 +311,7 @@ public class Game : MonoBehaviour
     {
         UpdateCurrentMovementOptions();
 
-        // Enable end turn button
-        IsMovementDone = true;
-        if (IsMovementDone) GameUI.Instance.GameLoopButton.Enable();
-        else GameUI.Instance.GameLoopButton.Disable();
+        PrepareNextMovementOptions();
     }
 
     public void EndTurn()
@@ -380,8 +385,17 @@ public class Game : MonoBehaviour
 
     public void ExecuteMovement(MovementOption movement)
     {
+        // Resources
+        RemainingMovingPhaseResources[ResourceDefOf.MovementPoint] -= movement.Length;
+
+        // Start moving
         MeepleMovementAnimator.AnimateMove(movement, onComplete: OnMovementDone);
+
+        // FX
         UnhighlightAllMovementOptionTargets();
+
+        // UI
+        GameUI.Instance.TurnPhaseResources.Refresh();
     }
 
     public void SetMajorGoalAsComplete()
@@ -460,7 +474,7 @@ public class Game : MonoBehaviour
         List<MovementOption> options = new List<MovementOption>();
 
         Tile startTile = meeple.Tile;
-        List<List<Tile>> paths = GetPaths(startTile, prevPosition: null, remainingMovementPoints: CurrentDraw.Resources[ResourceDefOf.MovementPoint]);
+        List<List<Tile>> paths = GetPaths(startTile, prevPosition: null, RemainingMovementPoints);
         foreach(List<Tile> path in paths)
         {
             Tile target = path.Last();
@@ -556,9 +570,14 @@ public class Game : MonoBehaviour
 
         Vector3 center = new Vector3(0, 100f, 0);
 
+        // Select tokens to display
+        List<Token> tokensToDisplay = new List<Token>();
+        if (GameState == GameState.DrawingPhase) tokensToDisplay = new List<Token>(CurrentDraw.PouchTokens);
+        else tokensToDisplay = new List<Token>(TokenPouch);
+
         // pre‐generate non‐overlapping 2D offsets
         var offsets2D = new List<Vector2>();
-        foreach (Token token in TokenPouch)
+        foreach (Token token in tokensToDisplay)
         {
             Vector2 candidate;
             int attempts = 0;
@@ -572,9 +591,9 @@ public class Game : MonoBehaviour
             offsets2D.Add(candidate);
         }
 
-        for (int i = 0; i < TokenPouch.Count; i++)
+        for (int i = 0; i < tokensToDisplay.Count; i++)
         {
-            Token orig = TokenPouch[i];
+            Token orig = tokensToDisplay[i];
 
             // Make a copy so we don't need to move the original token
             Token token = TokenGenerator.GenerateTokenCopy(orig); 
@@ -630,6 +649,7 @@ public class Game : MonoBehaviour
     }
 
     public int RemainingRedraws => RemainingDrawPhaseResources[ResourceDefOf.Redraw];
+    public int RemainingMovementPoints => RemainingMovingPhaseResources[ResourceDefOf.MovementPoint];
 
     #endregion
 }

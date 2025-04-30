@@ -28,6 +28,11 @@ public class MovementOption
     /// </summary>
     public Tile TargetTile;
 
+    /// <summary>
+    /// The total length of this movement path, equal to the amount of movement points it costs.
+    /// </summary>
+    public int Length => PassedTiles.Count + 1;
+
     public MovementOption(Meeple meeple, Tile startTile, List<Tile> passedTiles, Tile targetTile)
     {
         Meeple = meeple;

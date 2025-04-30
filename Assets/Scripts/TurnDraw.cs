@@ -103,4 +103,9 @@ public class TurnDraw
             }
         }
     }
+
+    public Dictionary<ResourceDef, int> GetMovingPhaseResources()
+    {
+        return Resources.Where(x => x.Key.Type == ResourceType.MovingPhaseResource).ToDictionary(x => x.Key, x => x.Value);
+    }
 }
