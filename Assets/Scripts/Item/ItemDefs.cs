@@ -12,6 +12,7 @@ public static class ItemDefs
             Label = "lucky scarf",
             Description = "+1 Redraw per turn",
             ItemClass = typeof(Item_LuckyScarf),
+            Rarity = ItemRarity.Common,
         }
     };
 }

@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class TileFeature_RedFlag : TileFeature
 {
-    public ObjectiveGoal_ReachRedFlag Goal;
+    public QuestGoal_ReachRedFlag Goal;
 
-    public void Init(ObjectiveGoal_ReachRedFlag goal)
+    public void Init(QuestGoal_ReachRedFlag goal)
     {
         Goal = goal;
     }
@@ -21,7 +21,7 @@ public class TileFeature_RedFlag : TileFeature
     {
         if (Game.Instance.CurrentChapterMission == Goal)
         {
-            Game.Instance.SetMajorGoalAsComplete();
+            Game.Instance.QueueActionPrompt(new ActionPrompt_ChapterComplete());
         }
     }
 }

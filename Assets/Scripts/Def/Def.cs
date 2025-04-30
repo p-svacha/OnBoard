@@ -46,7 +46,7 @@ public abstract class Def
     /// <summary>
     /// The path to the sprite that is used in UI elements for representing this Def.
     /// </summary>
-    public virtual Sprite UiSprite { get; init; } = null;
+    public virtual Sprite Sprite { get; init; } = null;
 
 
     /// <summary>

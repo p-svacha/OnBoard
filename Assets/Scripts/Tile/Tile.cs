@@ -101,7 +101,7 @@ public class Tile : MonoBehaviour
     }
 
 
-    public TileFeature_RedFlag AddRedFlag(ObjectiveGoal_ReachRedFlag goal)
+    public TileFeature_RedFlag AddRedFlag(QuestGoal_ReachRedFlag goal)
     {
         TileFeature_RedFlag feature = TileGenerator.CreateTileFeature(this, TileFeatureDefOf.RedFlag) as TileFeature_RedFlag;
         feature.Init(goal);

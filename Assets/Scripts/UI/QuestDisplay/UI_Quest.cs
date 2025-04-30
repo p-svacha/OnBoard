@@ -6,7 +6,7 @@ using TMPro;
 
 public class UI_Quest : MonoBehaviour
 {
-    private Objective Quest;
+    private Quest Quest;
 
     [Header("Elements")]
     public TextMeshProUGUI GoalText;
@@ -21,7 +21,7 @@ public class UI_Quest : MonoBehaviour
     public GameObject ExpandedIcon;
     public GameObject CollapsedIcon;
 
-    public void Init(Objective quest)
+    public void Init(Quest quest)
     {
         Quest = quest;
         ExpandCollapseButton.onClick.AddListener(Button_OnClick);

@@ -29,8 +29,9 @@ public static class DefDatabaseRegistry
         DefDatabase<TokenColorDef>.AddDefs(TokenColorDefs.Defs);
         DefDatabase<TokenSizeDef>.AddDefs(TokenSizeDefs.Defs);
         DefDatabase<ItemDef>.AddDefs(ItemDefs.Defs);
-        DefDatabase<ObjectiveGoalDef>.AddDefs(ObjectiveGoalDefs.Defs);
-        DefDatabase<ObjectiveRewardDef>.AddDefs(ObjectiveRewardDefs.Defs);
+        DefDatabase<QuestGoalDef>.AddDefs(QuestGoalDefs.Defs);
+        DefDatabase<QuestRewardDef>.AddDefs(QuestRewardDefs.Defs);
+        DefDatabase<ChapterRewardDef>.AddDefs(ChapterRewardDefs.Defs);
     }
 
     // Called when a DefDatabase<T> type is accessed for the first time

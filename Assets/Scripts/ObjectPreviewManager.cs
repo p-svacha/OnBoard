@@ -13,6 +13,12 @@ public static class ObjectPreviewManager
 
     public static GameObject ShowToken(RawImage rawImage, Token token, float distance = 3f)
     {
+        GameObject previewObject = TokenGenerator.GenerateTokenCopy(token, hidden: false, frozen: true).gameObject;
+        return ShowGameObject(rawImage, previewObject, distance);
+    }
+
+    public static GameObject ShowGameObject(RawImage rawImage, GameObject previewObject, float distance = 3f)
+    {
         // Create render texture
         RenderTexture renderTexture = new RenderTexture(1024, 1024, 16);
 
@@ -31,7 +37,6 @@ public static class ObjectPreviewManager
         PreviewCameras.Add(cameraObject);
 
         // Create preview object
-        GameObject previewObject = TokenGenerator.GenerateTokenCopy(token, hidden: false, frozen: true).gameObject;
         previewObject.layer = WorldManager.Layer_PreviewObject;
         previewObject.transform.rotation = Quaternion.Euler(Random.Range(0f, 360f), Random.Range(0f, 360f), Random.Range(0f, 360f));
         previewObject.AddComponent<SpinPreview>();

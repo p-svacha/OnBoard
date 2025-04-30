@@ -8,7 +8,7 @@ public class UI_ChapterDisplay : MonoBehaviour
     public TextMeshProUGUI ChapterText;
     public TextMeshProUGUI GoalText;
 
-    public void UpdateDisplay()
+    public void Refresh()
     {
         ChapterText.text = $"Chapter {Game.Instance.Chapter}";
         GoalText.text = Game.Instance.CurrentChapterMission.Description;

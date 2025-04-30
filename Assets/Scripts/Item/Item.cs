@@ -22,5 +22,6 @@ public class Item
 
     public Sprite Sprite { get; private set; }
     public virtual string Label => Def.Label;
+    public virtual string LabelCap => Label.CapitalizeFirst();
     public virtual string Descrption => Def.Description;
 }

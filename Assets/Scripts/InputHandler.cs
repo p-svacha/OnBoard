@@ -16,6 +16,8 @@ public static class InputHandler
 
     private static void LeftClick()
     {
+        if (HelperFunctions.IsMouseOverUi()) return;
+
         if (WorldManager.HoveredBoardTile != null) LeftClickBoardTile();
         if (WorldManager.HoveredThrownToken != null) LeftClickThrownToken();
     }

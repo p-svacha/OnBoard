@@ -55,7 +55,7 @@ public class Game : MonoBehaviour
     /// <summary>
     /// The current major goal that has to be completed to reach the next chapter.
     /// </summary>
-    public ObjectiveGoal CurrentChapterMission { get; private set; }
+    public QuestGoal CurrentChapterMission { get; private set; }
 
     /// <summary>
     /// The current turn number.
@@ -95,7 +95,7 @@ public class Game : MonoBehaviour
     /// <summary>
     /// All quests that are currently active.
     /// </summary>
-    public List<Objective> ActiveQuests { get; private set; }
+    public List<Quest> ActiveQuests { get; private set; }
 
     /// <summary>
     /// All items in the possession of the player.
@@ -205,9 +205,9 @@ public class Game : MonoBehaviour
     {
         Chapter = 1;
         Turn = 0;
-        ActiveQuests = new List<Objective>();
+        ActiveQuests = new List<Quest>();
         CurrentChapterMission = ChapterMissionGenerator.GenerateChapterObectiveGoal(Chapter);
-        GameUI.Instance.ChapterDisplay.UpdateDisplay();
+        GameUI.Instance.ChapterDisplay.Refresh();
     }
 
     #endregion
@@ -321,18 +321,6 @@ public class Game : MonoBehaviour
         // Collect all tokens off the board
         StartCoroutine(TokenPhysicsManager.CollectTokens(this));
 
-        // Check if major goal is complete
-        if(CurrentChapterMission.IsComplete)
-        {
-            // Remove old goal related stuff
-            CurrentChapterMission.OnRemoved();
-
-            // Set new goal
-            Chapter++;
-            CurrentChapterMission = ChapterMissionGenerator.GenerateChapterObectiveGoal(Chapter);
-            GameUI.Instance.ChapterDisplay.UpdateDisplay();
-        }
-
         // Wait for player to start next turn
         StartTurn();
     }
@@ -398,9 +386,22 @@ public class Game : MonoBehaviour
         GameUI.Instance.TurnPhaseResources.Refresh();
     }
 
-    public void SetMajorGoalAsComplete()
+    public void EndChapter()
     {
-        CurrentChapterMission.SetAsComplete();
+        // Choose reward
+        GameUI.Instance.ChapterCompleteWindow.Show();
+
+        // Increase chapter
+        Chapter++;
+
+        // Remove old goal related stuff
+        CurrentChapterMission.OnRemoved();
+
+        // Set new goal
+        CurrentChapterMission = ChapterMissionGenerator.GenerateChapterObectiveGoal(Chapter);
+
+        // UI
+        GameUI.Instance.ChapterDisplay.Refresh();
     }
 
     public void RedrawToken(Token thrownToken)
@@ -611,14 +612,14 @@ public class Game : MonoBehaviour
 
             // Save token in display list
             PouchDisplayTokens.Add(token);
-
-            // Move camera
-            CameraHandler.Instance.Camera.transform.position = new Vector3(0f, 100f + TokenDisplayDistance, 0f);
-            CameraHandler.Instance.Camera.transform.rotation = Quaternion.Euler(90, 0, 0);
-
-            // Freeze camera
-            CameraHandler.Instance.Freeze();
         }
+
+        // Move camera
+        CameraHandler.Instance.Camera.transform.position = new Vector3(0f, 100f + TokenDisplayDistance, 0f);
+        CameraHandler.Instance.Camera.transform.rotation = Quaternion.Euler(90, 0, 0);
+
+        // Freeze camera
+        CameraHandler.Instance.Freeze();
     }
 
     public void CloseTokenPouch()

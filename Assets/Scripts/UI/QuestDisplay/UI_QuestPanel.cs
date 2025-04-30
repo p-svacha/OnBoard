@@ -23,7 +23,7 @@ public class UI_QuestPanel : MonoBehaviour
 
         gameObject.SetActive(true);
         int counter = 0;
-        foreach (Objective quest in Game.Instance.ActiveQuests)
+        foreach (Quest quest in Game.Instance.ActiveQuests)
         {
             UI_Quest questDisplay = GameObject.Instantiate(QuestPrefab, QuestsContainer.transform);
             questDisplay.Init(quest);
