@@ -15,6 +15,16 @@ public class Token : MonoBehaviour
     public Rigidbody Rigidbody;
     public MeshCollider Collider;
 
+    /// <summary>
+    /// If this token is in the player token pouch.
+    /// </summary>
+    public bool IsInPouch;
+
+    /// <summary>
+    /// If this token is a copy of another token, this refers to the original.
+    /// </summary>
+    public Token Original;
+
     public void Init(TokenShapeDef shape, TokenColorDef color, TokenSizeDef size, int modelId, float scale)
     {
         Shape = shape;

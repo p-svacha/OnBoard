@@ -2,17 +2,25 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Item : MonoBehaviour
+public class Item
 {
-    // Start is called before the first frame update
-    void Start()
+    public ItemDef Def { get; private set; }
+
+    public void Init(ItemDef def)
     {
-        
+        Def = def;
+        Sprite = ResourceManager.LoadSprite($"Sprites/Items/{Def.DefName}");
+        OnInit();
     }
 
-    // Update is called once per frame
-    void Update()
+    protected virtual void OnInit() { }
+
+    public virtual Dictionary<ResourceDef, int> GetDrawPhaseResources()
     {
-        
+        return new Dictionary<ResourceDef, int>();
     }
+
+    public Sprite Sprite { get; private set; }
+    public virtual string Label => Def.Label;
+    public virtual string Descrption => Def.Description;
 }

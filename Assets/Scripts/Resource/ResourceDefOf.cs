@@ -6,4 +6,5 @@ using UnityEngine;
 public static class ResourceDefOf
 {
     public static ResourceDef MovementPoint;
+    public static ResourceDef Redraw;
 }

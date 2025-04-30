@@ -18,6 +18,7 @@ public static class WorldManager
     public static GameObject HoveredObject { get; private set; }
     public static Meeple HoveredMeeple { get; private set; }
     public static Tile HoveredBoardTile { get; private set; }
+    public static Token HoveredThrownToken { get; private set; }
 
     public static void Initialize()
     {
@@ -33,6 +34,7 @@ public static class WorldManager
         GameObject newHoveredObject = null;
         Meeple newHoveredMeeple = null;
         Tile newHoveredBoardTile = null;
+        Token newHoveredThrownToken = null;
 
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
@@ -49,10 +51,19 @@ public static class WorldManager
             {
                 newHoveredBoardTile = newHoveredObject.GetComponent<Tile>();
             }
+            if (newHoveredObject.layer == Layer_Token)
+            {
+                Token token = newHoveredObject.GetComponent<Token>();
+                if (token.Original.IsInPouch)
+                {
+                    newHoveredThrownToken = token;
+                }
+            }
         }
 
         HoveredObject = newHoveredObject;
         HoveredMeeple = newHoveredMeeple;
         HoveredBoardTile = newHoveredBoardTile;
+        HoveredThrownToken = newHoveredThrownToken;
     }
 }

@@ -9,22 +9,25 @@ public class Tooltip : MonoBehaviour
 {
     // Singleton
     public static Tooltip Instance;
-    private void Awake()
-    {
-        Instance = this;
-        gameObject.SetActive(false);
-    }
 
     [Header("Elements")]
     public TextMeshProUGUI Title;
     public TextMeshProUGUI Text;
 
-    public float Width;
-    public float Height;
+    [Header("Configuration")]
+    public int MaxWidth = 200;
 
-    private const int MAX_WIDTH = 200; // px
+    private float Width;
+    private float Height;
+
     private const int MOUSE_OFFSET = 5; // px
     private const int SCREEN_EDGE_OFFSET = 5; // px
+
+    private void Awake()
+    {
+        Instance = this;
+        gameObject.SetActive(false);
+    }
 
     public void Init(TooltipType type, string title, string text)
     {
@@ -36,17 +39,17 @@ public class Tooltip : MonoBehaviour
         RectTransform rect = GetComponent<RectTransform>();
 
         // 1) Force a max width initially
-        rect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, MAX_WIDTH);
+        rect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, MaxWidth);
 
         // 2) Update the TMP text so it wraps if necessary
         Title.ForceMeshUpdate();
         Text.ForceMeshUpdate();
 
         // 3) Measure the actual space needed *after* wrapping
-        float neededWidth = Mathf.Max(Title.preferredWidth + 10, Text.preferredWidth + 10);
+        float neededWidth = Mathf.Max(Title.preferredWidth + 50, Text.preferredWidth + 50);
 
         // 4) Clamp the width if the content is smaller than max width
-        float finalWidth = Mathf.Min(neededWidth, MAX_WIDTH);
+        float finalWidth = Mathf.Min(neededWidth, MaxWidth);
         rect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, finalWidth);
 
         // Initial placement

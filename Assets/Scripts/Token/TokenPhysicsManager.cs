@@ -11,17 +11,22 @@ public static class TokenPhysicsManager
         ThrownTokens = new List<Token>();
     }
 
-    public static void ThrowTokens(Game game)
+    public static void ThrowInitialTokens(Game game)
     {
-        foreach (Token token in game.CurrentDrawResult.DrawnTokens)
+        foreach (Token token in game.CurrentDraw.TableTokens)
         {
-            Token copy = TokenGenerator.GenerateTokenCopy(token);
-            copy.transform.position = GetRandomThrowSpawnPosition();
-            copy.transform.rotation = Quaternion.Euler(new Vector3(Random.Range(0, 360), Random.Range(0, 360), Random.Range(0, 360)));
-            copy.Show();
-            copy.Rigidbody.AddForce(GetRandomThrowForceDirection() * GetRandomThrowForce(), ForceMode.Impulse);
-            ThrownTokens.Add(copy);
+            ThrowToken(token);
         }
+    }
+
+    public static void ThrowToken(Token token)
+    {
+        Token copy = TokenGenerator.GenerateTokenCopy(token);
+        copy.transform.position = GetRandomThrowSpawnPosition();
+        copy.transform.rotation = Quaternion.Euler(new Vector3(Random.Range(0, 360), Random.Range(0, 360), Random.Range(0, 360)));
+        copy.Show();
+        copy.Rigidbody.AddForce(GetRandomThrowForceDirection() * GetRandomThrowForce(), ForceMode.Impulse);
+        ThrownTokens.Add(copy);
     }
 
     private static Vector3 GetRandomThrowSpawnPosition()
@@ -63,13 +68,6 @@ public static class TokenPhysicsManager
         // 1) disable physics & start each lift+implode
         foreach (Token token in collectedTokens)
         {
-            var rb = token.Rigidbody;
-            rb.velocity = Vector3.zero;
-            rb.isKinematic = true;
-
-            var col = token.GetComponent<Collider>();
-            if (col != null) col.enabled = false;
-
             game.StartCoroutine(LiftAndImplode(token));
         }
 
@@ -79,8 +77,10 @@ public static class TokenPhysicsManager
         foreach (Token token in collectedTokens) ThrownTokens.Remove(token);
     }
 
-    private static IEnumerator LiftAndImplode(Token token)
+    public static IEnumerator LiftAndImplode(Token token)
     {
+        token.Freeze();
+
         // --- Lift phase ---
         Vector3 startPos = token.transform.position;
         Vector3 bagOffset = new Vector3(

@@ -32,13 +32,13 @@ public class UI_PostItButton : MonoBehaviour
 
     public void Disable()
     {
-        Image.sprite = ResourceManager.LoadSprite("Sprites/PostItWhite");
+        Image.sprite = ResourceManager.LoadSprite("Sprites/UIFrame/UIFrame_Disabled");
         Text.color = new Color(0.3f, 0.3f, 0.3f);
         IsDisabled = true;
     }
     public void Enable()
     {
-        Image.sprite = ResourceManager.LoadSprite("Sprites/PostIt1");
+        Image.sprite = ResourceManager.LoadSprite("Sprites/UIFrame/UIFrame");
         Text.color = new Color(0.2f, 0.1f, 0.0f);
         IsDisabled = false;
     }

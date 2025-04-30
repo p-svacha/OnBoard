@@ -2,17 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ItemDefs : MonoBehaviour
+public static class ItemDefs
 {
-    // Start is called before the first frame update
-    void Start()
+    public static List<ItemDef> Defs => new List<ItemDef>()
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+        new ItemDef()
+        {
+            DefName = "LuckyScarf",
+            Label = "lucky scarf",
+            Description = "+1 Redraw per turn",
+            ItemClass = typeof(Item_LuckyScarf),
+        }
+    };
 }

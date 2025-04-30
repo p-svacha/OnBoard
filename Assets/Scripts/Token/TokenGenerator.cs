@@ -7,9 +7,11 @@ public static class TokenGenerator
     private static int MAX_PEBBLE_ID = 7;
     private static float MAX_SCALE_MODIFIER = 0.03f;
 
-    public static Token GenerateTokenCopy(Token token, bool randomModel = false, bool hidden = true, bool frozen = false)
+    public static Token GenerateTokenCopy(Token orig, bool randomModel = false, bool hidden = true, bool frozen = false)
     {
-        return GenerateToken(token.Shape, token.Color, token.Size, randomModel ? -1 : token.ModelId, hidden, frozen);
+        Token token = GenerateToken(orig.Shape, orig.Color, orig.Size, randomModel ? -1 : orig.ModelId, hidden, frozen);
+        token.Original = orig;
+        return token;
     }
 
 

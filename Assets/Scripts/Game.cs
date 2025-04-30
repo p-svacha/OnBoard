@@ -40,7 +40,7 @@ public class Game : MonoBehaviour
     /// <summary>
     /// The result of the draw of this turn.
     /// </summary>
-    public DrawResult CurrentDrawResult { get; private set; }
+    public TurnDraw CurrentDraw { get; private set; }
 
     /// <summary>
     /// A list of all current meeple movement options.
@@ -97,7 +97,35 @@ public class Game : MonoBehaviour
     /// </summary>
     public int MaxHealth { get; private set; }
 
+    /// <summary>
+    /// All quests that are currently active.
+    /// </summary>
     public List<Objective> ActiveQuests { get; private set; }
+
+    /// <summary>
+    /// All items in the possession of the player.
+    /// </summary>
+    public List<Item> Items { get; private set; }
+
+    /// <summary>
+    /// The amount of drawing phase resources the player has remaining this drawing phase.
+    /// </summary>
+    public Dictionary<ResourceDef, int> RemainingDrawPhaseResources { get; private set; }
+
+    /// <summary>
+    /// The amount of drawing phase resources the player had available in total this drawing phase.
+    /// </summary>
+    public Dictionary<ResourceDef, int> TotalDrawPhaseResources { get; private set; }
+
+    /// <summary>
+    /// The amount of moving phase resources the player has remaining this moving phase.
+    /// </summary>
+    public Dictionary<ResourceDef, int> RemainingMovingPhaseResources { get; private set; }
+
+    /// <summary>
+    /// The amount of moving phase resources the player had available in total this moving phase.
+    /// </summary>
+    public Dictionary<ResourceDef, int> TotalMovingPhaseResources { get; private set; }
 
     // Visual
     private List<Tile> CurrentlyHighlightedMovementTargets;
@@ -130,10 +158,15 @@ public class Game : MonoBehaviour
         TokenPhysicsManager.Initialize();
 
         MovementOptions = new List<MovementOption>();
+        TotalDrawPhaseResources = new Dictionary<ResourceDef, int>();
+        RemainingDrawPhaseResources = new Dictionary<ResourceDef, int>();
+        TotalMovingPhaseResources = new Dictionary<ResourceDef, int>();
+        RemainingMovingPhaseResources = new Dictionary<ResourceDef, int>();
 
         CreateInitialBoard();
         AddStartingMeeple();
         AddStartingTokensToPouch();
+        AddStartingItems();
         InitializeFirstChapter();
         CameraHandler.Instance.SetPosition(Meeples[0].transform.position);
 
@@ -152,6 +185,7 @@ public class Game : MonoBehaviour
         AddPlayerMeeple(Board.StartTile);
         MaxHealth = 6;
         Health = 6;
+        Items = new List<Item>();
         GameUI.Instance.HealthDisplay.Refresh();
     }
 
@@ -165,6 +199,11 @@ public class Game : MonoBehaviour
         AddTokenToPouch(TokenShapeDefOf.Pebble, TokenColorDefOf.Black, TokenSizeDefOf.Small);
         AddTokenToPouch(TokenShapeDefOf.Pebble, TokenColorDefOf.Black, TokenSizeDefOf.Small);
         DrawAmount = 4;
+    }
+
+    private void AddStartingItems()
+    {
+        Items.Add(ItemGenerator.GenerateRandomItem());
     }
 
     private void InitializeFirstChapter()
@@ -184,49 +223,47 @@ public class Game : MonoBehaviour
     {
         WorldManager.UpdateHoveredObjects();
 
-        if (Input.GetKeyDown(KeyCode.Space) && GameState == GameState.PreDraw && !IsTokenPouchOpen) DrawInitialTokens();
-
-        if (GameState == GameState.MovingPhase && !IsShowingActionPrompt)
-        {
-            if (Input.GetMouseButtonDown(0))
-            {
-                if (WorldManager.HoveredBoardTile != null)
-                {
-                    MovementOption movement = MovementOptions.FirstOrDefault(o => o.TargetTile == WorldManager.HoveredBoardTile);
-                    if (movement != null)
-                    {
-                        ExecuteMovement(movement);
-                        UnhighlightAllMovementOptionTargets();
-                    }
-                }
-            }
-        }
+        InputHandler.HandleInputs();
     }
 
     public void StartTurn()
     {
         Turn++;
-        GameUI.Instance.TurnDraw.ShowWaitingText();
-        GameUI.Instance.PostItButton.SetText("Draw");
+        Debug.Log($"Starting Turn {Turn}.");
 
         // Check if time for new quest
         if ((Turn - FIRST_NEW_QUEST_TURN) % NEW_QUEST_INTERVAL == 0)
         {
             ActiveQuests.Add(QuestGenerator.GenerateQuest());
         }
+
+        // UI
+        GameUI.Instance.TurnDraw.ShowWaitingText();
+        GameUI.Instance.GameLoopButton.SetText("Draw");
+        GameUI.Instance.TurnPhaseResources.Refresh();
         GameUI.Instance.QuestPanel.Refresh();
+        GameUI.Instance.ItemPanel.Refresh();
 
         GameState = GameState.PreDraw;
     }
 
     public void DrawInitialTokens()
     {
-        Debug.Log($"Starting Turn {Turn}.");
-        CurrentDrawResult = new DrawResult(DrawTokens());
-        TokenPhysicsManager.ThrowTokens(this);
-        GameUI.Instance.TurnDraw.ShowTurnDraw(this);
+        // Draw initial tokens
+        CurrentDraw = new TurnDraw();
+        GameUI.Instance.TurnDraw.Refresh();
+
+        TokenPhysicsManager.ThrowInitialTokens(this);
         GameState = GameState.DrawingPhase;
-        GameUI.Instance.PostItButton.SetText("Confirm Draw");
+        GameUI.Instance.GameLoopButton.SetText("Confirm Draw");
+
+        // Get amount of redraws
+        TotalDrawPhaseResources.Clear();
+        foreach (Item item in Items) TotalDrawPhaseResources.IncrementMultiple(item.GetDrawPhaseResources());
+        RemainingDrawPhaseResources = new Dictionary<ResourceDef, int>(TotalDrawPhaseResources);
+
+        // UI
+        GameUI.Instance.TurnPhaseResources.Refresh();
     }
 
     /// <summary>
@@ -237,12 +274,12 @@ public class Game : MonoBehaviour
         // Find all initial movement options
         UpdateCurrentMovementOptions();
         HighlightAllMovementOptionTargets();
-        GameUI.Instance.PostItButton.SetText("End\nTurn");
+        GameUI.Instance.GameLoopButton.SetText("End\nTurn");
 
         // Post it button
         IsMovementDone = (MovementOptions.Count == 0);
-        if (IsMovementDone) GameUI.Instance.PostItButton.Enable();
-        else GameUI.Instance.PostItButton.Disable();
+        if (IsMovementDone) GameUI.Instance.GameLoopButton.Enable();
+        else GameUI.Instance.GameLoopButton.Disable();
 
         GameState = GameState.MovingPhase;
     }
@@ -268,8 +305,8 @@ public class Game : MonoBehaviour
 
         // Enable end turn button
         IsMovementDone = true;
-        if (IsMovementDone) GameUI.Instance.PostItButton.Enable();
-        else GameUI.Instance.PostItButton.Disable();
+        if (IsMovementDone) GameUI.Instance.GameLoopButton.Enable();
+        else GameUI.Instance.GameLoopButton.Disable();
     }
 
     public void EndTurn()
@@ -293,25 +330,6 @@ public class Game : MonoBehaviour
 
         // Wait for player to start next turn
         StartTurn();
-    }
-
-    /// <summary>
-    /// Each turn starts by drawing tokens out of your pouch.
-    /// </summary>
-    private List<Token> DrawTokens()
-    {
-        int drawAmount = DrawAmount;
-        int pouchSize = TokenPouch.Count();
-        if (drawAmount > pouchSize) drawAmount = pouchSize;
-        List<Token> remainingTokens = new List<Token>(TokenPouch);
-        List<Token> drawnTokens = new List<Token>();
-        for (int i = 0; i < drawAmount; i++)
-        {
-            Token token = remainingTokens.RandomElement();
-            drawnTokens.Add(token);
-            remainingTokens.Remove(token);
-        }
-        return drawnTokens;
     }
 
     #endregion
@@ -340,12 +358,19 @@ public class Game : MonoBehaviour
     public void AddTokenToPouch(Token token)
     {
         TokenPouch.Add(token);
+        token.IsInPouch = true;
     }
-
     public void RemoveTokenFromPouch(Token token)
     {
         TokenPouch.Remove(token);
+        token.IsInPouch = false;
         GameObject.Destroy(token);
+    }
+
+    public void AddItem(Item item)
+    {
+        Items.Add(item);
+        GameUI.Instance.ItemPanel.Refresh();
     }
 
     public void TeleportMeeple(Meeple meeple, Tile tile)
@@ -356,11 +381,28 @@ public class Game : MonoBehaviour
     public void ExecuteMovement(MovementOption movement)
     {
         MeepleMovementAnimator.AnimateMove(movement, onComplete: OnMovementDone);
+        UnhighlightAllMovementOptionTargets();
     }
 
     public void SetMajorGoalAsComplete()
     {
         CurrentChapterMission.SetAsComplete();
+    }
+
+    public void RedrawToken(Token thrownToken)
+    {
+        if (RemainingRedraws == 0) return;
+
+        Token newDrawnToken = CurrentDraw.RedrawToken(thrownToken.Original);
+
+        if (newDrawnToken != null)
+        {
+            StartCoroutine(TokenPhysicsManager.LiftAndImplode(thrownToken));
+            TokenPhysicsManager.ThrowToken(newDrawnToken);
+
+            RemainingDrawPhaseResources[ResourceDefOf.Redraw]--;
+            GameUI.Instance.TurnPhaseResources.Refresh();
+        }
     }
 
     #endregion
@@ -418,7 +460,7 @@ public class Game : MonoBehaviour
         List<MovementOption> options = new List<MovementOption>();
 
         Tile startTile = meeple.Tile;
-        List<List<Tile>> paths = GetPaths(startTile, prevPosition: null, remainingMovementPoints: CurrentDrawResult.Resources[ResourceDefOf.MovementPoint]);
+        List<List<Tile>> paths = GetPaths(startTile, prevPosition: null, remainingMovementPoints: CurrentDraw.Resources[ResourceDefOf.MovementPoint]);
         foreach(List<Tile> path in paths)
         {
             Tile target = path.Last();
@@ -586,6 +628,8 @@ public class Game : MonoBehaviour
     {
         return 3;
     }
+
+    public int RemainingRedraws => RemainingDrawPhaseResources[ResourceDefOf.Redraw];
 
     #endregion
 }

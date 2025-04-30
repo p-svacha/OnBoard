@@ -11,12 +11,14 @@ public class GameUI : MonoBehaviour
     [Header("Elements")]
     public UI_TurnDraw TurnDraw;
     public UI_TokenPouchButton TokenPouchButton;
-    public UI_PostItButton PostItButton;
+    public UI_PostItButton GameLoopButton;
+    public UI_TurnPhaseResources TurnPhaseResources;
     public UI_ItemReceivedDisplay ItemReceivedDisplay;
     public UI_TokenDraftDisplay TokenDraftDisplay;
     public UI_ChapterDisplay ChapterDisplay;
     public UI_QuestPanel QuestPanel;
     public UI_HealthDisplay HealthDisplay;
+    public UI_ItemPanel ItemPanel;
 
     private void Awake()
     {

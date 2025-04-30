@@ -23,15 +23,15 @@ public class UI_TurnDraw : MonoBehaviour
         HelperFunctions.DestroyAllChildredImmediately(SummaryContainer);
     }
 
-    public void ShowTurnDraw(Game game)
+    public void Refresh()
     {
-        Title.text = $"Turn {game.Turn} Draw";
+        Title.text = $"Turn {Game.Instance.Turn} Draw";
         HelperFunctions.DestroyAllChildredImmediately(TokenSectionsContainer);
         HelperFunctions.DestroyAllChildredImmediately(SummaryContainer);
 
         // Sort by color
         Dictionary<TokenColorDef, List<Token>> tokensByColor = new Dictionary<TokenColorDef, List<Token>>();
-        foreach(Token token in game.CurrentDrawResult.DrawnTokens) tokensByColor.AddToValueList(token.Color, token);
+        foreach(Token token in Game.Instance.CurrentDraw.TableTokens) tokensByColor.AddToValueList(token.Color, token);
 
         // Display
         foreach(var colorSection in tokensByColor)
@@ -46,7 +46,7 @@ public class UI_TurnDraw : MonoBehaviour
         }
 
         // Resource summary
-        foreach(var res in game.CurrentDrawResult.Resources)
+        foreach(var res in Game.Instance.CurrentDraw.Resources)
         {
             TextMeshProUGUI summaryLine = GameObject.Instantiate(SummaryLinePrefab, SummaryContainer.transform);
             string label = res.Value == 1 ? res.Key.LabelCap : res.Key.LabelPluralCap;
