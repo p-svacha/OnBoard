@@ -187,12 +187,12 @@ public class Game : MonoBehaviour
     private void AddStartingTokensToPouch()
     {
         TokenPouch = new List<Token>();
-        AddTokenToPouch(TokenShapeDefOf.Pebble, TokenColorDefOf.White, TokenSizeDefOf.Small);
-        AddTokenToPouch(TokenShapeDefOf.Pebble, TokenColorDefOf.White, TokenSizeDefOf.Small);
-        AddTokenToPouch(TokenShapeDefOf.Pebble, TokenColorDefOf.White, TokenSizeDefOf.Small);
-        AddTokenToPouch(TokenShapeDefOf.Pebble, TokenColorDefOf.White, TokenSizeDefOf.Small);
-        AddTokenToPouch(TokenShapeDefOf.Pebble, TokenColorDefOf.Black, TokenSizeDefOf.Small);
-        AddTokenToPouch(TokenShapeDefOf.Pebble, TokenColorDefOf.Black, TokenSizeDefOf.Small);
+        AddTokenToPouch(TokenShapeDefOf.Pebble, new() { new(TokenColorDefOf.White) }, TokenSizeDefOf.Small);
+        AddTokenToPouch(TokenShapeDefOf.Pebble, new() { new(TokenColorDefOf.White) }, TokenSizeDefOf.Small);
+        AddTokenToPouch(TokenShapeDefOf.Pebble, new() { new(TokenColorDefOf.White) }, TokenSizeDefOf.Small);
+        AddTokenToPouch(TokenShapeDefOf.Pebble, new() { new(TokenColorDefOf.White) }, TokenSizeDefOf.Small);
+        AddTokenToPouch(TokenShapeDefOf.Pebble, new() { new(TokenColorDefOf.White) }, TokenSizeDefOf.Small);
+        AddTokenToPouch(TokenShapeDefOf.Pebble, new() { new(TokenColorDefOf.White) }, TokenSizeDefOf.Small);
         DrawAmount = 4;
     }
 
@@ -256,6 +256,9 @@ public class Game : MonoBehaviour
         TotalDrawPhaseResources.Clear();
         foreach (Item item in Items) TotalDrawPhaseResources.IncrementMultiple(item.GetDrawPhaseResources());
         RemainingDrawPhaseResources = new Dictionary<ResourceDef, int>(TotalDrawPhaseResources);
+
+        // Disable "Confirm Draw" button until all tokens are resting
+        GameUI.Instance.GameLoopButton.Disable();
 
         // UI
         GameUI.Instance.TurnPhaseResources.Refresh();
@@ -342,9 +345,9 @@ public class Game : MonoBehaviour
         return newMeeple;
     }
 
-    public Token AddTokenToPouch(TokenShapeDef shape, TokenColorDef color, TokenSizeDef size)
+    public Token AddTokenToPouch(TokenShapeDef shape, List<TokenSurface> surfaces, TokenSizeDef size)
     {
-        Token newToken = TokenGenerator.GenerateToken(shape, color, size);
+        Token newToken = TokenGenerator.GenerateToken(shape, surfaces, size);
         AddTokenToPouch(newToken);
         return newToken;
     }
@@ -416,8 +419,25 @@ public class Game : MonoBehaviour
             TokenPhysicsManager.ThrowToken(newDrawnToken);
 
             RemainingDrawPhaseResources[ResourceDefOf.Redraw]--;
+
+            // Disable "Confirm Draw" button until all tokens are resting
+            GameUI.Instance.GameLoopButton.Disable();
+
+            // UI
             GameUI.Instance.TurnPhaseResources.Refresh();
+            GameUI.Instance.TurnDraw.Refresh();
         }
+    }
+
+    public void SetRolledTokenSurface(Token thrownToken, int index)
+    {
+        CurrentDraw.SetRolledSurface(thrownToken.Original, thrownToken.Surfaces[index]);
+
+        // Check if we can enable "Confirm Draw" Button
+        if(CurrentDraw.AreAllTokensResting()) GameUI.Instance.GameLoopButton.Enable();
+
+        // UI
+        GameUI.Instance.TurnDraw.Refresh();
     }
 
     #endregion
@@ -535,6 +555,7 @@ public class Game : MonoBehaviour
 
     private void HighlightAllMovementOptionTargets()
     {
+        UnhighlightAllMovementOptionTargets();
         CurrentlyHighlightedMovementTargets = MovementOptions.Select(o => o.TargetTile).ToList();
         foreach (Tile target in CurrentlyHighlightedMovementTargets)
         {

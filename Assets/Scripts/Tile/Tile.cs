@@ -91,10 +91,10 @@ public class Tile : MonoBehaviour
     /// <summary>
     /// Adds a feature that landing on this tile awards a specific token.
     /// </summary>
-    public TileFeature_SpecificTokenGiver AddSpecificTokenGiverFeature(TokenShapeDef shape, TokenColorDef color, TokenSizeDef size)
+    public TileFeature_SpecificTokenGiver AddSpecificTokenGiverFeature(TokenShapeDef shape, List<TokenSurface> surfaces, TokenSizeDef size)
     {
         TileFeature_SpecificTokenGiver feature = TileGenerator.CreateTileFeature(this, TileFeatureDefOf.SpecificTokenGiver) as TileFeature_SpecificTokenGiver;
-        feature.InitToken(shape, color, size);
+        feature.InitToken(shape, surfaces, size);
         feature.InitVisuals();
         Features.Add(feature);
         return feature;

@@ -5,19 +5,19 @@ using UnityEngine;
 public class ActionPrompt_TokenReceived : ActionPrompt
 {
     private TokenShapeDef Shape;
-    private TokenColorDef Color;
+    private List<TokenSurface> Surfaces;
     private TokenSizeDef Size;
 
-    public ActionPrompt_TokenReceived(TokenShapeDef shape, TokenColorDef color, TokenSizeDef size)
+    public ActionPrompt_TokenReceived(TokenShapeDef shape, List<TokenSurface> surfaces, TokenSizeDef size)
     {
         Shape = shape;
-        Color = color;
+        Surfaces = surfaces;
         Size = size;
     }
 
     public override void OnShow()
     {
-        Token newToken = Game.Instance.AddTokenToPouch(Shape, Color, Size);
+        Token newToken = Game.Instance.AddTokenToPouch(Shape, Surfaces, Size);
         GameUI.Instance.ItemReceivedDisplay.ShowTokenReceived(newToken);
     }
 }

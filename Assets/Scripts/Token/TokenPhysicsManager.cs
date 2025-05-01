@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,9 +11,12 @@ public static class TokenPhysicsManager
         ThrownTokens = new List<Token>();
     }
 
+    #region Throw
+
     public static void ThrowInitialTokens(Game game)
     {
-        foreach (Token token in game.CurrentDraw.TableTokens)
+        List<Token> tokensToThrow = new List<Token>(game.CurrentDraw.TableTokens.Keys);
+        foreach (Token token in tokensToThrow)
         {
             ThrowToken(token);
         }
@@ -21,12 +24,90 @@ public static class TokenPhysicsManager
 
     public static void ThrowToken(Token token)
     {
-        Token copy = TokenGenerator.GenerateTokenCopy(token);
+        var copy = TokenGenerator.GenerateTokenCopy(token);
+        ThrownTokens.Add(copy);
+
+        // physics spawn…
         copy.transform.position = GetRandomThrowSpawnPosition();
-        copy.transform.rotation = Quaternion.Euler(new Vector3(Random.Range(0, 360), Random.Range(0, 360), Random.Range(0, 360)));
+        copy.transform.rotation = Random.rotation;
         copy.Show();
         copy.Rigidbody.AddForce(GetRandomThrowForceDirection() * GetRandomThrowForce(), ForceMode.Impulse);
-        ThrownTokens.Add(copy);
+
+        // watch until it comes to rest
+        copy.StartCoroutine(WatchForLanding(copy));
+    }
+
+    private static IEnumerator WatchForLanding(Token copy)
+    {
+        // make sure gravity is on
+        copy.Rigidbody.useGravity = true;
+
+        // give the physics one tick
+        yield return new WaitForFixedUpdate();
+
+        // now watch until it really settles...
+        while (true)
+        {
+            // 1) if it fell through the floor, rethrow it
+            if (copy.transform.position.y < -10f)
+            {
+                Rethrow(copy);
+                // wait a frame for the new impulse
+                yield return new WaitForFixedUpdate();
+                continue;
+            }
+
+            // 2) if it's still moving or spinning, keep waiting
+            if (copy.Rigidbody.velocity.sqrMagnitude > 0.01f ||
+                copy.Rigidbody.angularVelocity.sqrMagnitude > 0.01f)
+            {
+                yield return new WaitForFixedUpdate();
+                continue;
+            }
+
+            // 3) settled! break out
+            break;
+        }
+
+        // finally, assign its rolled face
+        AssignRolledSurface(copy);
+    }
+
+    private static void Rethrow(Token copy)
+    {
+        // teleport back to spawn
+        copy.transform.position = GetRandomThrowSpawnPosition();
+        // clear out old motion
+        var rb = copy.Rigidbody;
+        rb.velocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
+        // give it a fresh spin/impulse
+        copy.transform.rotation = Random.rotation;
+        rb.AddForce(GetRandomThrowForceDirection() * GetRandomThrowForce(), ForceMode.Impulse);
+    }
+
+    private static void AssignRolledSurface(Token copy)
+    {
+        // transform world up into token‐local space:
+        Vector3 localUp = copy.transform.InverseTransformDirection(Vector3.up).normalized;
+
+        // find the index whose normal is closest to that direction
+        int bestIndex = 0;
+        float bestDot = -1f;
+        for (int i = 0; i < copy.Surfaces.Count; i++)
+        {
+            float dot = Vector3.Dot(localUp, copy.Surfaces[i].NormalDirection.normalized);
+            if (dot > bestDot)
+            {
+                bestDot = dot;
+                bestIndex = i;
+            }
+        }
+
+        Debug.Log($"Token {copy.Label} has landed: The surface is {copy.Surfaces[bestIndex].Label}.");
+
+        // write it into the current draw result
+        Game.Instance.SetRolledTokenSurface(copy, bestIndex);
     }
 
     private static Vector3 GetRandomThrowSpawnPosition()
@@ -60,6 +141,10 @@ public static class TokenPhysicsManager
     {
         return Random.Range(4.5f, 6.5f);
     }
+
+    #endregion
+
+    #region Collect
 
     public static IEnumerator CollectTokens(Game game)
     {
@@ -128,4 +213,6 @@ public static class TokenPhysicsManager
         var col = token.GetComponent<Collider>();
         if (col != null) col.enabled = true;
     }
+
+    #endregion
 }

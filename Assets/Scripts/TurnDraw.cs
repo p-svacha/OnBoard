@@ -11,9 +11,9 @@ public class TurnDraw
     public List<Token> PouchTokens;
 
     /// <summary>
-    /// The set of tokens that are on the table and have their effects applied.
+    /// The set of tokens that are on the table, with information about which surface of the token is currently rolled.
     /// </summary>
-    public List<Token> TableTokens;
+    public Dictionary<Token, TokenSurface> TableTokens;
 
     /// <summary>
     /// The set of tokens that have been drawn from the pouch but discarded somehow.
@@ -44,7 +44,6 @@ public class TurnDraw
         Token drawnToken = DrawToken();
         UpdateResult();
 
-        GameUI.Instance.TurnDraw.Refresh();
         return drawnToken;
     }
 
@@ -57,7 +56,7 @@ public class TurnDraw
         int pouchSize = Game.Instance.TokenPouch.Count();
         if (drawAmount > pouchSize) drawAmount = pouchSize;
         PouchTokens = new List<Token>(Game.Instance.TokenPouch);
-        TableTokens = new List<Token>();
+        TableTokens = new Dictionary<Token, TokenSurface>();
         DiscardedTokens = new List<Token>();
         for (int i = 0; i < drawAmount; i++)
         {
@@ -71,7 +70,7 @@ public class TurnDraw
     private Token DrawToken()
     {
         Token token = PouchTokens.RandomElement();
-        TableTokens.Add(token);
+        TableTokens.Add(token, null); // Do not assign which surface is rolled yet, token has to land physically first
         PouchTokens.Remove(token);
         return token;
     }
@@ -85,6 +84,14 @@ public class TurnDraw
         TableTokens.Remove(token);
     }
 
+    public void SetRolledSurface(Token token, TokenSurface surface)
+    {
+        if (!TableTokens.ContainsKey(token)) return;
+
+        TableTokens[token] = surface;
+        UpdateResult();
+    }
+
     /// <summary>
     /// Updates all result values (like MovementPoints, Gold, etc.) from the currently drawn tokens.
     /// </summary>
@@ -93,15 +100,25 @@ public class TurnDraw
         // Reset
         Resources.Clear();
 
-        foreach (Token token in TableTokens)
+        foreach (var t in TableTokens)
         {
+            Token token = t.Key;
+            TokenSurface surface = t.Value;
+
+            if (surface == null) continue; // Surface not yet determined because token is still in movement
+
             // Add resource from color and size
-            if(token.Color.Resource != null)
+            if(surface.Color.Resource != null)
             {
-                int amount = token.Color.ResourceBaseAmount * token.Size.EffectMultiplier;
-                Resources.Increment(token.Color.Resource, amount);
+                int amount = surface.Color.ResourceBaseAmount * token.Size.EffectMultiplier;
+                Resources.Increment(surface.Color.Resource, amount);
             }
         }
+    }
+
+    public bool AreAllTokensResting()
+    {
+        return TableTokens.All(t => t.Value != null);
     }
 
     public Dictionary<ResourceDef, int> GetMovingPhaseResources()

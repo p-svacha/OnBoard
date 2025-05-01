@@ -30,18 +30,26 @@ public class UI_TurnDraw : MonoBehaviour
         HelperFunctions.DestroyAllChildredImmediately(SummaryContainer);
 
         // Sort by color
-        Dictionary<TokenColorDef, List<Token>> tokensByColor = new Dictionary<TokenColorDef, List<Token>>();
-        foreach(Token token in Game.Instance.CurrentDraw.TableTokens) tokensByColor.AddToValueList(token.Color, token);
+        Dictionary<TokenColorDef, List<KeyValuePair<Token, TokenSurface>>> tokensByColor = new();
+        foreach (var t in Game.Instance.CurrentDraw.TableTokens)
+        {
+            TokenSurface surface = t.Value;
+            if (surface == null) continue; // Surface not yet determined because token is still in movement
+
+            tokensByColor.AddToValueList(surface.Color, t);
+        }
 
         // Display
         foreach(var colorSection in tokensByColor)
         {
             GameObject section = GameObject.Instantiate(TokenSectionPrefab, TokenSectionsContainer.transform);
             HelperFunctions.DestroyAllChildredImmediately(section);
-            foreach(Token p in colorSection.Value)
+            foreach(var t in colorSection.Value)
             {
+                Token token = t.Key;
+                TokenSurface surface = t.Value;
                 UI_TokenDisplay tokenDisplay = GameObject.Instantiate(TokenDisplayPrefab, section.transform);
-                tokenDisplay.Init(p);
+                tokenDisplay.Init(token, surface);
             }
         }
 

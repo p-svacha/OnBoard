@@ -223,7 +223,7 @@ public static class BoardGenerator
     {
         if (Random.value < TOKEN_GIVER_CHANCE)
         {
-            tile.AddSpecificTokenGiverFeature(TokenShapeDefOf.Pebble, TokenColorDefOf.White, TokenSizeDefOf.Small);
+            tile.AddSpecificTokenGiverFeature(TokenShapeDefOf.Pebble, new() { new(TokenColorDefOf.White) }, TokenSizeDefOf.Small);
         }
         if (Random.value < TOKEN_BIN_CHANCE)
         {

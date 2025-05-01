@@ -11,7 +11,20 @@ public static class TokenShapeDefs
             DefName = "Pebble",
             Label = "pebble",
             Description = "A pebble that always does the same when drawn.",
-            NumSides = 1
-        }
+            NumSurfaces = 1
+        },
+
+        new TokenShapeDef()
+        {
+            DefName = "Coin",
+            Label = "coin",
+            Description = "A coin that has 2 different sides, thus 2 possible outcomes.",
+            NumSurfaces = 2,
+            SurfaceLocalNormals = new List<Vector3>()
+            {
+                Vector3.up,
+                Vector3.down
+            }
+        },
     };
 }

@@ -5,7 +5,7 @@ using UnityEngine;
 public class Token : MonoBehaviour
 {
     public TokenShapeDef Shape { get; private set; }
-    public TokenColorDef Color { get; private set; }
+    public List<TokenSurface> Surfaces { get; private set; }
     public TokenSizeDef Size { get; private set; }
 
     public int ModelId { get; private set; }
@@ -25,10 +25,11 @@ public class Token : MonoBehaviour
     /// </summary>
     public Token Original;
 
-    public void Init(TokenShapeDef shape, TokenColorDef color, TokenSizeDef size, int modelId, float scale)
+    public void Init(TokenShapeDef shape, List<TokenSurface> surfaces, TokenSizeDef size, int modelId, float scale)
     {
         Shape = shape;
-        Color = color;
+        Surfaces = new List<TokenSurface>();
+        for(int i = 0; i < surfaces.Count; i++) Surfaces.Add(new TokenSurface(this, surfaces[i].Color, shape.NumSurfaces == 1 ? Vector3.zero : Shape.SurfaceLocalNormals[i]));
         Size = size;
 
         ModelId = modelId;
@@ -63,20 +64,38 @@ public class Token : MonoBehaviour
         Collider.enabled = false;
     }
 
-    public string Label => $"{Size.Label} {Color.Label} {Shape.Label}";
+    #region Getters
+
+    public string Label
+    {
+        get
+        {
+            if(Surfaces.Count == 1) return $"{Size.Label} {Surfaces[0].Label} {Shape.Label}";
+            else
+            {
+                string surfaces = "";
+                foreach (TokenSurface surf in Surfaces) surfaces += $"{surf.Label}/";
+                surfaces = surfaces.TrimEnd('/');
+                return $"{Size.Label} {surfaces} {Shape.Label}";
+            }
+        }
+    }
     public string LabelCap => Label.CapitalizeFirst();
 
     public string Description
     {
         get
         {
-            string desc = "Does nothing";
-            if (Color.Resource != null)
+            string desc = "";
+            for(int i = 0; i < Surfaces.Count; i++)
             {
-                int amount = Color.ResourceBaseAmount * Size.EffectMultiplier;
-                desc = $"{amount} {(amount == 1 ? Color.Resource.LabelCap : Color.Resource.LabelPluralCap)}";
+                desc += Surfaces[i].Description;
+                if (i < Surfaces.Count - 1) desc += "\nOR\n";
             }
             return desc;
         }
     }
+
+
+    #endregion
 }

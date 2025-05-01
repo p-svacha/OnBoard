@@ -11,14 +11,18 @@ public class TileFeature_SpecificTokenGiver : TileFeature
     /// </summary>
     public Token AwardedToken { get; private set; }
 
-    public void InitToken(TokenShapeDef shape, TokenColorDef color, TokenSizeDef size)
+    public void InitToken(TokenShapeDef shape, List<TokenSurface> surfaces, TokenSizeDef size)
     {
-        AwardedToken = TokenGenerator.GenerateToken(shape, color, size);
+        AwardedToken = TokenGenerator.GenerateToken(shape, surfaces, size);
     }
 
     public override void SetRandomParameters()
     {
-        AwardedToken = TokenGenerator.GenerateToken(TokenShapeDefOf.Pebble, TokenColorDefOf.White, TokenSizeDefOf.Small);
+        List<TokenSurface> tokenSurfaces = new List<TokenSurface>()
+        {
+            new TokenSurface(TokenColorDefOf.White)
+        };
+        AwardedToken = TokenGenerator.GenerateToken(TokenShapeDefOf.Pebble, tokenSurfaces, TokenSizeDefOf.Small);
     }
 
     public override void InitVisuals()
@@ -42,6 +46,6 @@ public class TileFeature_SpecificTokenGiver : TileFeature
 
     public override void OnLand()
     {
-        Game.Instance.QueueActionPrompt(new ActionPrompt_TokenReceived(AwardedToken.Shape, AwardedToken.Color, AwardedToken.Size));
+        Game.Instance.QueueActionPrompt(new ActionPrompt_TokenReceived(AwardedToken.Shape, AwardedToken.Surfaces, AwardedToken.Size));
     }
 }

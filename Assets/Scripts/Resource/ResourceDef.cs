@@ -15,7 +15,7 @@ public class ResourceDef : Def
     public string LabelPluralCap => LabelPlural.CapitalizeFirst();
 
     private Sprite _Sprite;
-    public Sprite Sprite
+    public override Sprite Sprite
     {
         get
         {

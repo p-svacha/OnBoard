@@ -9,22 +9,33 @@ public static class TokenGenerator
 
     public static Token GenerateTokenCopy(Token orig, bool randomModel = false, bool hidden = true, bool frozen = false)
     {
-        Token token = GenerateToken(orig.Shape, orig.Color, orig.Size, randomModel ? -1 : orig.ModelId, hidden, frozen);
+        Token token = GenerateToken(orig.Shape, orig.Surfaces, orig.Size, randomModel ? -1 : orig.ModelId, hidden, frozen);
         token.Original = orig;
         return token;
     }
 
 
-    public static Token GenerateToken(TokenShapeDef shape, TokenColorDef color, TokenSizeDef size, int modelId = -1, bool hidden = true, bool frozen = false)
+    public static Token GenerateToken(TokenShapeDef shape, List<TokenSurface> surfaces, TokenSizeDef size, int modelId = -1, bool hidden = true, bool frozen = false)
     {
         if (modelId == -1) modelId = Random.Range(1, MAX_PEBBLE_ID + 1);
         string prefabPath = $"Prefabs/Tokens/Pebble{modelId:00}";
         GameObject tokenPrefab = ResourceManager.LoadPrefab(prefabPath);
         GameObject tokenObject = GameObject.Instantiate(tokenPrefab);
+
+        // Size
         float scale = size.Scale + Random.Range(-MAX_SCALE_MODIFIER, MAX_SCALE_MODIFIER);
-        tokenObject.GetComponent<MeshRenderer>().material.color = color.Color;
+
+        // Surfaces
+        MeshRenderer renderer = tokenObject.GetComponent<MeshRenderer>();
+        if (surfaces.Count != shape.NumSurfaces) throw new System.Exception($"The token shape {shape.DefName} requires {shape.NumSurfaces} surfaces, but {surfaces.Count} were provided.");
+        for(int i = 0; i < surfaces.Count; i++)
+        {
+            renderer.materials[i].color = surfaces[i].Color.Color;
+        }
+
+        // Token component
         Token newToken = tokenObject.AddComponent<Token>();
-        newToken.Init(shape, color, size, modelId, scale);
+        newToken.Init(shape, surfaces, size, modelId, scale);
 
         // Tooltip
         TooltipTarget3D tooltipTarget = tokenObject.AddComponent<TooltipTarget3D>();
