@@ -5,10 +5,10 @@ using UnityEngine;
 
 public static class TileGenerator
 {
-    public static Tile GenerateTile(Game game, Board board, Vector3 localPosition, float forwardAngle)
+    public static Tile GenerateTile(Game game, BoardRegion region, Vector3 localPosition, float forwardAngle)
     {
         GameObject tilePrefab = ResourceManager.LoadPrefab("Prefabs/Tile");
-        GameObject tileObject = GameObject.Instantiate(tilePrefab, board.transform);
+        GameObject tileObject = GameObject.Instantiate(tilePrefab, region.transform);
         tileObject.layer = WorldManager.Layer_BoardTile;
         tileObject.transform.localPosition = localPosition;
         Tile tile = tileObject.AddComponent<Tile>();

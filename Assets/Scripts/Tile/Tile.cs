@@ -15,7 +15,7 @@ public class Tile : MonoBehaviour
     public List<Tile> ConnectedTiles;
 
     // Visual
-    public const float TILE_SIZE = BoardSegmentGenerator.TILE_SIZE;
+    public const float TILE_SIZE = BoardGenerator.TILE_SIZE;
     private GameObject MovementHighlightFx;
 
     public void Init(Game game, Vector3 worldPosition, float forwardAngle)

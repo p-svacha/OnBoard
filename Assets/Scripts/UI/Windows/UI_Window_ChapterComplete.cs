@@ -34,6 +34,11 @@ public class UI_Window_ChapterComplete : UI_Window
 
         gameObject.SetActive(false);
         ((ChapterReward)RewardDraft.SelectedOption).Apply();
+
+        // Queue board expansion
+        Game.Instance.QueueActionPrompt(new ActionPrompt_BoardRegionAdded());
+
+        // Continue
         Game.Instance.CompleteCurrentActionPrompt();
     }
 }

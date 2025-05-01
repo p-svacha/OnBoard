@@ -7,6 +7,7 @@ public class Board : MonoBehaviour
     public static Board Instance;
 
     public List<Tile> Tiles = new List<Tile>();
+    public List<BoardRegion> Regions = new List<BoardRegion>();
     public Tile StartTile;
 
     private void Awake()
@@ -19,9 +20,10 @@ public class Board : MonoBehaviour
         StartTile = startTile;
     }
 
-    public void AddTile(Tile tile)
+    public void AddRegion(BoardRegion region)
     {
-        Tiles.Add(tile);
+        Regions.Add(region);
+        Tiles.AddRange(region.Tiles);
     }
 
     public Tile GetRandomTile()

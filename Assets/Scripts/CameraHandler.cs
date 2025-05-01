@@ -60,7 +60,7 @@ public class CameraHandler : MonoBehaviour
 
     private void Start()
     {
-        SetZoom(10f);
+        SetZoom(15f);
         SetAngle(180f);
         UpdatePosition();
     }

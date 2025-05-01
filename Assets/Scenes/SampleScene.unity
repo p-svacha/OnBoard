@@ -1577,7 +1577,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e573f679df6324f49a8a6e884e07c2ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Title: {fileID: 1965114000}
+  Title: {fileID: 1159608299}
   RewardDraft: {fileID: 9193553987064342608}
   ContinueButton: {fileID: 762837560}
 --- !u!114 &717135146
@@ -4006,7 +4006,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Chapter 2 Complete
+  m_text: Chapter 2 Complete...
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 063d6c5d4f7db16499c39f755bf72a49, type: 2}
   m_sharedMaterial: {fileID: -5884396152315577936, guid: 063d6c5d4f7db16499c39f755bf72a49, type: 2}
@@ -6693,17 +6693,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1965114000 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5881428201112262794, guid: 851a0aaccc9755d48b538726c37475c5, type: 3}
-  m_PrefabInstance: {fileID: 9193553987064342607}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1993601432
 GameObject:
   m_ObjectHideFlags: 0
@@ -6769,52 +6758,6 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
---- !u!1 &2027936189
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2027936191}
-  - component: {fileID: 2027936190}
-  m_Layer: 0
-  m_Name: Board
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &2027936190
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2027936189}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 98b302bca8c5b6045b9b640fe843ab8a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Tiles: []
-  StartTile: {fileID: 0}
---- !u!4 &2027936191
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2027936189}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2031682349
 GameObject:
   m_ObjectHideFlags: 0
@@ -8755,4 +8698,3 @@ SceneRoots:
   - {fileID: 1144506137}
   - {fileID: 1176241171}
   - {fileID: 877461838}
-  - {fileID: 2027936191}
