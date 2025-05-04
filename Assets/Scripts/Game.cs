@@ -80,7 +80,7 @@ public class Game : MonoBehaviour
     /// <summary>
     /// Returns if an action prompt is currently active.
     /// </summary>
-    public bool IsShowingActionPrompt => CurrentActionPrompt != null;
+    public bool InActionPrompt => CurrentActionPrompt != null;
 
     /// <summary>
     /// The current health the player has remaining in half hearts.
@@ -191,8 +191,9 @@ public class Game : MonoBehaviour
         AddTokenToPouch(TokenShapeDefOf.Pebble, new() { new(TokenColorDefOf.White) }, TokenSizeDefOf.Small);
         AddTokenToPouch(TokenShapeDefOf.Pebble, new() { new(TokenColorDefOf.White) }, TokenSizeDefOf.Small);
         AddTokenToPouch(TokenShapeDefOf.Pebble, new() { new(TokenColorDefOf.White) }, TokenSizeDefOf.Small);
-        AddTokenToPouch(TokenShapeDefOf.Pebble, new() { new(TokenColorDefOf.White) }, TokenSizeDefOf.Small);
-        AddTokenToPouch(TokenShapeDefOf.Pebble, new() { new(TokenColorDefOf.White) }, TokenSizeDefOf.Small);
+        AddTokenToPouch(TokenShapeDefOf.Pebble, new() { new(TokenColorDefOf.Black) }, TokenSizeDefOf.Small);
+        AddTokenToPouch(TokenShapeDefOf.Pebble, new() { new(TokenColorDefOf.Black) }, TokenSizeDefOf.Small);
+        AddTokenToPouch(TokenShapeDefOf.Coin, new() { new(TokenColorDefOf.White), new(TokenColorDefOf.Black) }, TokenSizeDefOf.Small);
         DrawAmount = 4;
     }
 
@@ -312,8 +313,6 @@ public class Game : MonoBehaviour
     /// </summary>
     private void OnActionPromptsDone()
     {
-        UpdateCurrentMovementOptions();
-
         PrepareNextMovementOptions();
     }
 
@@ -469,9 +468,6 @@ public class Game : MonoBehaviour
         CurrentActionPrompt.Close();
         CurrentActionPrompt = null;
 
-        // Update movements
-        UpdateCurrentMovementOptions();
-
         // Show next prompt
         ShowNextActionPrompt();
     }
@@ -565,6 +561,8 @@ public class Game : MonoBehaviour
 
     private void UnhighlightAllMovementOptionTargets()
     {
+        if (CurrentlyHighlightedMovementTargets == null || CurrentlyHighlightedMovementTargets.Count == 0) return;
+
         foreach (Tile target in CurrentlyHighlightedMovementTargets)
         {
             target.UnhighlightAsMovementOption();

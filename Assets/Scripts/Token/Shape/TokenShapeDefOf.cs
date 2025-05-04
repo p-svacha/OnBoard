@@ -6,4 +6,5 @@ using UnityEngine;
 public static class TokenShapeDefOf
 {
     public static TokenShapeDef Pebble;
+    public static TokenShapeDef Coin;
 }

@@ -59,13 +59,18 @@ public class Tile : MonoBehaviour
 
     public void HighlightAsMovementOption()
     {
+        if (MovementHighlightFx != null) return;
         GameObject fxPrefab = ResourceManager.LoadPrefab("Prefabs/TileFX/FloatingCircles");
         MovementHighlightFx = GameObject.Instantiate(fxPrefab, transform);
         MovementHighlightFx.transform.localPosition = Vector3.zero;
     }
     public void UnhighlightAsMovementOption()
     {
-        if (MovementHighlightFx != null) GameObject.Destroy(MovementHighlightFx.gameObject);
+        if (MovementHighlightFx != null)
+        {
+            GameObject.Destroy(MovementHighlightFx.gameObject);
+            MovementHighlightFx = null;
+        }
     }
 
     #region Features

@@ -11,7 +11,8 @@ public static class TokenShapeDefs
             DefName = "Pebble",
             Label = "pebble",
             Description = "A pebble that always does the same when drawn.",
-            NumSurfaces = 1
+            NumSurfaces = 1,
+            SurfaceMaterialIndices = new List<int>() { 0 }
         },
 
         new TokenShapeDef()
@@ -24,7 +25,8 @@ public static class TokenShapeDefs
             {
                 Vector3.up,
                 Vector3.down
-            }
+            },
+            SurfaceMaterialIndices = new List<int>() { 1, 2 }
         },
     };
 }

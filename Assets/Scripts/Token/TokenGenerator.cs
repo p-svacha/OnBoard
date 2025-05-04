@@ -1,10 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public static class TokenGenerator
 {
-    private static int MAX_PEBBLE_ID = 7;
     private static float MAX_SCALE_MODIFIER = 0.03f;
 
     public static Token GenerateTokenCopy(Token orig, bool randomModel = false, bool hidden = true, bool frozen = false)
@@ -17,10 +17,15 @@ public static class TokenGenerator
 
     public static Token GenerateToken(TokenShapeDef shape, List<TokenSurface> surfaces, TokenSizeDef size, int modelId = -1, bool hidden = true, bool frozen = false)
     {
-        if (modelId == -1) modelId = Random.Range(1, MAX_PEBBLE_ID + 1);
-        string prefabPath = $"Prefabs/Tokens/Pebble{modelId:00}";
+        if (modelId == -1)
+        {
+            List<GameObject> prefabs = Resources.LoadAll<GameObject>($"Prefabs/Tokens/{shape.DefName}").ToList();
+            modelId = Random.Range(1, prefabs.Count + 1);
+        }
+        string prefabPath = $"Prefabs/Tokens/{shape.DefName}/{shape.DefName}{modelId:00}";
         GameObject tokenPrefab = ResourceManager.LoadPrefab(prefabPath);
         GameObject tokenObject = GameObject.Instantiate(tokenPrefab);
+        tokenObject.layer = WorldManager.Layer_Token;
 
         // Size
         float scale = size.Scale + Random.Range(-MAX_SCALE_MODIFIER, MAX_SCALE_MODIFIER);
@@ -30,8 +35,13 @@ public static class TokenGenerator
         if (surfaces.Count != shape.NumSurfaces) throw new System.Exception($"The token shape {shape.DefName} requires {shape.NumSurfaces} surfaces, but {surfaces.Count} were provided.");
         for(int i = 0; i < surfaces.Count; i++)
         {
-            renderer.materials[i].color = surfaces[i].Color.Color;
+            renderer.materials[shape.SurfaceMaterialIndices[i]].color = surfaces[i].Color.Color;
         }
+
+        // GameObject components
+        MeshCollider col = tokenObject.AddComponent<MeshCollider>();
+        col.convex = true;
+        tokenObject.AddComponent<Rigidbody>();
 
         // Token component
         Token newToken = tokenObject.AddComponent<Token>();

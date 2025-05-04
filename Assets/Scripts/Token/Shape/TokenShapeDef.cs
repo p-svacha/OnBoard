@@ -14,10 +14,16 @@ public class TokenShapeDef : Def
     /// </summary>
     public List<Vector3> SurfaceLocalNormals { get; init; } = null;
 
+    /// <summary>
+    /// This list contains the index of each material on the shape prefab that represents the color of a surface.
+    /// </summary>
+    public List<int> SurfaceMaterialIndices { get; init; } = null;
+
     public override bool Validate()
     {
         base.Validate();
-        if (NumSurfaces > 1 && NumSurfaces != SurfaceLocalNormals.Count) throw new System.Exception($"There must be exactly {NumSurfaces} normals defined in the TokenShapeDef {DefName}.");
+        if (NumSurfaces > 1 && NumSurfaces != SurfaceLocalNormals.Count) throw new System.Exception($"There must be exactly {NumSurfaces} normals defined in the TokenShapeDef {DefName}. But there were {SurfaceLocalNormals.Count}.");
+        if (NumSurfaces != SurfaceMaterialIndices.Count) throw new System.Exception($"There must be exactly {NumSurfaces} surface material indicies defined in the TokenShapeDef {DefName}. But there were {SurfaceMaterialIndices.Count}.");
         return true;
     }
 }

@@ -63,7 +63,7 @@ public static class BoardGenerator
 
         // Move region until it doesn't intersect current board
         float nudgeAngle = RandomAngle;
-        float nudgeDistance = TILE_GAP * 0.5f;
+        float nudgeDistance = TILE_GAP * 0.25f;
         Vector3 nudgeOffset = new Vector3(Mathf.Sin(Mathf.Deg2Rad * nudgeAngle) * nudgeDistance, 0f, Mathf.Cos(Mathf.Deg2Rad * nudgeAngle) * nudgeDistance);
         Tile shortestConnection_existing;
         Tile shortestConnection_new;

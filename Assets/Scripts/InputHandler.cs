@@ -26,10 +26,13 @@ public static class InputHandler
     {
         if (Game.Instance.GameState == GameState.MovingPhase)
         {
-            MovementOption movement = Game.Instance.MovementOptions.FirstOrDefault(o => o.TargetTile == WorldManager.HoveredBoardTile);
-            if (movement != null)
+            if (!Game.Instance.InActionPrompt)
             {
-                Game.Instance.ExecuteMovement(movement);
+                MovementOption movement = Game.Instance.MovementOptions.FirstOrDefault(o => o.TargetTile == WorldManager.HoveredBoardTile);
+                if (movement != null)
+                {
+                    Game.Instance.ExecuteMovement(movement);
+                }
             }
         }
     }

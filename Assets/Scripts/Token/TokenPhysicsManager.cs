@@ -27,11 +27,12 @@ public static class TokenPhysicsManager
         var copy = TokenGenerator.GenerateTokenCopy(token);
         ThrownTokens.Add(copy);
 
-        // physics spawn…
+        // spawn
         copy.transform.position = GetRandomThrowSpawnPosition();
         copy.transform.rotation = Random.rotation;
         copy.Show();
-        copy.Rigidbody.AddForce(GetRandomThrowForceDirection() * GetRandomThrowForce(), ForceMode.Impulse);
+
+        ApplySpawnImpulses(copy.Rigidbody);
 
         // watch until it comes to rest
         copy.StartCoroutine(WatchForLanding(copy));
@@ -75,15 +76,26 @@ public static class TokenPhysicsManager
 
     private static void Rethrow(Token copy)
     {
-        // teleport back to spawn
+        // teleport back up
         copy.transform.position = GetRandomThrowSpawnPosition();
-        // clear out old motion
+        copy.transform.rotation = Random.rotation;
+
         var rb = copy.Rigidbody;
         rb.velocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
-        // give it a fresh spin/impulse
-        copy.transform.rotation = Random.rotation;
-        rb.AddForce(GetRandomThrowForceDirection() * GetRandomThrowForce(), ForceMode.Impulse);
+
+        ApplySpawnImpulses(rb);
+    }
+
+    private static void ApplySpawnImpulses(Rigidbody rb)
+    {
+        // apply linear impulse
+        Vector3 forceDir = GetRandomThrowForceDirection();
+        rb.AddForce(forceDir * GetRandomThrowForce(), ForceMode.Impulse);
+
+        // apply rotational impulse
+        float torque = Random.Range(350f, 650f);
+        rb.AddTorque(Random.onUnitSphere * torque, ForceMode.Impulse);
     }
 
     private static void AssignRolledSurface(Token copy)
