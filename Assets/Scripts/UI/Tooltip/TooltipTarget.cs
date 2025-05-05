@@ -11,6 +11,8 @@ public class TooltipTarget : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     public string Title;
     public string Text;
 
+    public bool Disabled;
+
     [HideInInspector] public bool IsFocussed;
     private float Delay = 0.5f;
     [HideInInspector] public float CurrentDelay;
@@ -27,6 +29,7 @@ public class TooltipTarget : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
     private void Update()
     {
+        if (Disabled) return;
         if(IsFocussed)
         {
             if(CurrentDelay < Delay) CurrentDelay += UnityEngine.Time.deltaTime;

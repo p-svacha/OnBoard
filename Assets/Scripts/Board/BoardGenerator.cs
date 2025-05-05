@@ -224,8 +224,20 @@ public static class BoardGenerator
     {
         foreach(var entry in RegionDef.TileFeatureProbabilities)
         {
+            // Initial probability based on region def
             TileFeatureDef featureDef = entry.Key;
             float probability = entry.Value;
+
+            // Rule probability modifiers
+            foreach (Rule r in Game.Instance.Rulebook.ActiveRules)
+            {
+                if (r.GetTileFeatureProbabilityModifiers().TryGetValue(featureDef, out float modifier))
+                {
+                    probability += modifier;
+                }
+            }
+
+            // Final check
             if (Random.value < probability) tile.AddFeature(featureDef);
         }
     }

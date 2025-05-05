@@ -15,6 +15,6 @@ public class TileFeature_Spikes : TileFeature
 
     public override void OnLand()
     {
-        Game.Instance.TakeDamage(1);
+        Game.Instance.TakeDamage(1, new() { DamageTag.Spike });
     }
 }

@@ -1,0 +1,70 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public abstract class Rule
+{
+    /// <summary>
+    /// The level defines the severity and difficulty of this rule.
+    /// </summary>
+    public int Level { get; private set; }
+
+    public RuleDef Def { get; private set; }
+
+    public void Init(RuleDef def)
+    {
+        Def = def;
+        Level = 1;
+        OnInit();
+    }
+    protected virtual void OnInit() { }
+
+    public void IncreaseLevel()
+    {
+        Level++;
+    }
+
+
+
+    #region Rule Effects
+
+    public virtual Dictionary<TileFeatureDef, float> GetTileFeatureProbabilityModifiers()
+    {
+        return new Dictionary<TileFeatureDef, float>();
+    }
+
+    public virtual Dictionary<DamageTag, int> GetDamageModifiers()
+    {
+        return new Dictionary<DamageTag, int>();
+    }
+
+    #endregion
+
+    #region Getters
+
+    /// <summary>
+    /// Returns if it is allowed for this rule to be active at the same time as the given other rule.
+    /// </summary>
+    public virtual bool CanCoexistWith(Rule otherRule)
+    {
+        return Def != otherRule.Def;
+    }
+
+    public virtual string Label => Def.Label;
+    public string LabelCap => Label.CapitalizeFirst();
+    public string Description
+    {
+        get
+        {
+            string desc = "";
+            for(int i = 1; i <= Def.MaxLevel; i++)
+            {
+                if (i > 1) desc += "\n\n";
+                desc += $"<u>Level {i}</u>: {Def.LevelDescriptions[i - 1]}";
+            }
+            return desc;
+        }
+    }
+
+    #endregion
+}

@@ -33,6 +33,7 @@ public static class DefDatabaseRegistry
         DefDatabase<QuestRewardDef>.AddDefs(QuestRewardDefs.Defs);
         DefDatabase<ChapterRewardDef>.AddDefs(ChapterRewardDefs.Defs);
         DefDatabase<BoardRegionDef>.AddDefs(BoardRegionDefs.Defs);
+        DefDatabase<RuleDef>.AddDefs(RuleDefs.Defs);
     }
 
     // Called when a DefDatabase<T> type is accessed for the first time

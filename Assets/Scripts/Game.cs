@@ -122,6 +122,11 @@ public class Game : MonoBehaviour
     /// </summary>
     public Dictionary<ResourceDef, int> TotalMovingPhaseResources { get; private set; }
 
+    /// <summary>
+    /// The rulebook tracks the current state of all active rules and contains all logic regarding rules.
+    /// </summary>
+    public Rulebook Rulebook { get; private set; }
+
     // Visual
     private List<Tile> CurrentlyHighlightedMovementTargets;
 
@@ -158,6 +163,7 @@ public class Game : MonoBehaviour
         TotalMovingPhaseResources = new Dictionary<ResourceDef, int>();
         RemainingMovingPhaseResources = new Dictionary<ResourceDef, int>();
 
+        InitializeRulebook();
         CreateInitialBoard();
         AddStartingMeeple();
         AddStartingTokensToPouch();
@@ -209,6 +215,11 @@ public class Game : MonoBehaviour
         ActiveQuests = new List<Quest>();
         CurrentChapterMission = ChapterMissionGenerator.GenerateChapterObectiveGoal(Chapter);
         GameUI.Instance.ChapterDisplay.Refresh();
+    }
+
+    private void InitializeRulebook()
+    {
+        Rulebook = new Rulebook();
     }
 
     #endregion
@@ -322,6 +333,9 @@ public class Game : MonoBehaviour
 
         // Collect all tokens off the board
         StartCoroutine(TokenPhysicsManager.CollectTokens(this));
+
+        // Rulebook
+        Rulebook.OnTurnPassed();
 
         // Wait for player to start next turn
         StartTurn();
@@ -442,8 +456,20 @@ public class Game : MonoBehaviour
     /// <summary>
     /// Reduces that many half hearts from the health.
     /// </summary>
-    public void TakeDamage(int amount)
+    public void TakeDamage(int amount, List<DamageTag> tags)
     {
+        // Rule modifiers
+        foreach(DamageTag tag in tags)
+        {
+            foreach (Rule r in Rulebook.ActiveRules)
+            {
+                if(r.GetDamageModifiers().TryGetValue(tag, out int modifier))
+                {
+                    amount += modifier;
+                }
+            }
+        }
+
         Health -= amount;
         GameUI.Instance.HealthDisplay.Refresh();
     }

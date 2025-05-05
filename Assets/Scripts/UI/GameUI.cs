@@ -17,6 +17,7 @@ public class GameUI : MonoBehaviour
     public UI_QuestPanel QuestPanel;
     public UI_HealthDisplay HealthDisplay;
     public UI_ItemPanel ItemPanel;
+    public UI_Rulebook Rulebook;
 
     [Header("Windows")]
     public UI_Window_TokenReceived ItemReceivedDisplay;
