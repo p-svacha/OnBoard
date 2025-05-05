@@ -37,6 +37,14 @@ public static class TileFeatureDefs
             Label = "token bin",
             Description = "When landing on the tile, draft a token from your pouch to discard.",
             TileFeatureClass = typeof(TileFeature_TokenBin),
+        },
+
+        new TileFeatureDef()
+        {
+            DefName = "Spikes",
+            Label = "spikes",
+            Description = "Landing on this tile causes you to lose half a heart.",
+            TileFeatureClass = typeof(TileFeature_Spikes),
         }
     };
 }

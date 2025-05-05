@@ -16,6 +16,7 @@ public static class BoardGenerator
 
     private const float TOKEN_GIVER_CHANCE = 0.05f;
     private const float TOKEN_BIN_CHANCE = 0.05f;
+    private const float SPIKES_CHANCE = 0.05f;
 
     // In generation
     private static Game Game;
@@ -221,14 +222,9 @@ public static class BoardGenerator
 
     private static void AddRandomTileFeaturesTo(Tile tile)
     {
-        if (Random.value < TOKEN_GIVER_CHANCE)
-        {
-            tile.AddSpecificTokenGiverFeature(TokenShapeDefOf.Pebble, new() { new(TokenColorDefOf.White) }, TokenSizeDefOf.Small);
-        }
-        if (Random.value < TOKEN_BIN_CHANCE)
-        {
-            tile.AddFeature(TileFeatureDefOf.TokenBin);
-        }
+        if (Random.value < TOKEN_GIVER_CHANCE) tile.AddSpecificTokenGiverFeature(TokenShapeDefOf.Pebble, new() { new(TokenColorDefOf.White) }, TokenSizeDefOf.Small);
+        if (Random.value < TOKEN_BIN_CHANCE) tile.AddFeature(TileFeatureDefOf.TokenBin);
+        if (Random.value < SPIKES_CHANCE) tile.AddFeature(TileFeatureDefOf.Spikes);
     }
 
     #endregion

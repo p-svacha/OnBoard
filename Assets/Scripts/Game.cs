@@ -439,6 +439,15 @@ public class Game : MonoBehaviour
         GameUI.Instance.TurnDraw.Refresh();
     }
 
+    /// <summary>
+    /// Reduces that many half hearts from the health.
+    /// </summary>
+    public void TakeDamage(int amount)
+    {
+        Health -= amount;
+        GameUI.Instance.HealthDisplay.Refresh();
+    }
+
     #endregion
 
     #region Action Prompts
