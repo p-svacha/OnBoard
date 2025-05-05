@@ -19,4 +19,9 @@ public class BoardRegionDef : Def
     /// </summary>
     public int MaxTiles;
 
+    /// <summary>
+    /// Table containing the probabilities of tile features appearing in a region of this def.
+    /// <br/>The values are the exact chance this feature appears on any given tile in the region.
+    /// </summary>
+    public Dictionary<TileFeatureDef, float> TileFeatureProbabilities;
 }

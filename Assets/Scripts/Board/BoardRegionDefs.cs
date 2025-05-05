@@ -13,7 +13,13 @@ public static class BoardRegionDefs
             Description = "A region that is very slow to pass through.",
             RegionClass = typeof(BoardRegion_Swamp),
             MinTiles = 18,
-            MaxTiles = 22
+            MaxTiles = 22,
+            TileFeatureProbabilities = new Dictionary<TileFeatureDef, float>()
+            {
+                { TileFeatureDefOf.SpecificTokenGiver, 0.05f },
+                { TileFeatureDefOf.TokenBin, 0.05f },
+                { TileFeatureDefOf.Spikes, 0.05f }
+            }
         }
     };
 }

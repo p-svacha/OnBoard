@@ -222,9 +222,12 @@ public static class BoardGenerator
 
     private static void AddRandomTileFeaturesTo(Tile tile)
     {
-        if (Random.value < TOKEN_GIVER_CHANCE) tile.AddSpecificTokenGiverFeature(TokenShapeDefOf.Pebble, new() { new(TokenColorDefOf.White) }, TokenSizeDefOf.Small);
-        if (Random.value < TOKEN_BIN_CHANCE) tile.AddFeature(TileFeatureDefOf.TokenBin);
-        if (Random.value < SPIKES_CHANCE) tile.AddFeature(TileFeatureDefOf.Spikes);
+        foreach(var entry in RegionDef.TileFeatureProbabilities)
+        {
+            TileFeatureDef featureDef = entry.Key;
+            float probability = entry.Value;
+            if (Random.value < probability) tile.AddFeature(featureDef);
+        }
     }
 
     #endregion
