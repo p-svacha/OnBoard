@@ -32,14 +32,14 @@ public class TileFeature_SpecificTokenGiver : TileFeature
         {
             float deg = i * degreeStep;
             float rad = deg * Mathf.Deg2Rad;
-            float x = Mathf.Sin(rad) * Tile.TILE_SIZE;
-            float y = Mathf.Cos(rad) * Tile.TILE_SIZE;
+            float x = Mathf.Sin(rad) * Tile.TILE_RADIUS;
+            float y = Mathf.Cos(rad) * Tile.TILE_RADIUS;
 
             Token visualToken = TokenGenerator.GenerateTokenCopy(AwardedToken, randomModel: true);
             visualToken.Show();
             visualToken.Freeze();
             visualToken.transform.SetParent(transform);
-            visualToken.transform.localPosition = new Vector3(x * visualToken.transform.localScale.x, 0f, y * visualToken.transform.localScale.z);
+            visualToken.transform.localPosition = new Vector3(x, Tile.TILE_HEIGHT, y);
             HelperFunctions.ApplyRandomRotation(visualToken.gameObject);
         }
     }

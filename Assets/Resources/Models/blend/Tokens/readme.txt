@@ -1,0 +1,1 @@
+In blender top-view, tokens should be 2x2 squares in size (one in each direction).

@@ -16,6 +16,8 @@ public class Tile : MonoBehaviour
 
     // Visual
     public const float TILE_SIZE = BoardGenerator.TILE_SIZE;
+    public const float TILE_RADIUS = TILE_SIZE * 0.5f;
+    public const float TILE_HEIGHT = 0.05f;
     private GameObject MovementHighlightFx;
 
     public void Init(Game game, Vector3 worldPosition, float forwardAngle)

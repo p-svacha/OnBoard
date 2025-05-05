@@ -5,7 +5,7 @@ using UnityEngine;
 
 public static class TokenGenerator
 {
-    private static float MAX_SCALE_MODIFIER = 0.03f;
+    private static float MAX_SCALE_MODIFIER = 0.02f;
 
     public static Token GenerateTokenCopy(Token orig, bool randomModel = false, bool hidden = true, bool frozen = false)
     {
@@ -39,9 +39,13 @@ public static class TokenGenerator
         }
 
         // GameObject components
-        MeshCollider col = tokenObject.AddComponent<MeshCollider>();
-        col.convex = true;
-        tokenObject.AddComponent<Rigidbody>();
+        if (tokenObject.GetComponent<Collider>() == null)
+        {
+            MeshCollider col = tokenObject.AddComponent<MeshCollider>();
+            col.convex = true;
+        }
+        Rigidbody rb = tokenObject.AddComponent<Rigidbody>();
+        rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
 
         // Token component
         Token newToken = tokenObject.AddComponent<Token>();

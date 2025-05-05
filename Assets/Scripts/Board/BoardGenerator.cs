@@ -6,7 +6,7 @@ using UnityEngine;
 public static class BoardGenerator
 {
     public const float BOARD_SIZE = 500;
-    public const float TILE_SIZE = 4f;
+    public const float TILE_SIZE = 2f;
     public const float TILE_GAP = 3f;
     private const float CONNECT_LINE_WIDTH = 0.1f;
 

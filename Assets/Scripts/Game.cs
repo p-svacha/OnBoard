@@ -632,7 +632,7 @@ public class Game : MonoBehaviour
 
             // position in world using our 2D offset on the camera‐plane
             Vector2 c2 = offsets2D[i];
-            Vector3 offset = new Vector3(c2.x, 0.3f, c2.y);
+            Vector3 offset = new Vector3(c2.x, 0.5f, c2.y);
             token.transform.position = center + offset;
 
             // optionally face the camera (if your token mesh isn't round)

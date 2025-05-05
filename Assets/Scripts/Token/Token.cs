@@ -13,7 +13,7 @@ public class Token : MonoBehaviour
 
     public MeshRenderer Renderer;
     public Rigidbody Rigidbody;
-    public MeshCollider Collider;
+    public Collider Collider;
 
     /// <summary>
     /// If this token is in the player token pouch.
