@@ -8,7 +8,7 @@ using UnityEngine;
 public abstract class QuestGoal
 {
     public QuestGoalDef Def { get; private set; }
-
+    public Quest Quest;
 
     public void Init(QuestGoalDef def)
     {

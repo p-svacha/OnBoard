@@ -13,10 +13,15 @@ public abstract class ChapterReward : IDraftable
     }
     protected virtual void OnInit() { }
 
-    public abstract void Apply();
+    protected abstract void ApplyReward();
+    
 
     // IDraftable
     public virtual string DraftDisplay_Text { get; } = null;
     public virtual Sprite DraftDisplay_Sprite { get; } = null;
     public virtual GameObject DraftDisplay_Spinning3DObject { get; } = null;
+    public void ApplySelection()
+    {
+        ApplyReward();
+    }
 }

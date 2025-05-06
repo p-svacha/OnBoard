@@ -31,6 +31,8 @@ public static class DefDatabaseRegistry
         DefDatabase<ItemDef>.AddDefs(ItemDefs.Defs);
         DefDatabase<QuestGoalDef>.AddDefs(QuestGoalDefs.Defs);
         DefDatabase<QuestRewardDef>.AddDefs(QuestRewardDefs.Defs);
+        DefDatabase<QuestPenaltyDef>.AddDefs(QuestPenaltyDefs.Defs);
+        DefDatabase<ChapterGoalDef>.AddDefs(ChapterGoalDefs.Defs);
         DefDatabase<ChapterRewardDef>.AddDefs(ChapterRewardDefs.Defs);
         DefDatabase<BoardRegionDef>.AddDefs(BoardRegionDefs.Defs);
         DefDatabase<RuleDef>.AddDefs(RuleDefs.Defs);

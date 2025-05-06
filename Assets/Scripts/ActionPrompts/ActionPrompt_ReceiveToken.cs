@@ -2,13 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ActionPrompt_TokenReceived : ActionPrompt
+public class ActionPrompt_ReceiveToken : ActionPrompt
 {
     private TokenShapeDef Shape;
     private List<TokenSurface> Surfaces;
     private TokenSizeDef Size;
 
-    public ActionPrompt_TokenReceived(TokenShapeDef shape, List<TokenSurface> surfaces, TokenSizeDef size)
+    public ActionPrompt_ReceiveToken(TokenShapeDef shape, List<TokenSurface> surfaces, TokenSizeDef size)
     {
         Shape = shape;
         Surfaces = surfaces;

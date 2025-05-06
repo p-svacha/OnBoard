@@ -53,9 +53,9 @@ public class Game : MonoBehaviour
     public int Chapter { get; private set; }
 
     /// <summary>
-    /// The current major goal that has to be completed to reach the next chapter.
+    /// The current goal that has to be completed to complete the current chapter.
     /// </summary>
-    public QuestGoal CurrentChapterMission { get; private set; }
+    public ChapterGoal CurrentChapterGoal { get; private set; }
 
     /// <summary>
     /// The current turn number.
@@ -213,8 +213,7 @@ public class Game : MonoBehaviour
         Chapter = 1;
         Turn = 0;
         ActiveQuests = new List<Quest>();
-        CurrentChapterMission = ChapterMissionGenerator.GenerateChapterObectiveGoal(Chapter);
-        GameUI.Instance.ChapterDisplay.Refresh();
+        SetNextChapterGoal();
     }
 
     private void InitializeRulebook()
@@ -337,6 +336,9 @@ public class Game : MonoBehaviour
         // Rulebook
         Rulebook.OnTurnPassed();
 
+        // UI refreshes
+        GameUI.Instance.QuestPanel.Refresh();
+
         // Wait for player to start next turn
         StartTurn();
     }
@@ -404,20 +406,70 @@ public class Game : MonoBehaviour
 
     public void EndChapter()
     {
-        // Choose reward
-        GameUI.Instance.ChapterCompleteWindow.Show();
+        // Queue draft window
+        string title = $"Chapter {Chapter} complete !";
+        string subtitle = "Choose a reward";
+        List<ChapterReward> rewardOptions = ChapterRewardGenerator.GenerateRewards(Chapter, amount: 3);
+        List<IDraftable> draftOptions = rewardOptions.Select(r => (IDraftable)r).ToList();
+        GameUI.Instance.DraftWindow.Show(title, subtitle, draftOptions, isDraft: true);
+
+        // Queue board expansion
+        QueueActionPrompt(new ActionPrompt_BoardRegionAdded());
 
         // Increase chapter
         Chapter++;
 
         // Remove old goal related stuff
-        CurrentChapterMission.OnRemoved();
+        CurrentChapterGoal.OnCompleted();
 
         // Set new goal
-        CurrentChapterMission = ChapterMissionGenerator.GenerateChapterObectiveGoal(Chapter);
+        SetNextChapterGoal();
+    }
+
+    private void SetNextChapterGoal()
+    {
+        CurrentChapterGoal = ChapterMissionGenerator.GenerateChapterObectiveGoal(Chapter);
+        CurrentChapterGoal.OnStarted();
+
+        GameUI.Instance.ChapterDisplay.Refresh();
+    }
+
+    public void CompleteQuest(Quest quest)
+    {
+        // Show draft window
+        string title = $"Quest complete !";
+        string subtitle = "Enjoy your reward";
+        List<IDraftable> options = new List<IDraftable>() { quest.Reward };
+        GameUI.Instance.DraftWindow.Show(title, subtitle, options, isDraft: false);
+
+        // Remove quest
+        ActiveQuests.Remove(quest);
 
         // UI
-        GameUI.Instance.ChapterDisplay.Refresh();
+        GameUI.Instance.QuestPanel.Refresh();
+    }
+
+    public void FailQuest(Quest quest)
+    {
+        // Show draft window
+        string title = $"Quest failed !";
+        if(quest.HasPenalty)
+        {
+            string subtitle = "A penalty has been applied";
+            List<IDraftable> options = new List<IDraftable>() { quest.Penalty };
+            GameUI.Instance.DraftWindow.Show(title, subtitle, options, isDraft: false);
+        }
+        else
+        {
+            string subtitle = "At least you tried...";
+            GameUI.Instance.DraftWindow.Show(title, subtitle, null, isDraft: false);
+        }
+
+        // Remove quest
+        ActiveQuests.Remove(quest);
+
+        // UI
+        GameUI.Instance.QuestPanel.Refresh();
     }
 
     public void RedrawToken(Token thrownToken)

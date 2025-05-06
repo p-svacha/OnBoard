@@ -13,9 +13,11 @@ public class UI_Quest : MonoBehaviour
     public GameObject Progress;
     public GameObject Reward;
     public GameObject Deadline;
+    public GameObject Penalty;
     public TextMeshProUGUI ProgressValueText;
     public TextMeshProUGUI RewardValueText;
     public TextMeshProUGUI DeadlineValueText;
+    public TextMeshProUGUI PenaltyText;
 
     public Button ExpandCollapseButton;
     public GameObject ExpandedIcon;
@@ -38,22 +40,28 @@ public class UI_Quest : MonoBehaviour
     {
         GoalText.text = Quest.Goal.Description;
         RewardValueText.text = Quest.Reward.Label;
+        DeadlineValueText.text = $"{Quest.DeadlineTurn - Game.Instance.Turn} Turns";
+        PenaltyText.text = Quest.HasPenalty ? Quest.Penalty.Label : "";
 
         if (Quest.IsUiCollapsed)
         {
             ExpandedIcon.SetActive(false);
             CollapsedIcon.SetActive(true);
+
             Progress.SetActive(false);
             Reward.SetActive(false);
             Deadline.SetActive(false);
+            Penalty.SetActive(false);
         }
         else
         {
             ExpandedIcon.SetActive(true);
             CollapsedIcon.SetActive(false);
-            Progress.SetActive(true);
+
+            Progress.SetActive(Quest.HasProgress);
             Reward.SetActive(true);
-            Deadline.SetActive(Quest.DeadlineTurn > 0);
+            Deadline.SetActive(Quest.HasDeadline);
+            Penalty.SetActive(Quest.HasPenalty);
         }
 
         LayoutRebuilder.ForceRebuildLayoutImmediate(GetComponent<RectTransform>());

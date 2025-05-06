@@ -11,6 +11,6 @@ public class UI_ChapterDisplay : MonoBehaviour
     public void Refresh()
     {
         ChapterText.text = $"Chapter {Game.Instance.Chapter}";
-        GoalText.text = Game.Instance.CurrentChapterMission.Description;
+        GoalText.text = Game.Instance.CurrentChapterGoal.Description;
     }
 }

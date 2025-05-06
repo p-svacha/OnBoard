@@ -99,7 +99,7 @@ public static class BoardGenerator
         CurrentPathEnds = new List<Tile>();
 
         // Create start tile
-        Vector3 startPosition = new Vector3(0f, 0.05f, 0f);
+        Vector3 startPosition = Vector3.zero;
         float startAngle = RandomAngle;
         Tile startTile = TileGenerator.GenerateTile(Game, CurrentRegion, startPosition, startAngle);
         CreatedTiles.Add(startTile);

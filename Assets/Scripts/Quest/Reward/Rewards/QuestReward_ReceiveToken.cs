@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class QuestReward_ReceiveToken : QuestReward
 {
-    public override void ApplyReward()
+    protected override void ApplyReward()
     {
-        Game.Instance.QueueActionPrompt(new ActionPrompt_TokenReceived(TokenShapeDefOf.Pebble, new() { new(TokenColorDefOf.White) }, TokenSizeDefOf.Small));
+        Game.Instance.QueueActionPrompt(new ActionPrompt_ReceiveToken(TokenShapeDefOf.Pebble, new() { new(TokenColorDefOf.White) }, TokenSizeDefOf.Small));
     }
 }

@@ -45,6 +45,14 @@ public static class TileFeatureDefs
             Label = "spikes",
             Description = "Landing on this tile causes you to lose half a heart.",
             TileFeatureClass = typeof(TileFeature_Spikes),
+        },
+
+        new TileFeatureDef()
+        {
+            DefName = "Altar",
+            Label = "altar",
+            Description = "A place where offerings are made.",
+            TileFeatureClass = typeof(TileFeature_Altar)
         }
     };
 }

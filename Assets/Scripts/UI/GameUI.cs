@@ -22,7 +22,7 @@ public class GameUI : MonoBehaviour
     [Header("Windows")]
     public UI_Window_TokenReceived ItemReceivedDisplay;
     public UI_Window_TokenDraft TokenDraftDisplay;
-    public UI_Window_ChapterComplete ChapterCompleteWindow;
+    public UI_DraftWindow DraftWindow;
 
     private void Awake()
     {

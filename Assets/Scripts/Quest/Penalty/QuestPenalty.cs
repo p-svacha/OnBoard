@@ -2,19 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class QuestReward : IDraftable
+public abstract class QuestPenalty : IDraftable
 {
-    public QuestRewardDef Def { get; private set; }
+    public QuestPenaltyDef Def { get; private set; }
 
-    public void Init(QuestRewardDef def)
+    public void Init(QuestPenaltyDef def)
     {
         Def = def;
         OnInit();
     }
     protected virtual void OnInit() { }
 
-    protected abstract void ApplyReward();
-    
+    protected abstract void ApplyPenalty();
 
     public virtual string Label => Def.Label;
 
@@ -24,6 +23,6 @@ public abstract class QuestReward : IDraftable
     public GameObject DraftDisplay_Spinning3DObject => throw new System.NotImplementedException();
     public void ApplySelection()
     {
-        ApplyReward();
+        ApplyPenalty();
     }
 }

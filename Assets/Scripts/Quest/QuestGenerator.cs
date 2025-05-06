@@ -4,6 +4,12 @@ using UnityEngine;
 
 public static class QuestGenerator
 {
+    public static float DeadlineChance = 0.5f;
+    public static int MinDeadlineTime = 10;
+    public static int MaxDeadlineTime = 20;
+
+    public static float PenaltyChance = 0.5f;
+
     public static Quest GenerateQuest()
     {
         // Choose a goal
@@ -16,6 +22,28 @@ public static class QuestGenerator
         QuestReward reward = (QuestReward)System.Activator.CreateInstance(chosenRewardDef.RewardClass);
         reward.Init(chosenRewardDef);
 
-        return new Quest(goal, reward);
+        // Choose a deadline
+        int deadlineTurn = -1;
+        bool hasDeadline = Random.value < DeadlineChance;
+        if (hasDeadline)
+        {
+            int time = Random.Range(MinDeadlineTime, MaxDeadlineTime + 1);
+            deadlineTurn = Game.Instance.Turn + time;
+        }
+
+        // Choose a failure penalty
+        QuestPenalty penalty = null;
+        if (hasDeadline)
+        {
+            bool hasPenalty = Random.value < PenaltyChance;
+            if(hasPenalty)
+            {
+                QuestPenaltyDef chosenPenaltyDef = DefDatabase<QuestPenaltyDef>.AllDefs.RandomElement();
+                penalty = (QuestPenalty)System.Activator.CreateInstance(chosenPenaltyDef.RewardClass);
+                penalty.Init(chosenPenaltyDef);
+            }
+        }
+
+        return new Quest(goal, reward, deadlineTurn, penalty);
     }
 }
