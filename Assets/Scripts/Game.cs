@@ -446,21 +446,32 @@ public class Game : MonoBehaviour
 
     public void CompleteQuest(Quest quest)
     {
+        Game.Instance.QueueActionPrompt(new ActionPrompt_QuestComplete(quest));
+        Game.Instance.QueueActionPrompt(new ActionPrompt_RemoveQuest(quest));
+    }
+
+    public void FailQuest(Quest quest)
+    {
+        Game.Instance.QueueActionPrompt(new ActionPrompt_QuestFailed(quest));
+        Game.Instance.QueueActionPrompt(new ActionPrompt_RemoveQuest(quest));
+    }
+
+    /// <summary>
+    /// Only call from action prompt.
+    /// </summary>
+    public void DoCompleteQuest(Quest quest)
+    {
         // Show draft window
         string title = $"Quest complete !";
         string subtitle = "Enjoy your reward";
         List<IDraftable> options = new List<IDraftable>() { quest.Reward };
         GameUI.Instance.DraftWindow.Show(title, subtitle, options, isDraft: false);
-
-        // Remove quest
-        quest.OnRemoved();
-        ActiveQuests.Remove(quest);
-
-        // UI
-        GameUI.Instance.QuestPanel.Refresh();
     }
 
-    public void FailQuest(Quest quest)
+    /// <summary>
+    /// Only call from action prompt.
+    /// </summary>
+    public void DoFailQuest(Quest quest)
     {
         // Show draft window
         string title = $"Quest failed !";
@@ -475,13 +486,21 @@ public class Game : MonoBehaviour
             string subtitle = "At least you tried...";
             GameUI.Instance.DraftWindow.Show(title, subtitle, null, isDraft: false);
         }
+    }
 
+    /// <summary>
+    /// Only call from action prompt.
+    /// </summary>
+    public void DoRemoveQuest(Quest quest)
+    {
         // Remove quest
         quest.OnRemoved();
         ActiveQuests.Remove(quest);
 
         // UI
         GameUI.Instance.QuestPanel.Refresh();
+
+        CompleteCurrentActionPrompt();
     }
 
     public void RedrawToken(Token thrownToken)

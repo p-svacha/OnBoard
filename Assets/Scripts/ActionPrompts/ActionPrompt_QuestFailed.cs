@@ -5,6 +5,7 @@ using UnityEngine;
 public class ActionPrompt_QuestFailed : ActionPrompt
 {
     private Quest Quest;
+
     public ActionPrompt_QuestFailed(Quest quest)
     {
         Quest = quest;
@@ -12,6 +13,6 @@ public class ActionPrompt_QuestFailed : ActionPrompt
 
     public override void OnShow()
     {
-        Game.Instance.FailQuest(Quest);
+        Game.Instance.DoFailQuest(Quest);
     }
 }

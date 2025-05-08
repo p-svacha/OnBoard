@@ -2,17 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ActionPrompt_QuestComplete : ActionPrompt
+public class ActionPrompt_RemoveQuest : ActionPrompt
 {
     private Quest Quest;
 
-    public ActionPrompt_QuestComplete(Quest quest)
+    public ActionPrompt_RemoveQuest(Quest quest)
     {
         Quest = quest;
     }
 
     public override void OnShow()
     {
-        Game.Instance.DoCompleteQuest(Quest);
+        Game.Instance.DoRemoveQuest(Quest);
     }
 }

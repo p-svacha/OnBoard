@@ -19,6 +19,6 @@ public class TileFeature_RedFlag : TileFeature
 
     public override void OnLand()
     {
-        Game.Instance.QueueActionPrompt(new ActionPrompt_QuestComplete(Goal.Quest));
+        Game.Instance.CompleteQuest(Goal.Quest);
     }
 }

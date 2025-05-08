@@ -45,7 +45,6 @@ public class UI_DraftWindow : UI_Window
         // Hide
         gameObject.SetActive(false);
         
-
         // Continue
         Game.Instance.CompleteCurrentActionPrompt();
     }

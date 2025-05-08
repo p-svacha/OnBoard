@@ -24,7 +24,10 @@ public class Quest
     /// </summary>
     public void OnTurnPassed()
     {
-        if (Game.Instance.Turn >= DeadlineTurn - 1) Game.Instance.QueueActionPrompt(new ActionPrompt_QuestFailed(this));
+        if (Game.Instance.Turn >= DeadlineTurn - 1)
+        {
+            Game.Instance.FailQuest(this);
+        }
     }
 
     /// <summary>
