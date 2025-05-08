@@ -13,5 +13,5 @@ public class TileFeatureDef : Def
     /// <summary>
     /// If true, a meeple is always allowed to stop on a tile with this feature, even if not all movement points are used up.
     /// </summary>
-    public bool MeepleCanStopOn;
+    public bool MeepleCanStopOn { get; init; }
 }

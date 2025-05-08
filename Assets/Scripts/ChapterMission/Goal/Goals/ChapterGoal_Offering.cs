@@ -24,4 +24,6 @@ public class ChapterGoal_Offering : ChapterGoal
         Tile targetTile = Game.Instance.Board.GetRandomTile();
         TargetAltar = targetTile.AddFeature(TileFeatureDefOf.Altar) as TileFeature_Altar;
     }
+
+    public override string Description => $"Deliver a <b>{Size.Label} {Shape.Label}</b> with a <b>{Color.Label}</b> surface to the altar.";
 }
