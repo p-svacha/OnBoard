@@ -11,6 +11,7 @@ public class UI_DraftOption : MonoBehaviour
     public Button Button;
     public TextMeshProUGUI Text;
     public Image Image;
+    public GameObject RawImageContainer;
     public RawImage RawImage;
 
     public void Init(UI_Draft draft, IDraftable option)
@@ -36,10 +37,10 @@ public class UI_DraftOption : MonoBehaviour
         // 3D Object
         if (option.DraftDisplay_Spinning3DObject != null)
         {
-            RawImage.gameObject.SetActive(true);
+            RawImageContainer.gameObject.SetActive(true);
             ObjectPreviewManager.ShowGameObject(RawImage, option.DraftDisplay_Spinning3DObject);
         }
-        else RawImage.gameObject.SetActive(false);
+        else RawImageContainer.gameObject.SetActive(false);
     }
 
     public void SetSelected(bool value)

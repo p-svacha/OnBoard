@@ -44,6 +44,6 @@ public class TileFeature_SpecificTokenGiver : TileFeature
 
     public override void OnLand()
     {
-        Game.Instance.QueueActionPrompt(new ActionPrompt_ReceiveToken(AwardedToken.Shape, AwardedToken.Surfaces, AwardedToken.Size));
+        Game.Instance.QueueActionPrompt(new ActionPrompt_ReceiveToken(AwardedToken));
     }
 }

@@ -4,9 +4,9 @@ using UnityEngine;
 
 public static class QuestGenerator
 {
-    public static float DeadlineChance = 0.5f;
-    public static int MinDeadlineTime = 10;
-    public static int MaxDeadlineTime = 20;
+    public static float DeadlineChance = 1f;
+    public static int MinDeadlineTime = 1;
+    public static int MaxDeadlineTime = 2;
 
     public static float PenaltyChance = 0.5f;
 

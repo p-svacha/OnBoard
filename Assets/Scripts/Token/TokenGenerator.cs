@@ -45,25 +45,27 @@ public static class TokenGenerator
             col.convex = true;
         }
 
+        // Rigidbody
+        if (!isStatic)
+        {
+            Rigidbody rb = tokenObject.AddComponent<Rigidbody>();
+            rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
+        }
+
         // Token component
         Token newToken = tokenObject.AddComponent<Token>();
         newToken.Init(shape, surfaces, size, modelId, scale);
 
+        // Tooltip
         if (!isStatic)
         {
-            // Rigidbody
-            Rigidbody rb = tokenObject.AddComponent<Rigidbody>();
-            rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
-
-            // Tooltip
             TooltipTarget3D tooltipTarget = tokenObject.AddComponent<TooltipTarget3D>();
             tooltipTarget.Title = newToken.LabelCap;
             tooltipTarget.Text = newToken.Description;
         }
-
+        
         if (hidden) newToken.Hide();
         if (frozen) newToken.Freeze();
-
         return newToken;
     }
 }

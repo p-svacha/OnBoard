@@ -15,6 +15,13 @@ public class ActionPrompt_ReceiveToken : ActionPrompt
         Size = size;
     }
 
+    public ActionPrompt_ReceiveToken(Token tokenData)
+    {
+        Shape = tokenData.Shape;
+        Surfaces = tokenData.Surfaces;
+        Size = tokenData.Size;
+    }
+
     public override void OnShow()
     {
         Token newToken = Game.Instance.AddTokenToPouch(Shape, Surfaces, Size);

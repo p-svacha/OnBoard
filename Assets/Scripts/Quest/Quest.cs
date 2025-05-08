@@ -19,6 +19,24 @@ public class Quest
         Penalty = penalty;
     }
 
+    /// <summary>
+    /// Gets executed whenever a turn ends.
+    /// </summary>
+    public void OnTurnPassed()
+    {
+        if (Game.Instance.Turn >= DeadlineTurn - 1) Game.Instance.QueueActionPrompt(new ActionPrompt_QuestFailed(this));
+    }
+
+    /// <summary>
+    /// Gets executed when this quest gets removed from the active quests.
+    /// </summary>
+    public void OnRemoved()
+    {
+        Goal.OnRemoved();
+        Reward.OnRemoved();
+        if(Penalty != null) Penalty.OnRemoved();
+    }
+
     public string GetShortDescription()
     {
         return "";

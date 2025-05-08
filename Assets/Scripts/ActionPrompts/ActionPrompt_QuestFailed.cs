@@ -4,8 +4,14 @@ using UnityEngine;
 
 public class ActionPrompt_QuestFailed : ActionPrompt
 {
+    private Quest Quest;
+    public ActionPrompt_QuestFailed(Quest quest)
+    {
+        Quest = quest;
+    }
+
     public override void OnShow()
     {
-        throw new System.NotImplementedException();
+        Game.Instance.FailQuest(Quest);
     }
 }

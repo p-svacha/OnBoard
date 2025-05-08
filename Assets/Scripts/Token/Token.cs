@@ -64,6 +64,11 @@ public class Token : MonoBehaviour
         Collider.enabled = false;
     }
 
+    public void DestroySelf()
+    {
+        GameObject.Destroy(gameObject);
+    }
+
     #region Getters
 
     public string Label

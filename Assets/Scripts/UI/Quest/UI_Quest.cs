@@ -40,7 +40,9 @@ public class UI_Quest : MonoBehaviour
     {
         GoalText.text = Quest.Goal.Description;
         RewardValueText.text = Quest.Reward.Label;
-        DeadlineValueText.text = $"{Quest.DeadlineTurn - Game.Instance.Turn} Turns";
+        int numTurnsUntilDeadline = Quest.DeadlineTurn - Game.Instance.Turn;
+        if(numTurnsUntilDeadline == 1) DeadlineValueText.text = $"This Turn!";
+        else DeadlineValueText.text = $"{Quest.DeadlineTurn - Game.Instance.Turn} Turns";
         PenaltyText.text = Quest.HasPenalty ? Quest.Penalty.Label : "";
 
         if (Quest.IsUiCollapsed)

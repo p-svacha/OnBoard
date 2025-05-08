@@ -24,7 +24,7 @@ public static class TokenPhysicsManager
 
     public static void ThrowToken(Token token)
     {
-        var copy = TokenGenerator.GenerateTokenCopy(token);
+        Token copy = TokenGenerator.GenerateTokenCopy(token);
         ThrownTokens.Add(copy);
 
         // spawn
@@ -171,7 +171,11 @@ public static class TokenPhysicsManager
         // 2) wait for all to finish: max lift (1.2s) + max implode (0.3s) + buffer
         yield return new WaitForSeconds(1.6f);
 
-        foreach (Token token in collectedTokens) ThrownTokens.Remove(token);
+        foreach (Token token in collectedTokens)
+        {
+            ThrownTokens.Remove(token);
+            token.DestroySelf();
+        }
     }
 
     public static IEnumerator LiftAndImplode(Token token)
@@ -214,16 +218,8 @@ public static class TokenPhysicsManager
             yield return null;
         }
 
-        // Hide visually
+        // Hide
         token.Hide();
-
-        // Reset for next throw
-        var rb = token.Rigidbody;
-        rb.isKinematic = false;
-        rb.velocity = Vector3.zero;
-        rb.angularVelocity = Vector3.zero;
-        var col = token.GetComponent<Collider>();
-        if (col != null) col.enabled = true;
     }
 
     #endregion

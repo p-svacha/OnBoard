@@ -13,15 +13,20 @@ public abstract class QuestReward : IDraftable
     }
     protected virtual void OnInit() { }
 
+    /// <summary>
+    /// Gets executed when the quest with this penalty gets removed from the active quests.
+    /// </summary>
+    public virtual void OnRemoved() { }
+
     protected abstract void ApplyReward();
     
 
     public virtual string Label => Def.Label;
 
     // IDraftable
-    public string DraftDisplay_Text => throw new System.NotImplementedException();
-    public Sprite DraftDisplay_Sprite => throw new System.NotImplementedException();
-    public GameObject DraftDisplay_Spinning3DObject => throw new System.NotImplementedException();
+    public abstract string DraftDisplay_Text { get; }
+    public abstract Sprite DraftDisplay_Sprite { get; }
+    public abstract GameObject DraftDisplay_Spinning3DObject { get; }
     public void ApplySelection()
     {
         ApplyReward();

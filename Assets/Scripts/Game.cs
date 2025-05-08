@@ -6,6 +6,7 @@ using UnityEngine;
 public class Game : MonoBehaviour
 {
     public static Game Instance;
+    public GameObject TokenPouchObject;
 
     #region Static Rules
 
@@ -135,6 +136,7 @@ public class Game : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+        TokenPouchObject = GameObject.Find("TokenPouch");
     }
 
     void Start()
@@ -249,6 +251,7 @@ public class Game : MonoBehaviour
         GameUI.Instance.TurnPhaseResources.Refresh();
         GameUI.Instance.QuestPanel.Refresh();
         GameUI.Instance.ItemPanel.Refresh();
+        GameUI.Instance.GameLoopButton.Enable();
 
         GameState = GameState.PreDraw;
     }
@@ -323,24 +326,30 @@ public class Game : MonoBehaviour
     /// </summary>
     private void OnActionPromptsDone()
     {
-        PrepareNextMovementOptions();
+        if (GameState == GameState.MovingPhase) PrepareNextMovementOptions();
+        if (GameState == GameState.PostTurn) StartTurn();
     }
 
     public void EndTurn()
     {
         GameState = GameState.PostTurn;
 
+        // Disable game loop button
+        GameUI.Instance.GameLoopButton.Disable();
+        GameUI.Instance.TurnPhaseResources.Refresh();
+
         // Collect all tokens off the board
         StartCoroutine(TokenPhysicsManager.CollectTokens(this));
+
+        // Quests
+        foreach (Quest quest in ActiveQuests) quest.OnTurnPassed();
+        GameUI.Instance.QuestPanel.Refresh();
 
         // Rulebook
         Rulebook.OnTurnPassed();
 
-        // UI refreshes
-        GameUI.Instance.QuestPanel.Refresh();
-
-        // Wait for player to start next turn
-        StartTurn();
+        // Go through post turn action prompts
+        ShowNextActionPrompt();
     }
 
     #endregion
@@ -370,6 +379,7 @@ public class Game : MonoBehaviour
     {
         TokenPouch.Add(token);
         token.IsInPouch = true;
+        token.transform.SetParent(TokenPouchObject.transform);  
     }
     public void RemoveTokenFromPouch(Token token)
     {
@@ -443,6 +453,7 @@ public class Game : MonoBehaviour
         GameUI.Instance.DraftWindow.Show(title, subtitle, options, isDraft: false);
 
         // Remove quest
+        quest.OnRemoved();
         ActiveQuests.Remove(quest);
 
         // UI
@@ -466,6 +477,7 @@ public class Game : MonoBehaviour
         }
 
         // Remove quest
+        quest.OnRemoved();
         ActiveQuests.Remove(quest);
 
         // UI
