@@ -7,15 +7,15 @@ public static class TokenGenerator
 {
     private static float MAX_SCALE_MODIFIER = 0.02f;
 
-    public static Token GenerateTokenCopy(Token orig, bool randomModel = false, bool hidden = true, bool frozen = false)
+    public static Token GenerateTokenCopy(Token orig, bool randomModel = false, bool isStatic = false, bool hidden = true, bool frozen = false)
     {
-        Token token = GenerateToken(orig.Shape, orig.Surfaces, orig.Size, randomModel ? -1 : orig.ModelId, hidden, frozen);
+        Token token = GenerateToken(orig.Shape, orig.Surfaces, orig.Size, randomModel ? -1 : orig.ModelId, isStatic, hidden, frozen);
         token.Original = orig;
         return token;
     }
 
 
-    public static Token GenerateToken(TokenShapeDef shape, List<TokenSurface> surfaces, TokenSizeDef size, int modelId = -1, bool hidden = true, bool frozen = false)
+    public static Token GenerateToken(TokenShapeDef shape, List<TokenSurface> surfaces, TokenSizeDef size, int modelId = -1, bool isStatic = false, bool hidden = true, bool frozen = false)
     {
         if (modelId == -1)
         {
@@ -38,23 +38,28 @@ public static class TokenGenerator
             renderer.materials[shape.SurfaceMaterialIndices[i]].color = surfaces[i].Color.Color;
         }
 
-        // GameObject components
+        // MeshCollider
         if (tokenObject.GetComponent<Collider>() == null)
         {
             MeshCollider col = tokenObject.AddComponent<MeshCollider>();
             col.convex = true;
         }
-        Rigidbody rb = tokenObject.AddComponent<Rigidbody>();
-        rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
 
         // Token component
         Token newToken = tokenObject.AddComponent<Token>();
         newToken.Init(shape, surfaces, size, modelId, scale);
 
-        // Tooltip
-        TooltipTarget3D tooltipTarget = tokenObject.AddComponent<TooltipTarget3D>();
-        tooltipTarget.Title = newToken.LabelCap;
-        tooltipTarget.Text = newToken.Description;
+        if (!isStatic)
+        {
+            // Rigidbody
+            Rigidbody rb = tokenObject.AddComponent<Rigidbody>();
+            rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
+
+            // Tooltip
+            TooltipTarget3D tooltipTarget = tokenObject.AddComponent<TooltipTarget3D>();
+            tooltipTarget.Title = newToken.LabelCap;
+            tooltipTarget.Text = newToken.Description;
+        }
 
         if (hidden) newToken.Hide();
         if (frozen) newToken.Freeze();

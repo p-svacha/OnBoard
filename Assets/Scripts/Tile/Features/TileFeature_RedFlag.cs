@@ -11,7 +11,7 @@ public class TileFeature_RedFlag : TileFeature
         Goal = goal;
     }
 
-    public override void InitVisuals()
+    protected override void OnInitVisuals()
     {
         GameObject flagPrefab = ResourceManager.LoadPrefab("Prefabs/TileFeatures/RedFlag");
         GameObject.Instantiate(flagPrefab, transform);

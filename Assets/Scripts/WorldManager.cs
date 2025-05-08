@@ -10,6 +10,7 @@ public static class WorldManager
     // Layers
     public static int Layer_Token;
     public static int Layer_BoardTile;
+    public static int Layer_TileFeature;
     public static int Layer_Meeple;
     public static int Layer_BoardSegment;
     public static int Layer_PreviewObject;
@@ -24,6 +25,7 @@ public static class WorldManager
     {
         Layer_Token = LayerMask.NameToLayer("Token");
         Layer_BoardTile = LayerMask.NameToLayer("BoardTile");
+        Layer_TileFeature = LayerMask.NameToLayer("TileFeature");
         Layer_Meeple = LayerMask.NameToLayer("Meeple");
         Layer_BoardSegment = LayerMask.NameToLayer("BoardSegment");
         Layer_PreviewObject = LayerMask.NameToLayer("PreviewObject");

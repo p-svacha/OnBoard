@@ -6,7 +6,7 @@ public class TileFeature_TokenBin : TileFeature
 {
     private static float CENTER_DISTANCE = Tile.TILE_SIZE * 0.2f;
 
-    public override void InitVisuals()
+    protected override void OnInitVisuals()
     {
         GameObject binPrefab = ResourceManager.LoadPrefab("Prefabs/TileFeatures/Trashcan");
         GameObject bin = GameObject.Instantiate(binPrefab, transform);

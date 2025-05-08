@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class TileFeature_Altar : TileFeature
 {
-    public override void InitVisuals()
+    protected override void OnInitVisuals()
     {
         GameObject altarPrefab = ResourceManager.LoadPrefab("Prefabs/TileFeatures/Altar");
-        GameObject altar = GameObject.Instantiate(altarPrefab, Tile.transform);
+        GameObject altar = GameObject.Instantiate(altarPrefab, transform);
         altar.transform.rotation = Quaternion.Euler(0f, Tile.ForwardAngle, 0f);
 
         float offsetAngle = Tile.ForwardAngle + 90;

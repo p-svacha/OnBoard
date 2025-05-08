@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class TileFeature_Spikes : TileFeature
 {
-    public override void InitVisuals()
+    protected override void OnInitVisuals()
     {
         GameObject prefab = ResourceManager.LoadPrefab("Prefabs/TileFeatures/Spikes");
         GameObject obj = GameObject.Instantiate(prefab, transform);

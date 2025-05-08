@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class TileFeature_Start : TileFeature
 {
-    public override void InitVisuals()
+    protected override void OnInitVisuals()
     {
         GameObject startTextPrefab = ResourceManager.LoadPrefab("Prefabs/TileFeatures/StartText");
         GameObject.Instantiate(startTextPrefab, transform);

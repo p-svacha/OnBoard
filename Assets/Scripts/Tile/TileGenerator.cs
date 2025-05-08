@@ -27,6 +27,7 @@ public static class TileGenerator
         GameObject featureObject = new GameObject(def.DefName);
         featureObject.transform.SetParent(tile.transform);
         featureObject.transform.localPosition = Vector3.zero;
+        featureObject.layer = WorldManager.Layer_TileFeature;
 
         var component = featureObject.AddComponent(def.TileFeatureClass) as TileFeature;
         if (component == null)

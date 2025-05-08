@@ -25,7 +25,7 @@ public class TileFeature_SpecificTokenGiver : TileFeature
         AwardedToken = TokenGenerator.GenerateToken(TokenShapeDefOf.Pebble, tokenSurfaces, TokenSizeDefOf.Small);
     }
 
-    public override void InitVisuals()
+    protected override void OnInitVisuals()
     {
         float degreeStep = 360f / NUM_VISUAL_TOKENS;
         for(int i = 0; i < NUM_VISUAL_TOKENS; i++)
@@ -35,9 +35,7 @@ public class TileFeature_SpecificTokenGiver : TileFeature
             float x = Mathf.Sin(rad) * Tile.TILE_RADIUS;
             float y = Mathf.Cos(rad) * Tile.TILE_RADIUS;
 
-            Token visualToken = TokenGenerator.GenerateTokenCopy(AwardedToken, randomModel: true);
-            visualToken.Show();
-            visualToken.Freeze();
+            Token visualToken = TokenGenerator.GenerateTokenCopy(AwardedToken, randomModel: true, isStatic: true, hidden: false);
             visualToken.transform.SetParent(transform);
             visualToken.transform.localPosition = new Vector3(x, Tile.TILE_HEIGHT, y);
             HelperFunctions.ApplyRandomRotation(visualToken.gameObject);

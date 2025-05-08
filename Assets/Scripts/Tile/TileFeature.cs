@@ -27,7 +27,13 @@ public abstract class TileFeature : MonoBehaviour
     /// <summary>
     /// Function used when initializing a feature to make it visually more interesting.
     /// </summary>
-    public virtual void InitVisuals() { }
+    public void InitVisuals()
+    {
+        OnInitVisuals();
+        AddCollidersAndTooltipToChildren(gameObject);
+    }
+
+    protected virtual void OnInitVisuals() { }
 
     /// <summary>
     /// The effect that gets executed when landing on this feature.
@@ -48,6 +54,27 @@ public abstract class TileFeature : MonoBehaviour
     }
 
     /// <summary>
+    /// Adds a mesh collider and 3D tooltip to all children.
+    /// </summary>
+    private void AddCollidersAndTooltipToChildren(GameObject obj, bool includeRoot = true)
+    {
+        if (includeRoot)
+        {
+            if (obj.GetComponent<MeshFilter>() != null)
+            {
+                obj.AddComponent<MeshCollider>();
+                TooltipTarget3D tooltip = obj.AddComponent<TooltipTarget3D>();
+                tooltip.Title = LabelCap;
+                tooltip.Text = Description;
+            }
+        }
+        for (int i = 0; i < obj.transform.childCount; i++)
+        {
+            AddCollidersAndTooltipToChildren(obj.transform.GetChild(i).gameObject);
+        }
+    }
+
+    /// <summary>
     /// Returns if meeples are allowed to always stop on this tile.
     /// </summary>
     public virtual bool CanMeepleStopHere()
@@ -55,4 +82,7 @@ public abstract class TileFeature : MonoBehaviour
         return Def.MeepleCanStopOn;
     }
 
+    public virtual string Label => Def.Label;
+    public string LabelCap => Label.CapitalizeFirst();
+    public virtual string Description => Def.Description;
 }
