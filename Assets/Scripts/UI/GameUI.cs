@@ -15,6 +15,7 @@ public class GameUI : MonoBehaviour
     public UI_TurnPhaseResources TurnPhaseResources;
     public UI_ChapterDisplay ChapterDisplay;
     public UI_QuestPanel QuestPanel;
+    public UI_ResourcesPanel ResourcesPanel;
     public UI_HealthDisplay HealthDisplay;
     public UI_ItemPanel ItemPanel;
     public UI_Rulebook Rulebook;

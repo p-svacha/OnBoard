@@ -22,6 +22,15 @@ public static class ResourceDefs
             LabelPlural = "redraws",
             Description = "During drawing phase, a redraw allows to discard a drawn token and draw a new one from the pouch.",
             Type = ResourceType.DrawingPhaseResource,
+        },
+
+        new ResourceDef()
+        {
+            DefName = "Gold",
+            Label = "gold",
+            LabelPlural = "gold",
+            Description = "A versatile currency used for various interactions, upgrades, and opportunities. You'll never have quite enough.",
+            Type = ResourceType.Collectable,
         }
     };
 }

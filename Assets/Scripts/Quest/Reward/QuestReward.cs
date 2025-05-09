@@ -22,9 +22,11 @@ public abstract class QuestReward : IDraftable
     
 
     public virtual string Label => Def.Label;
+    public string LabelCap => Label.CapitalizeFirst();
+    public virtual string Description => Def.Description;
 
     // IDraftable
-    public abstract string DraftDisplay_Text { get; }
-    public abstract Sprite DraftDisplay_Sprite { get; }
-    public abstract GameObject DraftDisplay_Spinning3DObject { get; }
+    public virtual string DraftDisplay_Text => Label;
+    public virtual Sprite DraftDisplay_Sprite => null;
+    public virtual GameObject DraftDisplay_Spinning3DObject => null;
 }

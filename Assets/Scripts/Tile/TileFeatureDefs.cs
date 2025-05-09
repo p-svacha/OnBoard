@@ -52,7 +52,8 @@ public static class TileFeatureDefs
             DefName = "Altar",
             Label = "altar",
             Description = "A place where offerings are made.",
-            TileFeatureClass = typeof(TileFeature_Altar)
+            TileFeatureClass = typeof(TileFeature_Altar),
+            MeepleCanStopOn = true,
         }
     };
 }

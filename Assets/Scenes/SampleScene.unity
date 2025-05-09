@@ -4302,6 +4302,7 @@ MonoBehaviour:
   TurnPhaseResources: {fileID: 770651693}
   ChapterDisplay: {fileID: 1703583784}
   QuestPanel: {fileID: 601186102}
+  ResourcesPanel: {fileID: 2084251686}
   HealthDisplay: {fileID: 1513843262}
   ItemPanel: {fileID: 1150755406}
   Rulebook: {fileID: 762638337}
@@ -8399,6 +8400,7 @@ GameObject:
   - component: {fileID: 2084251684}
   - component: {fileID: 2084251683}
   - component: {fileID: 2084251682}
+  - component: {fileID: 2084251686}
   m_Layer: 5
   m_Name: Resources
   m_TagString: Untagged
@@ -8504,6 +8506,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2084251680}
   m_CullTransparentMesh: 1
+--- !u!114 &2084251686
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2084251680}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dfefaf03cfdb2fe4199504d30786901d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Container: {fileID: 2084251680}
+  ResourcePrefab: {fileID: 6014334462071883897, guid: 77332443afb2aee4190b77c514319ea0, type: 3}
 --- !u!1 &2112905828
 GameObject:
   m_ObjectHideFlags: 0

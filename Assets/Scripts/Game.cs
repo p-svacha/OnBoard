@@ -104,6 +104,11 @@ public class Game : MonoBehaviour
     public List<Item> Items { get; private set; }
 
     /// <summary>
+    /// The amount of each collectible resource the player currently has.
+    /// </summary>
+    public Dictionary<ResourceDef, int> Resources;
+
+    /// <summary>
     /// The amount of drawing phase resources the player has remaining this drawing phase.
     /// </summary>
     public Dictionary<ResourceDef, int> RemainingDrawPhaseResources { get; private set; }
@@ -168,8 +173,7 @@ public class Game : MonoBehaviour
         InitializeRulebook();
         CreateInitialBoard();
         AddStartingMeeple();
-        AddStartingTokensToPouch();
-        AddStartingItems();
+        AddStartingContent();
         InitializeFirstChapter();
         CameraHandler.Instance.SetPosition(Meeples[0].transform.position);
 
@@ -192,8 +196,9 @@ public class Game : MonoBehaviour
         GameUI.Instance.HealthDisplay.Refresh();
     }
 
-    private void AddStartingTokensToPouch()
+    private void AddStartingContent()
     {
+        // Tokens
         TokenPouch = new List<Token>();
         AddTokenToPouch(TokenShapeDefOf.Pebble, new() { new(TokenColorDefOf.White) }, TokenSizeDefOf.Small);
         AddTokenToPouch(TokenShapeDefOf.Pebble, new() { new(TokenColorDefOf.White) }, TokenSizeDefOf.Small);
@@ -203,11 +208,13 @@ public class Game : MonoBehaviour
         AddTokenToPouch(TokenShapeDefOf.Pebble, new() { new(TokenColorDefOf.Black) }, TokenSizeDefOf.Small);
         AddTokenToPouch(TokenShapeDefOf.Coin, new() { new(TokenColorDefOf.White), new(TokenColorDefOf.Black) }, TokenSizeDefOf.Small);
         DrawAmount = 4;
-    }
 
-    private void AddStartingItems()
-    {
-        Items.Add(ItemGenerator.GenerateRandomItem());
+        // Items
+        AddItem(ItemGenerator.GenerateRandomItem());
+
+        // Resources
+        Resources = new Dictionary<ResourceDef, int>();
+        AddResource(ResourceDefOf.Gold, 5);
     }
 
     private void InitializeFirstChapter()
@@ -398,6 +405,20 @@ public class Game : MonoBehaviour
     {
         Items.Add(item);
         GameUI.Instance.ItemPanel.Refresh();
+    }
+
+    public void AddResource(ResourceDef resource, int amount)
+    {
+        if (resource.Type != ResourceType.Collectable) throw new System.Exception($"Can't add resource {resource.LabelCap} since it is not a collectable resource.");
+        Resources.Increment(resource, amount);
+        GameUI.Instance.ResourcesPanel.Refresh();
+    }
+
+    public void RemoveResource(ResourceDef resource, int amount)
+    {
+        if (resource.Type != ResourceType.Collectable) throw new System.Exception($"Can't remove resource {resource.LabelCap} since it is not a collectable resource.");
+        Resources.Decrement(resource, amount);
+        GameUI.Instance.ResourcesPanel.Refresh();
     }
 
     public void TeleportMeeple(Meeple meeple, Tile tile)

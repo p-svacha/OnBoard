@@ -21,8 +21,5 @@ public class QuestReward_ReceiveToken : QuestReward
         RewardToken.DestroySelf();
     }
 
-    // IDraftable
-    public override string DraftDisplay_Text => Def.LabelCap;
-    public override Sprite DraftDisplay_Sprite => null;
-    public override GameObject DraftDisplay_Spinning3DObject => RewardToken.gameObject;
+    public override string Label => RewardToken.Label;
 }

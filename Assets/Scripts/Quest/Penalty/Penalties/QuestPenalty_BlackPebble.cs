@@ -20,9 +20,4 @@ public class QuestPenalty_BlackPebble : QuestPenalty
     {
         PenaltyToken.DestroySelf();
     }
-
-    // IDraftable
-    public override string DraftDisplay_Text => Def.LabelCap;
-    public override Sprite DraftDisplay_Sprite => null;
-    public override GameObject DraftDisplay_Spinning3DObject => PenaltyToken.gameObject;
 }

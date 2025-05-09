@@ -21,5 +21,8 @@ public abstract class QuestGoal
     /// Gets executed when the objective with this goal gets removed.
     /// </summary>
     public virtual void OnRemoved() { }
+
+    public virtual string Label => Def.Label;
+    public string LabelCap => Label.CapitalizeFirst();
     public virtual string Description => Def.Description;
 }

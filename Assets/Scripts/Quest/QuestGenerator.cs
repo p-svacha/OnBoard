@@ -4,11 +4,11 @@ using UnityEngine;
 
 public static class QuestGenerator
 {
-    public static float DeadlineChance = 1f;
-    public static int MinDeadlineTime = 1;
-    public static int MaxDeadlineTime = 2;
+    public static float DeadlineChance = 0.5f;
+    public static int MinDeadlineTime = 2;
+    public static int MaxDeadlineTime = 4;
 
-    public static float PenaltyChance = 0.5f;
+    public static float PenaltyChance = 0.5f; // Gets checked for only if there is a deadline
 
     public static Quest GenerateQuest()
     {
