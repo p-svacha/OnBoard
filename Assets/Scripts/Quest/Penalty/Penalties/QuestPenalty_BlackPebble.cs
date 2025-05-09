@@ -11,7 +11,7 @@ public class QuestPenalty_BlackPebble : QuestPenalty
         PenaltyToken = TokenGenerator.GenerateToken(TokenShapeDefOf.Pebble, new() { new(TokenColorDefOf.Black) }, TokenSizeDefOf.Small, hidden: true, frozen: true);
     }
 
-    protected override void ApplyPenalty()
+    public override void ApplyPenalty()
     {
         Game.Instance.QueueActionPrompt(new ActionPrompt_ReceiveToken(PenaltyToken));
     }

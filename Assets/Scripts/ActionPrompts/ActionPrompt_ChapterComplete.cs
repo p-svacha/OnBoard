@@ -6,6 +6,6 @@ public class ActionPrompt_ChapterComplete : ActionPrompt
 {
     public override void OnShow()
     {
-        Game.Instance.EndChapter();
+        Game.Instance.DoCompleteChapter();
     }
 }

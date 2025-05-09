@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Token : MonoBehaviour
+public class Token : MonoBehaviour, IDraftable
 {
     public TokenShapeDef Shape { get; private set; }
     public List<TokenSurface> Surfaces { get; private set; }
@@ -101,6 +101,10 @@ public class Token : MonoBehaviour
         }
     }
 
-
     #endregion
+
+    // IDraftable
+    public string DraftDisplay_Text => LabelCap;
+    public Sprite DraftDisplay_Sprite => null;
+    public GameObject DraftDisplay_Spinning3DObject => gameObject;
 }

@@ -38,6 +38,8 @@ public static class ObjectPreviewManager
 
         // Create preview object
         previewObject.SetActive(true);
+        Rigidbody rb = previewObject.GetComponent<Rigidbody>();
+        if (rb != null) rb.isKinematic = true;
         previewObject.layer = WorldManager.Layer_PreviewObject;
         previewObject.transform.rotation = Quaternion.Euler(Random.Range(0f, 360f), Random.Range(0f, 360f), Random.Range(0f, 360f));
         previewObject.AddComponent<SpinPreview>();

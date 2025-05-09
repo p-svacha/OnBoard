@@ -11,7 +11,7 @@ public class QuestReward_ReceiveToken : QuestReward
         RewardToken = TokenGenerator.GenerateToken(TokenShapeDefOf.Pebble, new() { new(TokenColorDefOf.White) }, TokenSizeDefOf.Small, hidden: true, frozen: true);
     }
 
-    protected override void ApplyReward()
+    public override void ApplyReward()
     {
         Game.Instance.QueueActionPrompt(new ActionPrompt_ReceiveToken(RewardToken));
     }

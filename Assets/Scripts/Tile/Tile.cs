@@ -43,6 +43,8 @@ public class Tile : MonoBehaviour
         return Features.Any(f => f.CanMeepleStopHere());
     }
 
+    #region Hooks
+
     /// <summary>
     /// The effect that gets executed when landing on this board tile.
     /// </summary>
@@ -54,10 +56,14 @@ public class Tile : MonoBehaviour
     /// <summary>
     /// The effect that gets executed when passing over this board tile.
     /// </summary>
-    public virtual void OnPass()
+    public void OnPass()
     {
         foreach (TileFeature feature in Features) feature.OnPass();
     }
+
+    #endregion
+
+    #region FX
 
     public void HighlightAsMovementOption()
     {
@@ -74,6 +80,8 @@ public class Tile : MonoBehaviour
             MovementHighlightFx = null;
         }
     }
+
+    #endregion
 
     #region Features
 
@@ -115,6 +123,25 @@ public class Tile : MonoBehaviour
         feature.InitVisuals();
         Features.Add(feature);
         return feature;
+    }
+
+    #endregion
+
+    #region Getters
+
+    /// <summary>
+    /// Returns all tile interactions a player meeple can perform when standing on this tile.
+    /// </summary>
+    public List<TileInteraction> GetInteractions()
+    {
+        List<TileInteraction> interactions = new List<TileInteraction>();
+
+        foreach(TileFeature feature in Features)
+        {
+            interactions.AddRange(feature.GetInteractions());
+        }
+
+        return interactions;
     }
 
     #endregion

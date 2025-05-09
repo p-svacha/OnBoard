@@ -59,8 +59,8 @@ public static class TokenPhysicsManager
             }
 
             // 2) if it's still moving or spinning, keep waiting
-            if (copy.Rigidbody.velocity.sqrMagnitude > 0.01f ||
-                copy.Rigidbody.angularVelocity.sqrMagnitude > 0.01f)
+            if (copy.Rigidbody.velocity.sqrMagnitude > 0.02f ||
+                copy.Rigidbody.angularVelocity.sqrMagnitude > 0.02f)
             {
                 yield return new WaitForFixedUpdate();
                 continue;

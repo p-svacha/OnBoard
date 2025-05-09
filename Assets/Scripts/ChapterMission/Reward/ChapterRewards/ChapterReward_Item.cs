@@ -11,7 +11,7 @@ public class ChapterReward_Item : ChapterReward
         Item = ItemGenerator.GenerateRandomItem();
     }
 
-    protected override void ApplyReward()
+    public override void ApplyReward()
     {
         Game.Instance.AddItem(Item);
     }

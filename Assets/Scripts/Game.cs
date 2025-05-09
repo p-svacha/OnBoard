@@ -290,23 +290,38 @@ public class Game : MonoBehaviour
         TotalMovingPhaseResources.IncrementMultiple(CurrentDraw.GetMovingPhaseResources()); // Add resources from tokens
         RemainingMovingPhaseResources = new Dictionary<ResourceDef, int>(TotalMovingPhaseResources);
 
-        // Find initial movement options
-        PrepareNextMovementOptions();
+        // Prepare possible actions for player
+        PrepareMovingPhasePlayerActions();
 
         // UI
         GameUI.Instance.GameLoopButton.SetText("End\nTurn");
         GameUI.Instance.TurnPhaseResources.Refresh();
     }
 
-    private void PrepareNextMovementOptions()
+    /// <summary>
+    /// Gets executed during the moving phase when the player is free again to perform their next action (i.e. move a meeple, interacting with a tile, etc.).
+    /// </summary>
+    private void PrepareMovingPhasePlayerActions()
     {
         // Find all movement options
         UpdateCurrentMovementOptions();
         HighlightAllMovementOptionTargets();
 
-        // Game loop button
-        if (RemainingMovementPoints == 0) GameUI.Instance.GameLoopButton.Enable();
+        // Identify interactions the player meeples can perform on the tiles they are on
+        GameUI.Instance.TileInteractionMenu.Refresh();
+
+        // Game loop button (can only end turn when all moveme
+        if (CanEndTurn()) GameUI.Instance.GameLoopButton.Enable();
         else GameUI.Instance.GameLoopButton.Disable();
+    }
+
+    /// <summary>
+    /// Returns if the player can end the turn.
+    /// </summary>
+    private bool CanEndTurn()
+    {
+        if (RemainingMovementPoints > 0) return false;
+        return true;
     }
 
     /// <summary>
@@ -319,15 +334,6 @@ public class Game : MonoBehaviour
 
         // Show action prompts
         ShowNextActionPrompt();
-    }
-
-    /// <summary>
-    /// Gets called when all action prompts are completed after a meeple landed on a tile.
-    /// </summary>
-    private void OnActionPromptsDone()
-    {
-        if (GameState == GameState.MovingPhase) PrepareNextMovementOptions();
-        if (GameState == GameState.PostTurn) StartTurn();
     }
 
     public void EndTurn()
@@ -414,14 +420,22 @@ public class Game : MonoBehaviour
         GameUI.Instance.TurnPhaseResources.Refresh();
     }
 
-    public void EndChapter()
+    public void QueueCompleteChapter()
+    {
+        QueueActionPrompt(new ActionPrompt_ChapterComplete());
+    }
+
+    /// <summary>
+    /// Only call from action prompt.
+    /// </summary>
+    public void DoCompleteChapter()
     {
         // Queue draft window
         string title = $"Chapter {Chapter} complete !";
         string subtitle = "Choose a reward";
         List<ChapterReward> rewardOptions = ChapterRewardGenerator.GenerateRewards(Chapter, amount: 3);
         List<IDraftable> draftOptions = rewardOptions.Select(r => (IDraftable)r).ToList();
-        GameUI.Instance.DraftWindow.Show(title, subtitle, draftOptions, isDraft: true);
+        GameUI.Instance.DraftWindow.Show(title, subtitle, draftOptions, isDraft: true, callback: OnChapterRewardChosen);
 
         // Queue board expansion
         QueueActionPrompt(new ActionPrompt_BoardRegionAdded());
@@ -434,6 +448,14 @@ public class Game : MonoBehaviour
 
         // Set new goal
         SetNextChapterGoal();
+    }
+
+    private void OnChapterRewardChosen(List<IDraftable> chosenOptions)
+    {
+        foreach (ChapterReward reward in chosenOptions.Select(o => (ChapterReward)o))
+        {
+            reward.ApplyReward();
+        }
     }
 
     private void SetNextChapterGoal()
@@ -465,7 +487,15 @@ public class Game : MonoBehaviour
         string title = $"Quest complete !";
         string subtitle = "Enjoy your reward";
         List<IDraftable> options = new List<IDraftable>() { quest.Reward };
-        GameUI.Instance.DraftWindow.Show(title, subtitle, options, isDraft: false);
+        GameUI.Instance.DraftWindow.Show(title, subtitle, options, isDraft: false, callback: OnQuestRewardChosen);
+    }
+
+    private void OnQuestRewardChosen(List<IDraftable> chosenOptions)
+    {
+        foreach(QuestReward reward in chosenOptions.Select(o => (QuestReward)o))
+        {
+            reward.ApplyReward();
+        }
     }
 
     /// <summary>
@@ -479,12 +509,20 @@ public class Game : MonoBehaviour
         {
             string subtitle = "A penalty has been applied";
             List<IDraftable> options = new List<IDraftable>() { quest.Penalty };
-            GameUI.Instance.DraftWindow.Show(title, subtitle, options, isDraft: false);
+            GameUI.Instance.DraftWindow.Show(title, subtitle, options, isDraft: false, OnQuestPenaltyChosen);
         }
         else
         {
             string subtitle = "At least you tried...";
             GameUI.Instance.DraftWindow.Show(title, subtitle, null, isDraft: false);
+        }
+    }
+
+    private void OnQuestPenaltyChosen(List<IDraftable> chosenOptions)
+    {
+        foreach (QuestPenalty penalty in chosenOptions.Select(o => (QuestPenalty)o))
+        {
+            penalty.ApplyPenalty();
         }
     }
 
@@ -568,7 +606,7 @@ public class Game : MonoBehaviour
         ActionPromptQueue.Enqueue(prompt);
     }
 
-    private void ShowNextActionPrompt()
+    public void ShowNextActionPrompt()
     {
         if (ActionPromptQueue.Count == 0)
         {
@@ -589,7 +627,16 @@ public class Game : MonoBehaviour
         // Show next prompt
         ShowNextActionPrompt();
     }
-    
+
+    /// <summary>
+    /// Gets called when all action prompts are completed after a meeple landed on a tile.
+    /// </summary>
+    private void OnActionPromptsDone()
+    {
+        if (GameState == GameState.MovingPhase) PrepareMovingPhasePlayerActions();
+        if (GameState == GameState.PostTurn) StartTurn();
+    }
+
     #endregion
 
     #region Movement
@@ -757,6 +804,9 @@ public class Game : MonoBehaviour
 
         // Freeze camera
         CameraHandler.Instance.Freeze();
+
+        // Hide tile interactions
+        GameUI.Instance.TileInteractionMenu.Hide();
     }
 
     public void CloseTokenPouch()
@@ -775,11 +825,27 @@ public class Game : MonoBehaviour
         CameraHandler.Instance.UpdatePosition();
 
         HelperFunctions.UnfocusNonInputUiElements();
+
+        // Unhide tile interactions
+        GameUI.Instance.TileInteractionMenu.Show();
     }
 
     #endregion
 
     #region Getters
+
+    public List<TileInteraction> GetAllPossibleTileInteractions()
+    {
+        List<TileInteraction> list = new List<TileInteraction>();
+
+        foreach (Meeple meeple in Game.Instance.Meeples)
+        {
+            Tile tile = meeple.Tile;
+            list.AddRange(tile.GetInteractions());
+        }
+
+        return list;
+    }
 
     public int GetDraftDrawAmount()
     {

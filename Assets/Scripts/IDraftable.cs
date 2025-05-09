@@ -10,5 +10,4 @@ public interface IDraftable
     public string DraftDisplay_Text { get; }
     public Sprite DraftDisplay_Sprite { get; }
     public GameObject DraftDisplay_Spinning3DObject { get; }
-    public void ApplySelection();
 }

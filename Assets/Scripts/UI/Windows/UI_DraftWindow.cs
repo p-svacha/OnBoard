@@ -12,13 +12,20 @@ public class UI_DraftWindow : UI_Window
     public UI_Draft Draft;
     public Button ContinueButton;
 
+    /// <summary>
+    /// The function that gets executed when closing / confirming this window. The IDraftables passed represent the chosen options.
+    /// </summary>
+    private System.Action<List<IDraftable>> Callback;
+
     protected override void Init()
     {
         ContinueButton.onClick.AddListener(Continue);
     }
 
-    public void Show(string title, string subtitle, List<IDraftable> options, bool isDraft)
+    public void Show(string title, string subtitle, List<IDraftable> options, bool isDraft, System.Action<List<IDraftable>> callback = null)
     {
+        Callback = callback;
+
         gameObject.SetActive(true);
         Title.text = title;
         Draft.Init(subtitle, options, isDraft);
@@ -30,21 +37,28 @@ public class UI_DraftWindow : UI_Window
         if (Draft.IsDraft && Draft.SelectedOption == null) return; // Must choose an option
 
         // Apply options
-        if(Draft.IsDraft)
+        List<IDraftable> chosenOptions = new List<IDraftable>();
+        if (Draft.IsDraft)
         {
-            (Draft.SelectedOption).ApplySelection();
+            chosenOptions = new List<IDraftable>() { Draft.SelectedOption };
         }
         else
         {
-            foreach(IDraftable draftable in Draft.Options)
+            if (Draft.Options != null)
             {
-                draftable.ApplySelection();
+                foreach (IDraftable draftable in Draft.Options)
+                {
+                    chosenOptions.Add(draftable);
+                }
             }
         }
 
         // Hide
         gameObject.SetActive(false);
-        
+
+        // Callback
+        Callback?.Invoke(chosenOptions);
+
         // Continue
         Game.Instance.CompleteCurrentActionPrompt();
     }

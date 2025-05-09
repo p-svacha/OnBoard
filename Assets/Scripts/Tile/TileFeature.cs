@@ -82,6 +82,15 @@ public abstract class TileFeature : MonoBehaviour
         return Def.MeepleCanStopOn;
     }
 
+    /// <summary>
+    /// Returns all possible actions a meeple can do during the moving phase when standing on a tile with this feature.
+    /// </summary>
+    /// <returns></returns>
+    public virtual List<TileInteraction> GetInteractions()
+    {
+        return new List<TileInteraction>();
+    }
+
     public virtual string Label => Def.Label;
     public string LabelCap => Label.CapitalizeFirst();
     public virtual string Description => Def.Description;

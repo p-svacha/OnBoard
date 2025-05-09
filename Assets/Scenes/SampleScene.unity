@@ -482,6 +482,56 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c6bb36633ec87d1458156d238f32157c, type: 3}
+--- !u!1 &114099814
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 114099815}
+  - component: {fileID: 114099816}
+  m_Layer: 5
+  m_Name: TileInteractions
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &114099815
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 114099814}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1078685394}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 300, y: 300}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &114099816
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 114099814}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 678c38c2da0ae1b43b685655c32206d6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Container: {fileID: 114099814}
+  OptionPrefab: {fileID: -8726356349177732387, guid: 6bf1936873925bc42aa8e5c01de09ac6, type: 3}
 --- !u!1001 &151327251
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4224,6 +4274,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1931002044}
+  - {fileID: 114099815}
   - {fileID: 1195103686}
   - {fileID: 1071507902}
   m_Father: {fileID: 1520850528}
@@ -4254,6 +4305,7 @@ MonoBehaviour:
   HealthDisplay: {fileID: 1513843262}
   ItemPanel: {fileID: 1150755406}
   Rulebook: {fileID: 762638337}
+  TileInteractionMenu: {fileID: 114099816}
   ItemReceivedDisplay: {fileID: 483585709}
   TokenDraftDisplay: {fileID: 1798682812}
   DraftWindow: {fileID: 1233430277238333075}

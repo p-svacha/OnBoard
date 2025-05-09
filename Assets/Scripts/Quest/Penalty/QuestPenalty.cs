@@ -18,7 +18,7 @@ public abstract class QuestPenalty : IDraftable
     /// </summary>
     public virtual void OnRemoved() { }
 
-    protected abstract void ApplyPenalty();
+    public abstract void ApplyPenalty();
 
     public virtual string Label => Def.Label;
 
@@ -26,8 +26,4 @@ public abstract class QuestPenalty : IDraftable
     public abstract string DraftDisplay_Text { get; }
     public abstract Sprite DraftDisplay_Sprite { get; }
     public abstract GameObject DraftDisplay_Spinning3DObject { get; }
-    public void ApplySelection()
-    {
-        ApplyPenalty();
-    }
 }
