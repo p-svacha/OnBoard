@@ -18,12 +18,12 @@ public class TileInteraction
     /// <br/>If available, this function will return an empty string.
     /// <br/>If not, this function will return the reason of why it is invalid, which will be shown in the tooltip.
     /// </summary>
-    public Func<string> Validator;
+    private Func<string> Validator;
 
     /// <summary>
     /// Returns if this tile interaction can performed.
     /// </summary>
-    public bool IsAvailable => Validator() == "";
+    public bool IsAvailable => GetUnavailableReason() == "";
 
     /// <summary>
     /// The tile this interaction belongs to.
@@ -35,26 +35,59 @@ public class TileInteraction
     /// </summary>
     public TileFeature Feature { get; private set; }
 
+    /// <summary>
+    /// How much resources need to be spent to perform this interaction.
+    /// </summary>
+    public Dictionary<ResourceDef, int> ResourceCost;
+
     public string Label { get; private set; }
     public string Description { get; private set; }
 
-    public TileInteraction(Action onExecute, Func<string> validator, Tile tile, TileFeature feature, string label, string description)
+    public TileInteraction(Action onExecute, Tile tile, TileFeature feature, string label, string description, Func<string> validator = null, Dictionary<ResourceDef, int> resourceCost = null)
     {
         OnExecute = onExecute;
-        Validator = validator;
+        if (validator == null) Validator = () => "";
+        else Validator = validator;
 
         Tile = tile;
         Feature = feature;
         Label = label;
         Description = description;
+
+        if (resourceCost == null) ResourceCost = new Dictionary<ResourceDef, int>();
+        else ResourceCost = resourceCost;
     }
 
     public void Execute()
     {
+        // Pay cost
+        foreach(var res in ResourceCost)
+        {
+            Game.Instance.RemoveResource(res.Key, res.Value);
+        }
+
+        // Execute interaction
         OnExecute();
 
+        // Show action prompts
         GameUI.Instance.TileInteractionMenu.Hide();
         Game.Instance.ShowNextActionPrompt();
+    }
+
+    public string GetUnavailableReason()
+    {
+        // Check resource cost
+        foreach(var res in ResourceCost)
+        {
+            if (Game.Instance.Resources[res.Key] < res.Value)
+                return $"Not enough {res.Key.LabelPlural}";
+        }
+
+        // Check custom validator
+        string validatorResult = Validator();
+        if (validatorResult != "") return validatorResult;
+
+        return "";
     }
 
 }

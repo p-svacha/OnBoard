@@ -43,7 +43,7 @@ public class UI_Window_TokenDraft : UI_Window
 
         // Draw random tokens to draft from
         List<Token> candidates = new List<Token>(Game.Instance.TokenPouch);
-        int drawAmount = Game.Instance.GetDraftDrawAmount();
+        int drawAmount = Game.Instance.GetDraftOptionsAmount();
         for(int i = 0; i < drawAmount; i++)
         {
             Token chosenToken = candidates.RandomElement();

@@ -5,7 +5,7 @@ using UnityEngine;
 
 public static class TokenGenerator
 {
-    private static float MAX_SCALE_MODIFIER = 0.02f;
+    public static float MAX_SCALE_MODIFIER = 0.02f;
 
     public static Token GenerateTokenCopy(Token orig, bool randomModel = false, bool isStatic = false, bool hidden = true, bool frozen = false)
     {
@@ -26,9 +26,6 @@ public static class TokenGenerator
         GameObject tokenPrefab = ResourceManager.LoadPrefab(prefabPath);
         GameObject tokenObject = GameObject.Instantiate(tokenPrefab);
         tokenObject.layer = WorldManager.Layer_Token;
-
-        // Size
-        float scale = size.Scale + Random.Range(-MAX_SCALE_MODIFIER, MAX_SCALE_MODIFIER);
 
         // Surfaces
         MeshRenderer renderer = tokenObject.GetComponent<MeshRenderer>();
@@ -54,7 +51,7 @@ public static class TokenGenerator
 
         // Token component
         Token newToken = tokenObject.AddComponent<Token>();
-        newToken.Init(shape, surfaces, size, modelId, scale);
+        newToken.Init(shape, surfaces, size, modelId);
 
         // Tooltip
         if (!isStatic)

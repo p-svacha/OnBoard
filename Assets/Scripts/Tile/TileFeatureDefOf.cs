@@ -11,4 +11,5 @@ public static class TileFeatureDefOf
     public static TileFeatureDef Spikes;
     public static TileFeatureDef Start;
     public static TileFeatureDef TokenBin;
+    public static TileFeatureDef UpgradeStand;
 }

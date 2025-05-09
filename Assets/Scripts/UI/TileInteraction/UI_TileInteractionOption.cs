@@ -12,6 +12,10 @@ public class UI_TileInteractionOption : MonoBehaviour
     public Button Button;
     public TextMeshProUGUI Text;
     public TooltipTarget Tooltip;
+    public GameObject CostContainer;
+
+    [Header("Prefabs")]
+    public UI_ResourceDisplay ResourceCostPrefab;
 
     public void Init(TileInteraction interaction)
     {
@@ -24,9 +28,27 @@ public class UI_TileInteractionOption : MonoBehaviour
 
         if (!Interaction.IsAvailable)
         {
-            Tooltip.Text += $"\n\n<color=\"red\">{Interaction.Validator()}</color>";
+            Tooltip.Text += $"\n\n<color=\"red\">{Interaction.GetUnavailableReason()}</color>";
             Button.interactable = false;
         }
+
+        // Cost
+        if(interaction.ResourceCost.Count == 0)
+        {
+            CostContainer.SetActive(false);
+        }
+        else
+        {
+            CostContainer.SetActive(true);
+            HelperFunctions.DestroyAllChildredImmediately(CostContainer);
+            foreach(var res in interaction.ResourceCost)
+            {
+                UI_ResourceDisplay display = GameObject.Instantiate(ResourceCostPrefab, CostContainer.transform);
+                display.Init(res);
+            }
+        }
+
+        Update();
     }
 
     private void OnClick()

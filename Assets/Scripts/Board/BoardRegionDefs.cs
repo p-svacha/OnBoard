@@ -18,7 +18,8 @@ public static class BoardRegionDefs
             {
                 { TileFeatureDefOf.SpecificTokenGiver, 0.05f },
                 { TileFeatureDefOf.TokenBin, 0.05f },
-                { TileFeatureDefOf.Spikes, 0.05f }
+                { TileFeatureDefOf.Spikes, 0.05f },
+                { TileFeatureDefOf.UpgradeStand, 0.05f },
             }
         }
     };

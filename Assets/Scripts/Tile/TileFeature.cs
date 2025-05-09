@@ -91,6 +91,21 @@ public abstract class TileFeature : MonoBehaviour
         return new List<TileInteraction>();
     }
 
+    protected GameObject PlaceObjectAroundTile(string prefabPath, float offsetDistance, float angleOffset = 0)
+    {
+        GameObject prefab = ResourceManager.LoadPrefab(prefabPath);
+        GameObject obj = GameObject.Instantiate(prefab, transform);
+        obj.transform.rotation = Quaternion.Euler(0f, Tile.ForwardAngle + angleOffset, 0f);
+        obj.transform.localPosition = Vector3.zero;
+
+        float offsetAngle = Tile.ForwardAngle + 90;
+        float x = Mathf.Sin(Mathf.Deg2Rad * offsetAngle) * offsetDistance;
+        float y = Mathf.Cos(Mathf.Deg2Rad * offsetAngle) * offsetDistance;
+        transform.localPosition = new Vector3(x, 0f, y);
+
+        return obj;
+    }
+
     public virtual string Label => Def.Label;
     public string LabelCap => Label.CapitalizeFirst();
     public virtual string Description => Def.Description;

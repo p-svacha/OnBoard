@@ -54,6 +54,14 @@ public static class TileFeatureDefs
             Description = "A place where offerings are made.",
             TileFeatureClass = typeof(TileFeature_Altar),
             MeepleCanStopOn = true,
+        },
+
+        new TileFeatureDef()
+        {
+            DefName = "UpgradeStand",
+            Label = "upgrade stand",
+            Description = "A stand where you can pay 2 gold to ugrade the size of a drafted token from your pouch.",
+            TileFeatureClass = typeof(TileFeature_UpgradeStand),
         }
     };
 }

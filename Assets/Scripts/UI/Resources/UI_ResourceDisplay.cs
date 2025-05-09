@@ -11,6 +11,10 @@ public class UI_ResourceDisplay : MonoBehaviour
     public TextMeshProUGUI Label;
     public TooltipTarget Tooltip;
 
+    public void Init(KeyValuePair<ResourceDef, int> res)
+    {
+        Init(res.Key, res.Value);
+    }
     public void Init(ResourceDef resource, int amount)
     {
         Icon.sprite = resource.Sprite;

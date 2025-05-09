@@ -400,6 +400,12 @@ public class Game : MonoBehaviour
         token.IsInPouch = false;
         GameObject.Destroy(token);
     }
+    public void UpgradeTokenSize(Token token)
+    {
+        if (token.Size == TokenSizeDefOf.Small) token.SetSize(TokenSizeDefOf.Medium);
+        else if (token.Size == TokenSizeDefOf.Medium) token.SetSize(TokenSizeDefOf.Big);
+        else if (token.Size == TokenSizeDefOf.Big) token.SetSize(TokenSizeDefOf.Large);
+    }
 
     public void AddItem(Item item)
     {
@@ -439,6 +445,7 @@ public class Game : MonoBehaviour
 
         // UI
         GameUI.Instance.TurnPhaseResources.Refresh();
+        GameUI.Instance.TileInteractionMenu.Hide();
     }
 
     public void QueueCompleteChapter()
@@ -868,7 +875,7 @@ public class Game : MonoBehaviour
         return list;
     }
 
-    public int GetDraftDrawAmount()
+    public int GetDraftOptionsAmount()
     {
         return 3;
     }

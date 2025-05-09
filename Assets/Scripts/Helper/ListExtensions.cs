@@ -33,6 +33,32 @@ public static class ListExtensions
     }
 
     /// <summary>
+    /// Returns a new list containing the specified number of elements randomly selected from the original list.
+    /// </summary>
+    /// <typeparam name="T">The type of the elements in the list.</typeparam>
+    /// <param name="list">The list to pick elements from.</param>
+    /// <param name="amount">The number of random elements to select.</param>
+    /// <returns>A list of <paramref name="amount"/> elements chosen at random.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if the list is null.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="amount"/> is negative.</exception>
+    /// <exception cref="ArgumentException">Thrown if <paramref name="amount"/> is greater than the number of elements in <paramref name="list"/>.</exception>
+    public static List<T> RandomElements<T>(this List<T> list, int amount)
+    {
+        if (list == null)
+            throw new System.ArgumentNullException(nameof(list), "The list cannot be null.");
+
+        if (amount < 0)
+            throw new System.ArgumentOutOfRangeException(nameof(amount), "Amount must be non-negative.");
+
+        if (amount > list.Count)
+            throw new System.ArgumentException("Amount cannot be greater than the number of elements in the list.", nameof(amount));
+
+        // Shuffle a copy and take the first 'amount' elements
+        var shuffled = list.GetShuffledList();
+        return shuffled.GetRange(0, amount);
+    }
+
+    /// <summary>
     /// Returns a new list with all elements shuffled randomly without modifying the original list.
     /// </summary>
     /// <typeparam name="T">The type of the elements in the list.</typeparam>

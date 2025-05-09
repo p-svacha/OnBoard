@@ -25,21 +25,26 @@ public class Token : MonoBehaviour, IDraftable
     /// </summary>
     public Token Original;
 
-    public void Init(TokenShapeDef shape, List<TokenSurface> surfaces, TokenSizeDef size, int modelId, float scale)
+    public void Init(TokenShapeDef shape, List<TokenSurface> surfaces, TokenSizeDef size, int modelId)
     {
         Shape = shape;
         Surfaces = new List<TokenSurface>();
         for(int i = 0; i < surfaces.Count; i++) Surfaces.Add(new TokenSurface(this, surfaces[i].Color, shape.NumSurfaces == 1 ? Vector3.zero : Shape.SurfaceLocalNormals[i]));
-        Size = size;
+        SetSize(size);
 
         ModelId = modelId;
-        Scale = scale;
 
         Renderer = GetComponent<MeshRenderer>();
         Rigidbody = GetComponent<Rigidbody>();
         Collider = GetComponent<MeshCollider>();
 
         transform.localScale = new Vector3(Scale, Scale, Scale);
+    }
+
+    public void SetSize(TokenSizeDef size)
+    {
+        Size = size;
+        Scale = size.Scale + Random.Range(-TokenGenerator.MAX_SCALE_MODIFIER, TokenGenerator.MAX_SCALE_MODIFIER);
     }
 
     public void Hide()
