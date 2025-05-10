@@ -12,41 +12,36 @@ using UnityEngine;
 
 public static class DefDumpUtility
 {
-    // keyed by "ClassName.PropertyName" or "ClassName.__class"
+    // keyed by "ClassName.PropertyName" and "ClassName.__class"
     private static Dictionary<string, string> _summaries;
 
     [MenuItem("Tools/Dump All Defs to Text…")]
     public static void DumpAllDefs()
     {
+        DefDatabaseRegistry.ClearAllDatabases();
+        DefDatabaseRegistry.AddAllDefs();
+        DefDatabaseRegistry.ResolveAllReferences();
+        DefDatabaseRegistry.OnLoadingDone();
+
         _summaries = BuildSourceSummaries();
 
         string path = EditorUtility.SaveFilePanel(
-            title: "Save Def Dump",
-            directory: "",
-            defaultName: "AllDefsDump.txt",
-            extension: "txt"
+            "Save Def Dump", "", "AllDefsDump.txt", "txt"
         );
         if (string.IsNullOrEmpty(path)) return;
 
         using var writer = new StreamWriter(path, false, Encoding.UTF8);
 
-        writer.WriteLine("=== DEF CLASSES ===");
-        writer.WriteLine();
+        writer.WriteLine("=== DEF CLASSES ===\n");
         DumpDefTypes(writer);
 
-        writer.WriteLine();
-        writer.WriteLine("=== STATIC XyzDefs LISTS ===");
-        writer.WriteLine();
+        writer.WriteLine("\n=== STATIC XyzDefs LISTS ===\n");
         DumpStaticDefsLists(writer);
 
         AssetDatabase.Refresh();
         Debug.Log($"Def dump written to: {path}");
     }
 
-    /// <summary>
-    /// Scans all .cs under Assets/ and extracts every /// <summary>…</summary> block,
-    /// mapping it either to the next property found or to a class definition.
-    /// </summary>
     private static Dictionary<string, string> BuildSourceSummaries()
     {
         var dict = new Dictionary<string, string>();
@@ -59,30 +54,27 @@ public static class DefDumpUtility
             for (int i = 0; i < lines.Length; i++)
             {
                 if (!lines[i].TrimStart().StartsWith("/// <summary>")) continue;
-                // collect summary text
+
                 var sb = new StringBuilder();
                 i++;
                 while (i < lines.Length && !lines[i].TrimStart().StartsWith("/// </summary>"))
                 {
                     var t = lines[i].Trim();
-                    if (t.StartsWith("///"))
-                        t = t.Substring(3).Trim();
+                    if (t.StartsWith("///")) t = t.Substring(3).Trim();
                     sb.AppendLine(t);
                     i++;
                 }
                 var summary = sb.ToString().Replace("\r", "").Replace("\n", " ").Trim();
 
-                // look ahead for either a property or a class
+                // look ahead
                 int j = i + 1;
-                bool found = false;
-                for (; j < lines.Length && !found; j++)
+                for (; j < lines.Length; j++)
                 {
                     var line = lines[j].Trim();
                     // property?
                     var pm = Regex.Match(line, @"public\s+[^\s]+\s+(?<prop>\w+)\s*\{");
                     if (pm.Success)
                     {
-                        // backtrack to find the enclosing class name
                         string className = null;
                         for (int k = j; k >= 0; k--)
                         {
@@ -99,7 +91,6 @@ public static class DefDumpUtility
                             if (!dict.ContainsKey(key))
                                 dict[key] = summary;
                         }
-                        found = true;
                         break;
                     }
                     // class?
@@ -110,7 +101,6 @@ public static class DefDumpUtility
                         var key = $"{className}.__class";
                         if (!dict.ContainsKey(key))
                             dict[key] = summary;
-                        found = true;
                         break;
                     }
                 }
@@ -119,20 +109,12 @@ public static class DefDumpUtility
         return dict;
     }
 
-    /// <summary>
-    /// Helper to fetch a summary for a given class or property.
-    /// </summary>
     private static string GetSummary(Type t, string member)
     {
-        if (_summaries != null && _summaries.TryGetValue($"{t.Name}.{member}", out var s))
-            return s;
-        return "";
+        var key = $"{t.Name}.{member}";
+        return _summaries != null && _summaries.TryGetValue(key, out var s) ? s : "";
     }
 
-    /// <summary>
-    /// Dumps each Def subclass: first prints class summary, then all public properties
-    /// with their summaries, then every instance from DefDatabase.AllDefs with actual values.
-    /// </summary>
     private static void DumpDefTypes(StreamWriter writer)
     {
         var defTypes = AppDomain.CurrentDomain.GetAssemblies()
@@ -148,7 +130,6 @@ public static class DefDumpUtility
                 writer.WriteLine($"  Description: {clsSum}");
             writer.WriteLine();
 
-            // properties
             var props = defType.GetProperties(BindingFlags.Public | BindingFlags.Instance)
                 .Where(p => p.GetMethod != null && p.GetMethod.IsPublic)
                 .ToList();
@@ -161,50 +142,57 @@ public static class DefDumpUtility
             }
             writer.WriteLine();
 
-            // instances
             writer.WriteLine("  Instances:");
             var dbType = typeof(DefDatabase<>).MakeGenericType(defType);
             var allDefsProp = dbType.GetProperty("AllDefs", BindingFlags.Public | BindingFlags.Static);
             var allDefs = allDefsProp?.GetValue(null) as IEnumerable;
             if (allDefs == null)
             {
-                writer.WriteLine("    (no instances)");
-                writer.WriteLine();
+                writer.WriteLine("    (no instances)\n");
                 continue;
             }
 
-            // for each instance, print all props
             foreach (var def in allDefs)
             {
-                // header: DefName + Label
-                var defName = defType.GetProperty("DefName").GetValue(def);
-                var label = defType.GetProperty("LabelCap").GetValue(def);
+                object defName = "", label = "";
+                try
+                {
+                    defName = defType.GetProperty("DefName").GetValue(def);
+                    label = defType.GetProperty("LabelCap").GetValue(def);
+                }
+                catch { /* skip name/label if broken */ }
+
                 writer.WriteLine($"    - {defName} ({label})");
                 foreach (var p in props)
                 {
-                    var val = p.GetValue(def);
-                    writer.WriteLine($"        {p.Name}: {val}");
+                    try
+                    {
+                        var val = p.GetValue(def);
+                        writer.WriteLine($"        {p.Name}: {val}");
+                    }
+                    catch
+                    {
+                        // skip this property if it threw
+                    }
                 }
             }
             writer.WriteLine();
         }
     }
 
-    /// <summary>
-    /// Finds every static class with a public static List<T> Defs property, then
-    /// dumps each entry’s full set of public properties (like above).
-    /// </summary>
     private static void DumpStaticDefsLists(StreamWriter writer)
     {
+        // find all static “XyzDefs” types that expose a public static List<Def> Defs
         var holders = AppDomain.CurrentDomain.GetAssemblies()
             .SelectMany(a => a.GetTypes())
             .Where(t =>
             {
                 var prop = t.GetProperty("Defs", BindingFlags.Public | BindingFlags.Static);
-                return prop != null
-                    && typeof(IEnumerable).IsAssignableFrom(prop.PropertyType)
-                    && prop.PropertyType.IsGenericType
-                    && typeof(Def).IsAssignableFrom(prop.PropertyType.GetGenericArguments()[0]);
+                if (prop == null) return false;
+                if (!typeof(IEnumerable).IsAssignableFrom(prop.PropertyType)) return false;
+                if (!prop.PropertyType.IsGenericType) return false;
+                var elem = prop.PropertyType.GetGenericArguments()[0];
+                return typeof(Def).IsAssignableFrom(elem);
             })
             .OrderBy(t => t.Name);
 
@@ -214,39 +202,90 @@ public static class DefDumpUtility
             writer.WriteLine();
 
             var prop = holder.GetProperty("Defs", BindingFlags.Public | BindingFlags.Static);
+            var elemType = prop.PropertyType.GetGenericArguments()[0];
+
+            // 1) Try the static Holder.Defs
             IEnumerable list = null;
-            try { list = prop.GetValue(null) as IEnumerable; }
-            catch (Exception e)
+            try
             {
-                writer.WriteLine($"  Error reading Defs: {e.Message}");
-                writer.WriteLine();
-                continue;
+                list = prop.GetValue(null) as IEnumerable;
+            }
+            catch
+            {
+                // swallow and fallback below
+            }
+
+            // 2) If it threw, returned null, or returned empty, fall back to DefDatabase<T>.AllDefs
+            bool needFallback = false;
+            if (list == null) needFallback = true;
+            else
+            {
+                // check if empty
+                var en = list.GetEnumerator();
+                if (!en.MoveNext()) needFallback = true;
+            }
+
+            if (needFallback)
+            {
+                var dbType = typeof(DefDatabase<>).MakeGenericType(elemType);
+                var allDefsProp = dbType.GetProperty("AllDefs", BindingFlags.Public | BindingFlags.Static);
+                if (allDefsProp != null)
+                {
+                    try
+                    {
+                        list = allDefsProp.GetValue(null) as IEnumerable;
+                    }
+                    catch
+                    {
+                        list = null;
+                    }
+                }
             }
 
             if (list == null)
             {
-                writer.WriteLine("  (empty list)");
-                writer.WriteLine();
+                writer.WriteLine("  (no definitions available)\n");
                 continue;
             }
 
-            // element type and its props
-            var elemType = prop.PropertyType.GetGenericArguments()[0];
-            var props = elemType.GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                           .Where(p => p.GetMethod != null && p.GetMethod.IsPublic).ToList();
+            // prepare to reflect on the element properties
+            var props = elemType
+                .GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                .Where(p => p.GetMethod != null && p.GetMethod.IsPublic)
+                .ToList();
 
+            // dump each def
             foreach (var def in list)
             {
-                var defName = elemType.GetProperty("DefName").GetValue(def);
-                var label = elemType.GetProperty("LabelCap").GetValue(def);
+                // header
+                object defName = "", label = "";
+                try
+                {
+                    defName = elemType.GetProperty("DefName").GetValue(def);
+                    label = elemType.GetProperty("LabelCap").GetValue(def);
+                }
+                catch
+                {
+                    // ignore missing fields
+                }
                 writer.WriteLine($"  - {defName} ({label})");
+
+                // individual properties
                 foreach (var p in props)
                 {
-                    var val = p.GetValue(def);
-                    writer.WriteLine($"      {p.Name}: {val}");
+                    try
+                    {
+                        var val = p.GetValue(def);
+                        writer.WriteLine($"      {p.Name}: {val}");
+                    }
+                    catch
+                    {
+                        // skip any broken property
+                    }
                 }
+
+                writer.WriteLine();
             }
-            writer.WriteLine();
         }
     }
 }

@@ -361,6 +361,9 @@ public class Game : MonoBehaviour
         // Rulebook
         Rulebook.OnTurnPassed();
 
+        // Tile interactions
+        GameUI.Instance.TileInteractionMenu.Hide();
+
         // Go through post turn action prompts
         ShowNextActionPrompt();
     }

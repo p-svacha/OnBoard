@@ -11,6 +11,13 @@ Class: BoardRegionDef
     Sprite Sprite
 
   Instances:
+    - Swamp (Swamp)
+        RegionClass: BoardRegion_Swamp
+        DefName: Swamp
+        Label: swamp
+        LabelCap: Swamp
+        Description: A region that is very slow to pass through.
+        Sprite: 
 
 Class: ChapterGoalDef
 
@@ -23,6 +30,13 @@ Class: ChapterGoalDef
     Sprite Sprite
 
   Instances:
+    - Offering ()
+        GoalClass: ChapterGoal_Offering
+        DefName: Offering
+        Label: 
+        LabelCap: 
+        Description: Deliver a specific kind of token to a designated altar tile.
+        Sprite: 
 
 Class: ChapterRewardDef
 
@@ -35,6 +49,13 @@ Class: ChapterRewardDef
     Sprite Sprite
 
   Instances:
+    - Item (Item)
+        RewardClass: ChapterReward_Item
+        DefName: Item
+        Label: item
+        LabelCap: Item
+        Description: Receive a specific item.
+        Sprite: 
 
 Class: ItemDef
 
@@ -48,6 +69,14 @@ Class: ItemDef
     Sprite Sprite
 
   Instances:
+    - LuckyScarf (Lucky scarf)
+        ItemClass: Item_LuckyScarf
+        Rarity: Common
+        DefName: LuckyScarf
+        Label: lucky scarf
+        LabelCap: Lucky scarf
+        Description: +1 Redraw per turn
+        Sprite: 
 
 Class: QuestGoalDef
 
@@ -60,6 +89,13 @@ Class: QuestGoalDef
     Sprite Sprite
 
   Instances:
+    - ReachRedFlag ()
+        GoalClass: QuestGoal_ReachRedFlag
+        DefName: ReachRedFlag
+        Label: 
+        LabelCap: 
+        Description: Reach the red flag.
+        Sprite: 
 
 Class: QuestPenaltyDef
 
@@ -72,6 +108,13 @@ Class: QuestPenaltyDef
     Sprite Sprite
 
   Instances:
+    - BlackPebble (1 small black pebble)
+        RewardClass: QuestPenalty_BlackPebble
+        DefName: BlackPebble
+        Label: 1 small black pebble
+        LabelCap: 1 small black pebble
+        Description: A useless pebble is added to your pouch.
+        Sprite: 
 
 Class: QuestRewardDef
 
@@ -84,6 +127,13 @@ Class: QuestRewardDef
     Sprite Sprite
 
   Instances:
+    - SpecificToken (Specific token)
+        RewardClass: QuestReward_ReceiveToken
+        DefName: SpecificToken
+        Label: specific token
+        LabelCap: Specific token
+        Description: Receive a specific token
+        Sprite: 
 
 Class: ResourceDef
   Description: Resources refer to anything that does not have inherent behaviour or logic attached and is solely defined by its amount. <br/> Therefore resources can always be referred to by just a ResourceDef and amount and never have to be explicitly instantiated. <br/> Resources are used and interacted with by specific game mechanics and rules that add or substract from a resource.
@@ -99,6 +149,33 @@ Class: ResourceDef
     String Description
 
   Instances:
+    - MovementPoint (Movement point)
+        Type: MovingPhaseResource
+        LabelPlural: movement points
+        LabelPluralCap: Movement points
+        Sprite: MovementPoint (UnityEngine.Sprite)
+        DefName: MovementPoint
+        Label: movement point
+        LabelCap: Movement point
+        Description: The amount of tiles that have to be moved this turn.
+    - Redraw (Redraw)
+        Type: DrawingPhaseResource
+        LabelPlural: redraws
+        LabelPluralCap: Redraws
+        Sprite: Redraw (UnityEngine.Sprite)
+        DefName: Redraw
+        Label: redraw
+        LabelCap: Redraw
+        Description: During drawing phase, a redraw allows to discard a drawn token and draw a new one from the pouch.
+    - Gold (Gold)
+        Type: Collectable
+        LabelPlural: gold
+        LabelPluralCap: Gold
+        Sprite: Gold (UnityEngine.Sprite)
+        DefName: Gold
+        Label: gold
+        LabelCap: Gold
+        Description: A versatile currency used for various interactions, upgrades, and opportunities. You'll never have quite enough.
 
 Class: RuleDef
 
@@ -113,6 +190,15 @@ Class: RuleDef
     Sprite Sprite
 
   Instances:
+    - SpikedPaths (Spiked paths)
+        RuleClass: Rule_SpikedPaths
+        MaxLevel: 3
+        LevelDescriptions: System.Collections.Generic.List`1[System.String]
+        DefName: SpikedPaths
+        Label: spiked paths
+        LabelCap: Spiked paths
+        Description: 
+        Sprite: 
 
 Class: TileFeatureDef
 
@@ -126,6 +212,103 @@ Class: TileFeatureDef
     Sprite Sprite
 
   Instances:
+    - Start (Start)
+        TileFeatureClass: TileFeature_Start
+        MeepleCanStopOn: False
+        DefName: Start
+        Label: start
+        LabelCap: Start
+        Description: The tile where everything started. Does nothing except remind you of your roots.
+        Sprite: 
+    - SpecificTokenGiver ()
+        TileFeatureClass: TileFeature_SpecificTokenGiver
+        MeepleCanStopOn: False
+        DefName: SpecificTokenGiver
+        Label: 
+        LabelCap: 
+        Description: Landing on the tile adds a specific kind of token to your pouch.
+        Sprite: 
+    - RedFlag (Red flag)
+        TileFeatureClass: TileFeature_RedFlag
+        MeepleCanStopOn: True
+        DefName: RedFlag
+        Label: red flag
+        LabelCap: Red flag
+        Description: Symbolizes the target tile for goals.
+        Sprite: 
+    - TokenBin (Token bin)
+        TileFeatureClass: TileFeature_TokenBin
+        MeepleCanStopOn: False
+        DefName: TokenBin
+        Label: token bin
+        LabelCap: Token bin
+        Description: When landing on the tile, draft a token from your pouch to discard.
+        Sprite: 
+    - Spikes (Spikes)
+        TileFeatureClass: TileFeature_Spikes
+        MeepleCanStopOn: False
+        DefName: Spikes
+        Label: spikes
+        LabelCap: Spikes
+        Description: Landing on this tile causes you to lose half a heart.
+        Sprite: 
+    - Altar (Altar)
+        TileFeatureClass: TileFeature_Altar
+        MeepleCanStopOn: True
+        DefName: Altar
+        Label: altar
+        LabelCap: Altar
+        Description: A place where offerings are made.
+        Sprite: 
+    - UpgradeStand (Upgrade stand)
+        TileFeatureClass: TileFeature_UpgradeStand
+        MeepleCanStopOn: False
+        DefName: UpgradeStand
+        Label: upgrade stand
+        LabelCap: Upgrade stand
+        Description: A stand where you can pay 2 gold to ugrade the size of a drafted token from your pouch.
+        Sprite: 
+
+Class: TokenAffinityDef
+  Description: Each token can optionally have an affinity. Affinities don't do anything by themselves but interact with many other systems.
+
+  Properties:
+    Color Color: The color associated with the affinity.
+    String DefName
+    String Label
+    String LabelCap
+    String Description
+    Sprite Sprite
+
+  Instances:
+    - Fury (Fury)
+        Color: RGBA(0.750, 0.250, 0.250, 1.000)
+        DefName: Fury
+        Label: fury
+        LabelCap: Fury
+        Description: An affinity related to combat and dealing damage.
+        Sprite: Fury (UnityEngine.Sprite)
+    - Growth (Growth)
+        Color: RGBA(0.350, 0.600, 0.350, 1.000)
+        DefName: Growth
+        Label: growth
+        LabelCap: Growth
+        Description: An affinity related to healing and upgrading.
+        Sprite: Growth (UnityEngine.Sprite)
+    - Wealth (Wealth)
+        Color: RGBA(0.850, 0.700, 0.350, 1.000)
+        DefName: Wealth
+        Label: wealth
+        LabelCap: Wealth
+        Description: An affinity related to gold, resources and items.
+        Sprite: Wealth (UnityEngine.Sprite)
+    - Flow (Flow)
+        Color: RGBA(0.450, 0.550, 0.850, 1.000)
+        DefName: Flow
+        Label: flow
+        LabelCap: Flow
+        Description: An affinity related to movement and drawing.
+        Sprite: Flow (UnityEngine.Sprite)
 
 Class: TokenColorDef
 
@@ -140,6 +323,24 @@ Class: TokenColorDef
     Sprite Sprite
 
   Instances:
+    - Black (Black)
+        Color: RGBA(0.200, 0.200, 0.200, 1.000)
+        Resource: 
+        ResourceBaseAmount: 0
+        DefName: Black
+        Label: black
+        LabelCap: Black
+        Description: Does absolutely nothing.
+        Sprite: 
+    - White (White)
+        Color: RGBA(0.900, 0.900, 0.900, 1.000)
+        Resource: ResourceDef
+        ResourceBaseAmount: 1
+        DefName: White
+        Label: white
+        LabelCap: White
+        Description: Awards movement points.
+        Sprite: 
 
 Class: TokenShapeDef
 
@@ -154,6 +355,24 @@ Class: TokenShapeDef
     Sprite Sprite
 
   Instances:
+    - Pebble (Pebble)
+        NumSurfaces: 1
+        SurfaceLocalNormals: 
+        SurfaceMaterialIndices: System.Collections.Generic.List`1[System.Int32]
+        DefName: Pebble
+        Label: pebble
+        LabelCap: Pebble
+        Description: A pebble that always does the same when drawn.
+        Sprite: 
+    - Coin (Coin)
+        NumSurfaces: 2
+        SurfaceLocalNormals: System.Collections.Generic.List`1[UnityEngine.Vector3]
+        SurfaceMaterialIndices: System.Collections.Generic.List`1[System.Int32]
+        DefName: Coin
+        Label: coin
+        LabelCap: Coin
+        Description: A coin that has 2 different sides, thus 2 possible outcomes.
+        Sprite: 
 
 Class: TokenSizeDef
 
@@ -168,13 +387,55 @@ Class: TokenSizeDef
     Sprite Sprite
 
   Instances:
+    - Small (Small)
+        Scale: 0.2
+        UiSize: 20
+        EffectMultiplier: 1
+        DefName: Small
+        Label: small
+        LabelCap: Small
+        Description: The smallest of sizes with the weakest possible effect.
+        Sprite: 
+    - Medium (Medium)
+        Scale: 0.3
+        UiSize: 35
+        EffectMultiplier: 2
+        DefName: Medium
+        Label: medium
+        LabelCap: Medium
+        Description: Medium sized for a slightly stronger effect.
+        Sprite: 
+    - Big (Big)
+        Scale: 0.4
+        UiSize: 50
+        EffectMultiplier: 3
+        DefName: Big
+        Label: big
+        LabelCap: Big
+        Description: Big in size for a big effect.
+        Sprite: 
+    - Large (Large)
+        Scale: 0.5
+        UiSize: 65
+        EffectMultiplier: 5
+        DefName: Large
+        Label: large
+        LabelCap: Large
+        Description: The biggest of sizes for a very big effect.
+        Sprite: 
 
 
 === STATIC XyzDefs LISTS ===
 
 Defs holder: BoardRegionDefs
 
-  Error reading Defs: Exception has been thrown by the target of an invocation.
+  - Swamp (Swamp)
+      RegionClass: BoardRegion_Swamp
+      DefName: Swamp
+      Label: swamp
+      LabelCap: Swamp
+      Description: A region that is very slow to pass through.
+      Sprite: 
 
 Defs holder: ChapterGoalDefs
 
@@ -248,6 +509,7 @@ Defs holder: ResourceDefs
       Label: movement point
       LabelCap: Movement point
       Description: The amount of tiles that have to be moved this turn.
+
   - Redraw (Redraw)
       Type: DrawingPhaseResource
       LabelPlural: redraws
@@ -257,6 +519,16 @@ Defs holder: ResourceDefs
       Label: redraw
       LabelCap: Redraw
       Description: During drawing phase, a redraw allows to discard a drawn token and draw a new one from the pouch.
+
+  - Gold (Gold)
+      Type: Collectable
+      LabelPlural: gold
+      LabelPluralCap: Gold
+      Sprite: Gold (UnityEngine.Sprite)
+      DefName: Gold
+      Label: gold
+      LabelCap: Gold
+      Description: A versatile currency used for various interactions, upgrades, and opportunities. You'll never have quite enough.
 
 Defs holder: RuleDefs
 
@@ -280,6 +552,7 @@ Defs holder: TileFeatureDefs
       LabelCap: Start
       Description: The tile where everything started. Does nothing except remind you of your roots.
       Sprite: 
+
   - SpecificTokenGiver ()
       TileFeatureClass: TileFeature_SpecificTokenGiver
       MeepleCanStopOn: False
@@ -288,6 +561,7 @@ Defs holder: TileFeatureDefs
       LabelCap: 
       Description: Landing on the tile adds a specific kind of token to your pouch.
       Sprite: 
+
   - RedFlag (Red flag)
       TileFeatureClass: TileFeature_RedFlag
       MeepleCanStopOn: True
@@ -296,6 +570,7 @@ Defs holder: TileFeatureDefs
       LabelCap: Red flag
       Description: Symbolizes the target tile for goals.
       Sprite: 
+
   - TokenBin (Token bin)
       TileFeatureClass: TileFeature_TokenBin
       MeepleCanStopOn: False
@@ -304,6 +579,7 @@ Defs holder: TileFeatureDefs
       LabelCap: Token bin
       Description: When landing on the tile, draft a token from your pouch to discard.
       Sprite: 
+
   - Spikes (Spikes)
       TileFeatureClass: TileFeature_Spikes
       MeepleCanStopOn: False
@@ -312,14 +588,58 @@ Defs holder: TileFeatureDefs
       LabelCap: Spikes
       Description: Landing on this tile causes you to lose half a heart.
       Sprite: 
+
   - Altar (Altar)
       TileFeatureClass: TileFeature_Altar
-      MeepleCanStopOn: False
+      MeepleCanStopOn: True
       DefName: Altar
       Label: altar
       LabelCap: Altar
       Description: A place where offerings are made.
       Sprite: 
+
+  - UpgradeStand (Upgrade stand)
+      TileFeatureClass: TileFeature_UpgradeStand
+      MeepleCanStopOn: False
+      DefName: UpgradeStand
+      Label: upgrade stand
+      LabelCap: Upgrade stand
+      Description: A stand where you can pay 2 gold to ugrade the size of a drafted token from your pouch.
+      Sprite: 
+
+Defs holder: TokenAffinityDefs
+
+  - Fury (Fury)
+      Color: RGBA(0.750, 0.250, 0.250, 1.000)
+      DefName: Fury
+      Label: fury
+      LabelCap: Fury
+      Description: An affinity related to combat and dealing damage.
+      Sprite: Fury (UnityEngine.Sprite)
+
+  - Growth (Growth)
+      Color: RGBA(0.350, 0.600, 0.350, 1.000)
+      DefName: Growth
+      Label: growth
+      LabelCap: Growth
+      Description: An affinity related to healing and upgrading.
+      Sprite: Growth (UnityEngine.Sprite)
+
+  - Wealth (Wealth)
+      Color: RGBA(0.850, 0.700, 0.350, 1.000)
+      DefName: Wealth
+      Label: wealth
+      LabelCap: Wealth
+      Description: An affinity related to gold, resources and items.
+      Sprite: Wealth (UnityEngine.Sprite)
+
+  - Flow (Flow)
+      Color: RGBA(0.450, 0.550, 0.850, 1.000)
+      DefName: Flow
+      Label: flow
+      LabelCap: Flow
+      Description: An affinity related to movement and drawing.
+      Sprite: Flow (UnityEngine.Sprite)
 
 Defs holder: TokenColorDefs
 
@@ -332,9 +652,10 @@ Defs holder: TokenColorDefs
       LabelCap: Black
       Description: Does absolutely nothing.
       Sprite: 
+
   - White (White)
       Color: RGBA(0.900, 0.900, 0.900, 1.000)
-      Resource: 
+      Resource: ResourceDef
       ResourceBaseAmount: 1
       DefName: White
       Label: white
@@ -353,6 +674,7 @@ Defs holder: TokenShapeDefs
       LabelCap: Pebble
       Description: A pebble that always does the same when drawn.
       Sprite: 
+
   - Coin (Coin)
       NumSurfaces: 2
       SurfaceLocalNormals: System.Collections.Generic.List`1[UnityEngine.Vector3]
@@ -374,6 +696,7 @@ Defs holder: TokenSizeDefs
       LabelCap: Small
       Description: The smallest of sizes with the weakest possible effect.
       Sprite: 
+
   - Medium (Medium)
       Scale: 0.3
       UiSize: 35
@@ -383,6 +706,7 @@ Defs holder: TokenSizeDefs
       LabelCap: Medium
       Description: Medium sized for a slightly stronger effect.
       Sprite: 
+
   - Big (Big)
       Scale: 0.4
       UiSize: 50
@@ -392,6 +716,7 @@ Defs holder: TokenSizeDefs
       LabelCap: Big
       Description: Big in size for a big effect.
       Sprite: 
+
   - Large (Large)
       Scale: 0.5
       UiSize: 65

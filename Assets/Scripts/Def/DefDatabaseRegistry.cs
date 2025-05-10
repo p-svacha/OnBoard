@@ -28,6 +28,7 @@ public static class DefDatabaseRegistry
         DefDatabase<TokenShapeDef>.AddDefs(TokenShapeDefs.Defs);
         DefDatabase<TokenColorDef>.AddDefs(TokenColorDefs.Defs);
         DefDatabase<TokenSizeDef>.AddDefs(TokenSizeDefs.Defs);
+        DefDatabase<TokenAffinityDef>.AddDefs(TokenAffinityDefs.Defs);
         DefDatabase<ItemDef>.AddDefs(ItemDefs.Defs);
         DefDatabase<QuestGoalDef>.AddDefs(QuestGoalDefs.Defs);
         DefDatabase<QuestRewardDef>.AddDefs(QuestRewardDefs.Defs);
