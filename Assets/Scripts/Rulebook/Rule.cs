@@ -2,20 +2,24 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class Rule
+public abstract class Rule : IDraftable
 {
     /// <summary>
     /// The level defines the severity and difficulty of this rule.
     /// </summary>
     public int Level { get; private set; }
-
     public RuleDef Def { get; private set; }
+
+    public List<RuleLevel> Levels { get; private set; }
 
     public void Init(RuleDef def)
     {
         Def = def;
         Level = 1;
         OnInit();
+
+        Levels = new List<RuleLevel>();
+        for (int i = 1; i <= def.MaxLevel; i++) Levels.Add(new RuleLevel(this, i, Def.LevelDescriptions[i - 1]));
     }
     protected virtual void OnInit() { }
 
@@ -67,4 +71,10 @@ public abstract class Rule
     }
 
     #endregion
+
+    // IDraftable
+    public virtual string DraftDisplay_Title => LabelCap;
+    public virtual string DraftDisplay_Text => Description;
+    public virtual Sprite DraftDisplay_Sprite => null;
+    public virtual GameObject DraftDisplay_Spinning3DObject => null;
 }

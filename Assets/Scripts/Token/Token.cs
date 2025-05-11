@@ -123,7 +123,8 @@ public class Token : MonoBehaviour, IDraftable
     #endregion
 
     // IDraftable
-    public string DraftDisplay_Text => LabelCap;
+    public string DraftDisplay_Title => LabelCap;
+    public string DraftDisplay_Text => null;
     public Sprite DraftDisplay_Sprite => null;
     public GameObject DraftDisplay_Spinning3DObject => gameObject;
 }

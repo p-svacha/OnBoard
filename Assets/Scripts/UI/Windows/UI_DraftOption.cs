@@ -9,22 +9,23 @@ public class UI_DraftOption : MonoBehaviour
     [Header("Elements")]
     public Image SelectionFrame;
     public Button Button;
-    public TextMeshProUGUI Text;
+    public TextMeshProUGUI Title;
     public Image Image;
     public GameObject RawImageContainer;
     public RawImage RawImage;
+    public TextMeshProUGUI Text;
 
     public void Init(UI_Draft draft, IDraftable option)
     {
         Button.onClick.AddListener(() => draft.SetSelectedOption(option));
 
-        // Text
-        if (option.DraftDisplay_Text != null && option.DraftDisplay_Text != "")
+        // Title
+        if (option.DraftDisplay_Title != null && option.DraftDisplay_Title != "")
         {
-            Text.gameObject.SetActive(true);
-            Text.text = option.DraftDisplay_Text;
+            Title.gameObject.SetActive(true);
+            Title.text = option.DraftDisplay_Title;
         }
-        else Text.gameObject.SetActive(false);
+        else Title.gameObject.SetActive(false);
 
         // Sprite
         if (option.DraftDisplay_Sprite != null)
@@ -41,6 +42,14 @@ public class UI_DraftOption : MonoBehaviour
             ObjectPreviewManager.ShowGameObject(RawImage, option.DraftDisplay_Spinning3DObject);
         }
         else RawImageContainer.gameObject.SetActive(false);
+
+        // Text
+        if (option.DraftDisplay_Text != null && option.DraftDisplay_Text != "")
+        {
+            Text.gameObject.SetActive(true);
+            Text.text = option.DraftDisplay_Text;
+        }
+        else Text.gameObject.SetActive(false);
     }
 
     public void SetSelected(bool value)

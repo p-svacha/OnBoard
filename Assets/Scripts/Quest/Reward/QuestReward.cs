@@ -26,7 +26,8 @@ public abstract class QuestReward : IDraftable
     public virtual string Description => Def.Description;
 
     // IDraftable
-    public virtual string DraftDisplay_Text => Label;
+    public virtual string DraftDisplay_Title => Label;
+    public virtual string DraftDisplay_Text => null;
     public virtual Sprite DraftDisplay_Sprite => null;
     public virtual GameObject DraftDisplay_Spinning3DObject => null;
 }

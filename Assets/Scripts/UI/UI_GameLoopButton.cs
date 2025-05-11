@@ -25,7 +25,9 @@ public class UI_GameLoopButton : MonoBehaviour
         if (Game.Instance.GameState == GameState.PreTurn) Game.Instance.DrawInitialTokens();
         else if (Game.Instance.GameState == GameState.PreparationPhase) Game.Instance.LockInSpread();
         else if (Game.Instance.GameState == GameState.ActionPhase) Game.Instance.EndActionPhase();
+
         Tooltip.HideTooltip();
+        HelperFunctions.UnfocusNonInputUiElements();
     }
 
     public void RefreshTextAndTooltip()
@@ -48,7 +50,7 @@ public class UI_GameLoopButton : MonoBehaviour
                 break;
 
             case GameState.PostTurn:
-                Text.text = "Processing…";
+                Text.text = "Please Wait";
                 Tooltip.Text = "Resolving events, rules, quests, and effects. Please wait.";
                 break;
         }

@@ -10,11 +10,8 @@ public class Game : MonoBehaviour
 
     #region Static Rules
 
-    private const int NEW_QUEST_INTERVAL = 3;
+    private const int NEW_QUEST_INTERVAL = 6;
     private const int FIRST_NEW_QUEST_TURN = 3;
-
-    private const int NEW_RULE_INTERVAL = 20;
-    private const int FIRST_NEW_RULE_TURN = 15;
 
     #endregion
 
@@ -325,15 +322,15 @@ public class Game : MonoBehaviour
         // Identify interactions the player meeples can perform on the tiles they are on
         GameUI.Instance.TileInteractionMenu.Refresh();
 
-        // Game loop button (can only end turn when all moveme
-        if (CanEndTurn()) GameUI.Instance.GameLoopButton.Enable();
+        // Game loop button
+        if (CanEndActionPhase()) GameUI.Instance.GameLoopButton.Enable();
         else GameUI.Instance.GameLoopButton.Disable();
     }
 
     /// <summary>
     /// Returns if the player can end the turn.
     /// </summary>
-    private bool CanEndTurn()
+    private bool CanEndActionPhase()
     {
         if (RemainingMovementPoints > 0) return false;
         return true;
@@ -376,6 +373,8 @@ public class Game : MonoBehaviour
         // Go through post turn action prompts
         ShowNextActionPrompt();
     }
+
+
 
     #endregion
 

@@ -17,6 +17,6 @@ public class ChapterReward_Item : ChapterReward
     }
 
     // IDraftable
-    public override string DraftDisplay_Text => Item.LabelCap;
+    public override string DraftDisplay_Title => Item.LabelCap;
     public override Sprite DraftDisplay_Sprite => Item.Sprite;
 }

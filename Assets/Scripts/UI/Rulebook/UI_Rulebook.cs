@@ -32,6 +32,8 @@ public class UI_Rulebook : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     {
         IsOpen = !IsOpen;
         Refresh();
+        Tooltip.Instance.gameObject.SetActive(false);
+        HelperFunctions.UnfocusNonInputUiElements();
     }
 
     public void Refresh()

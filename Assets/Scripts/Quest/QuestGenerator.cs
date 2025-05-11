@@ -5,8 +5,8 @@ using UnityEngine;
 public static class QuestGenerator
 {
     public static float DeadlineChance = 0.5f;
-    public static int MinDeadlineTime = 2;
-    public static int MaxDeadlineTime = 4;
+    public static int MinDeadlineTime = 3;
+    public static int MaxDeadlineTime = 15;
 
     public static float PenaltyChance = 0.5f; // Gets checked for only if there is a deadline
 

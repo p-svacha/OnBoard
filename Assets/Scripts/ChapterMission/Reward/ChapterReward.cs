@@ -17,6 +17,7 @@ public abstract class ChapterReward : IDraftable
     
 
     // IDraftable
+    public virtual string DraftDisplay_Title { get; } = null;
     public virtual string DraftDisplay_Text { get; } = null;
     public virtual Sprite DraftDisplay_Sprite { get; } = null;
     public virtual GameObject DraftDisplay_Spinning3DObject { get; } = null;

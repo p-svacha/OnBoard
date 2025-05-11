@@ -6,7 +6,7 @@ using UnityEngine;
 public class Rulebook
 {
     public static int MAX_RULES = 10;
-    public static int DEFAULT_EXPANSION_INTERVAL = 3;
+    public static int DEFAULT_EXPANSION_INTERVAL = 6;
 
     /// <summary>
     /// The list of all rules that are currently active in the rulebook.
@@ -21,7 +21,7 @@ public class Rulebook
     /// <summary>
     /// The amount of turns until the next expansion.
     /// </summary>
-    public int NextExpansionIn => UpcomingExpansionTurn - Game.Instance.Turn;
+    public int NextExpansionIn => UpcomingExpansionTurn - (Game.Instance.GameState == GameState.PostTurn ? (Game.Instance.Turn + 1) : Game.Instance.Turn);
 
     /// <summary>
     /// Flag if the upcoming rulebook expansion is the addition of a completely new rule.
@@ -45,7 +45,7 @@ public class Rulebook
     {
         ActiveRules = new List<Rule>();
         ExpansionInterval = DEFAULT_EXPANSION_INTERVAL;
-        SetupUpcomingExpansion();
+        DoSetupUpcomingExpansion();
         GameUI.Instance.Rulebook.Refresh();
     }
 
@@ -55,26 +55,74 @@ public class Rulebook
     public void OnTurnPassed()
     {
         // Rulebook expansion
-        if(Game.Instance.Turn == UpcomingExpansionTurn)
+        if ((Game.Instance.Turn + 1) == UpcomingExpansionTurn)
         {
-            ExecuteRulebookExpansion();
-            SetupUpcomingExpansion();
+            ExecuteRulebookExpansion(UpcomingExpansionRule);
         }
 
         GameUI.Instance.Rulebook.Refresh();
     }
 
-    private void ExecuteRulebookExpansion()
+    /// <summary>
+    /// Queues a rule expansion action prompt.
+    /// </summary>
+    public void ExecuteRulebookExpansion(Rule rule)
     {
-        if (IsUpcomingExpansionNewRule) ActiveRules.Add(UpcomingExpansionRule);
-        else UpcomingExpansionRule.IncreaseLevel();
+        Game.Instance.QueueActionPrompt(new ActionPrompt_RulebookExpansion(rule));
+    }
+
+    /// <summary>
+    /// Instantly performs a rulebook expansion and shows it in a window.
+    /// </summary>
+    public void DoExecuteRulebookExpansion(Rule rule)
+    {
+        // New rule
+        if (!ActiveRules.Contains(rule))
+        {
+            ActiveRules.Add(rule);
+
+            // Show draft window
+            string title = $"A rule has been added";
+            string subtitle = rule.LabelCap;
+            List<IDraftable> options = rule.Levels.Select(l => (IDraftable)l).ToList();
+            GameUI.Instance.DraftWindow.Show(title, subtitle, options, isDraft: false);
+        }
+
+        // Level increase 
+        else
+        {
+            UpcomingExpansionRule.IncreaseLevel();
+
+            // Show draft window
+            string title = $"A rule level has increased";
+            string subtitle = rule.LabelCap;
+            List<IDraftable> options = rule.Levels.Select(l => (IDraftable)l).ToList();
+            GameUI.Instance.DraftWindow.Show(title, subtitle, options, isDraft: false);
+        }
+
+        // Setup next rulebook expansion
+        DoSetupUpcomingExpansion();
+
+        // UI
         GameUI.Instance.Rulebook.Refresh();
     }
 
-    private void SetupUpcomingExpansion()
+    /// <summary>
+    /// Queues an action prompt that adds a future/upcoming rulebook expansion.
+    /// </summary>
+    public void SetupUpcomingExpansion()
+    {
+
+    }
+
+    /// <summary>
+    /// Instantly adds an upcoming rule expansion
+    /// </summary>
+    private void DoSetupUpcomingExpansion()
     {
         // Set the turn when the expansion happens
         UpcomingExpansionTurn = Game.Instance.Turn + ExpansionInterval;
+        if (Game.Instance.GameState == GameState.PostTurn) UpcomingExpansionTurn++;
 
         // Decide if to add new rule or increase existing rule level
         float newRuleChance = 0f;
@@ -102,10 +150,13 @@ public class Rulebook
             UpcomingExpansionRule = newRule;
 
 
-            if (attempts >= 20) UpcomingExpansionRule = ActiveRules.RandomElement();
+            if (attempts >= 20) addNewRule = false;
         }
-        else
+        
+
+        if (!addNewRule)
         {
+            Debug.Log("Rulebook expansion will be level increase");
             UpcomingExpansionRule = ActiveRules.RandomElement();
         }
 
