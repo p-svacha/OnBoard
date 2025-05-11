@@ -15,7 +15,7 @@ public static class TokenPhysicsManager
 
     public static void ThrowInitialTokens(Game game)
     {
-        List<Token> tokensToThrow = new List<Token>(game.CurrentDraw.TableTokens.Keys);
+        List<Token> tokensToThrow = new List<Token>(game.CurrentSpread.TableTokens.Keys);
         foreach (Token token in tokensToThrow)
         {
             ThrowToken(token);

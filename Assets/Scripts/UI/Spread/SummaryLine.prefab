@@ -67,15 +67,15 @@ MonoBehaviour:
       m_Calls: []
   m_text: 1 Movement Point
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 2f4512692b2ecb345b474fa3bd3e0a4f, type: 2}
-  m_sharedMaterial: {fileID: -6268291296271561325, guid: 2f4512692b2ecb345b474fa3bd3e0a4f, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 2ebbed90f07b9bb4b841ff2edf4184fe, type: 2}
+  m_sharedMaterial: {fileID: -9115439494732645350, guid: 2ebbed90f07b9bb4b841ff2edf4184fe, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4281618791
+  m_fontColor: {r: 0.4039216, g: 0.31764707, b: 0.20392159, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -98,11 +98,11 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 256
   m_textAlignment: 65535
-  m_characterSpacing: 0
+  m_characterSpacing: -8
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0

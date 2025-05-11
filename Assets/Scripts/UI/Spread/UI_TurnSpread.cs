@@ -4,10 +4,11 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class UI_TurnDraw : MonoBehaviour
+public class UI_TurnSpread : MonoBehaviour
 {
     [Header("Elements")]
-    public TextMeshProUGUI Title;
+    public TextMeshProUGUI TurnText;
+    public TextMeshProUGUI SpreadText;
     public GameObject TokenSectionsContainer;
     public GameObject SummaryContainer;
 
@@ -16,22 +17,29 @@ public class UI_TurnDraw : MonoBehaviour
     public UI_TokenDisplay TokenDisplayPrefab;
     public TextMeshProUGUI SummaryLinePrefab;
 
-    public void ShowWaitingText()
+    public void ShowPreTurnText()
     {
-        Title.text = "Press Space to Draw";
+        TurnText.text = $"Turn {Game.Instance.Turn}";
+        SpreadText.gameObject.SetActive(false);
+        TokenSectionsContainer.gameObject.SetActive(false);
+        SummaryContainer.gameObject.SetActive(false);
         HelperFunctions.DestroyAllChildredImmediately(TokenSectionsContainer);
         HelperFunctions.DestroyAllChildredImmediately(SummaryContainer);
     }
 
-    public void Refresh()
+    public void RefreshCurrentSpread()
     {
-        Title.text = $"Turn {Game.Instance.Turn} Draw";
+        SpreadText.gameObject.SetActive(true);
+        TokenSectionsContainer.gameObject.SetActive(true);
+        SummaryContainer.gameObject.SetActive(true);
+
+        SpreadText.text = "Preliminary Spread";
         HelperFunctions.DestroyAllChildredImmediately(TokenSectionsContainer);
         HelperFunctions.DestroyAllChildredImmediately(SummaryContainer);
 
         // Sort by color
         Dictionary<TokenColorDef, List<KeyValuePair<Token, TokenSurface>>> tokensByColor = new();
-        foreach (var t in Game.Instance.CurrentDraw.TableTokens)
+        foreach (var t in Game.Instance.CurrentSpread.TableTokens)
         {
             TokenSurface surface = t.Value;
             if (surface == null) continue; // Surface not yet determined because token is still in movement
@@ -54,11 +62,16 @@ public class UI_TurnDraw : MonoBehaviour
         }
 
         // Resource summary
-        foreach(var res in Game.Instance.CurrentDraw.Resources)
+        foreach(var res in Game.Instance.CurrentSpread.Resources)
         {
             TextMeshProUGUI summaryLine = GameObject.Instantiate(SummaryLinePrefab, SummaryContainer.transform);
             string label = res.Value == 1 ? res.Key.LabelCap : res.Key.LabelPluralCap;
             summaryLine.text = $"{res.Value} {label}";
         }
+    }
+
+    public void LockIn()
+    {
+        SpreadText.text = "Locked in spread";
     }
 }

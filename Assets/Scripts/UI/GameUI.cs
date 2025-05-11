@@ -9,9 +9,9 @@ public class GameUI : MonoBehaviour
     public static GameUI Instance;
 
     [Header("Permanent Elements")]
-    public UI_TurnDraw TurnDraw;
+    public UI_TurnSpread TurnSpreadPanel;
     public UI_TokenPouchButton TokenPouchButton;
-    public UI_PostItButton GameLoopButton;
+    public UI_GameLoopButton GameLoopButton;
     public UI_TurnPhaseResources TurnPhaseResources;
     public UI_ChapterDisplay ChapterDisplay;
     public UI_QuestPanel QuestPanel;

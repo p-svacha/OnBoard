@@ -9,7 +9,7 @@ public static class InputHandler
     {
         Game game = Game.Instance;
 
-        if (Input.GetKeyDown(KeyCode.Space) && game.GameState == GameState.PreDraw && !game.IsTokenPouchOpen) game.DrawInitialTokens();
+        if (Input.GetKeyDown(KeyCode.Space) && game.GameState == GameState.PreTurn && !game.IsTokenPouchOpen) game.DrawInitialTokens();
 
         if (Input.GetMouseButtonDown(0)) LeftClick();
     }
@@ -24,7 +24,7 @@ public static class InputHandler
 
     private static void LeftClickBoardTile()
     {
-        if (Game.Instance.GameState == GameState.MovingPhase)
+        if (Game.Instance.GameState == GameState.ActionPhase)
         {
             if (!Game.Instance.InActionPrompt)
             {
@@ -39,7 +39,7 @@ public static class InputHandler
 
     private static void LeftClickThrownToken()
     {
-        if(Game.Instance.GameState == GameState.DrawingPhase)
+        if(Game.Instance.GameState == GameState.PreparationPhase)
         {
             if(Game.Instance.RemainingRedraws > 0)
             {

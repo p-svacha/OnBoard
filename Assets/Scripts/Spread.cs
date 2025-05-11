@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class TurnDraw
+public class Spread
 {
     /// <summary>
     /// The set of tokens that are currently still in the pouch.
@@ -25,7 +25,7 @@ public class TurnDraw
     /// </summary>
     public Dictionary<ResourceDef, int> Resources;
 
-    public TurnDraw()
+    public Spread()
     {
         Resources = new Dictionary<ResourceDef, int>();
         DrawInitialTokens();

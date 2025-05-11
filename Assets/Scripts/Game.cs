@@ -39,9 +39,9 @@ public class Game : MonoBehaviour
     public Board Board;
 
     /// <summary>
-    /// The result of the draw of this turn.
+    /// The set of tokens and surfaces that are active this turn.
     /// </summary>
-    public TurnDraw CurrentDraw { get; private set; }
+    public Spread CurrentSpread { get; private set; }
 
     /// <summary>
     /// A list of all current meeple movement options.
@@ -109,24 +109,24 @@ public class Game : MonoBehaviour
     public Dictionary<ResourceDef, int> Resources;
 
     /// <summary>
-    /// The amount of drawing phase resources the player has remaining this drawing phase.
+    /// The amount of preparation phase resources the player has remaining this preparation phase.
     /// </summary>
-    public Dictionary<ResourceDef, int> RemainingDrawPhaseResources { get; private set; }
+    public Dictionary<ResourceDef, int> RemainingPreparationPhaseResources { get; private set; }
 
     /// <summary>
-    /// The amount of drawing phase resources the player had available in total this drawing phase.
+    /// The amount of preparation phase resources the player had available in total this preparation phase.
     /// </summary>
-    public Dictionary<ResourceDef, int> TotalDrawPhaseResources { get; private set; }
+    public Dictionary<ResourceDef, int> TotalPreparationPhaseResources { get; private set; }
 
     /// <summary>
-    /// The amount of moving phase resources the player has remaining this moving phase.
+    /// The amount of action phase resources the player has remaining this action phase.
     /// </summary>
-    public Dictionary<ResourceDef, int> RemainingMovingPhaseResources { get; private set; }
+    public Dictionary<ResourceDef, int> RemainingActionPhaseResources { get; private set; }
 
     /// <summary>
-    /// The amount of moving phase resources the player had available in total this moving phase.
+    /// The amount of action phase resources the player had available in total this action phase.
     /// </summary>
-    public Dictionary<ResourceDef, int> TotalMovingPhaseResources { get; private set; }
+    public Dictionary<ResourceDef, int> TotalActionPhaseResources { get; private set; }
 
     /// <summary>
     /// The rulebook tracks the current state of all active rules and contains all logic regarding rules.
@@ -165,10 +165,10 @@ public class Game : MonoBehaviour
         TokenPhysicsManager.Initialize();
 
         MovementOptions = new List<MovementOption>();
-        TotalDrawPhaseResources = new Dictionary<ResourceDef, int>();
-        RemainingDrawPhaseResources = new Dictionary<ResourceDef, int>();
-        TotalMovingPhaseResources = new Dictionary<ResourceDef, int>();
-        RemainingMovingPhaseResources = new Dictionary<ResourceDef, int>();
+        TotalPreparationPhaseResources = new Dictionary<ResourceDef, int>();
+        RemainingPreparationPhaseResources = new Dictionary<ResourceDef, int>();
+        TotalActionPhaseResources = new Dictionary<ResourceDef, int>();
+        RemainingActionPhaseResources = new Dictionary<ResourceDef, int>();
 
         InitializeRulebook();
         CreateInitialBoard();
@@ -200,7 +200,7 @@ public class Game : MonoBehaviour
     {
         // Tokens
         TokenPouch = new List<Token>();
-        AddTokenToPouch(TokenShapeDefOf.Pebble, new() { new(TokenColorDefOf.White) }, TokenSizeDefOf.Small);
+        AddTokenToPouch(TokenShapeDefOf.Pebble, new() { new(TokenColorDefOf.White) }, TokenSizeDefOf.Small, TokenAffinityDefOf.Flow);
         AddTokenToPouch(TokenShapeDefOf.Pebble, new() { new(TokenColorDefOf.White) }, TokenSizeDefOf.Small);
         AddTokenToPouch(TokenShapeDefOf.Pebble, new() { new(TokenColorDefOf.White) }, TokenSizeDefOf.Small);
         AddTokenToPouch(TokenShapeDefOf.Pebble, new() { new(TokenColorDefOf.White) }, TokenSizeDefOf.Small);
@@ -243,6 +243,8 @@ public class Game : MonoBehaviour
 
     public void StartTurn()
     {
+        GameState = GameState.PreTurn;
+
         Turn++;
         Debug.Log($"Starting Turn {Turn}.");
 
@@ -253,55 +255,55 @@ public class Game : MonoBehaviour
         }
 
         // UI
-        GameUI.Instance.TurnDraw.ShowWaitingText();
-        GameUI.Instance.GameLoopButton.SetText("Draw");
+        GameUI.Instance.TurnSpreadPanel.ShowPreTurnText();
         GameUI.Instance.TurnPhaseResources.Refresh();
         GameUI.Instance.QuestPanel.Refresh();
         GameUI.Instance.ItemPanel.Refresh();
-        GameUI.Instance.GameLoopButton.Enable();
 
-        GameState = GameState.PreDraw;
+        GameUI.Instance.GameLoopButton.RefreshTextAndTooltip();
+        GameUI.Instance.GameLoopButton.Enable();
     }
 
     public void DrawInitialTokens()
     {
-        // Draw initial tokens
-        CurrentDraw = new TurnDraw();
-        GameUI.Instance.TurnDraw.Refresh();
+        GameState = GameState.PreparationPhase;
 
+        // Draw initial tokens
+        CurrentSpread = new Spread();
         TokenPhysicsManager.ThrowInitialTokens(this);
-        GameState = GameState.DrawingPhase;
-        GameUI.Instance.GameLoopButton.SetText("Confirm Draw");
 
         // Get amount of redraws
-        TotalDrawPhaseResources.Clear();
-        foreach (Item item in Items) TotalDrawPhaseResources.IncrementMultiple(item.GetDrawPhaseResources());
-        RemainingDrawPhaseResources = new Dictionary<ResourceDef, int>(TotalDrawPhaseResources);
+        TotalPreparationPhaseResources.Clear();
+        foreach (Item item in Items) TotalPreparationPhaseResources.IncrementMultiple(item.GetDrawPhaseResources());
+        RemainingPreparationPhaseResources = new Dictionary<ResourceDef, int>(TotalPreparationPhaseResources);
 
         // Disable "Confirm Draw" button until all tokens are resting
         GameUI.Instance.GameLoopButton.Disable();
 
         // UI
+        GameUI.Instance.TurnSpreadPanel.RefreshCurrentSpread();
+        GameUI.Instance.GameLoopButton.RefreshTextAndTooltip();
         GameUI.Instance.TurnPhaseResources.Refresh();
     }
 
     /// <summary>
-    /// Ends the phase where the player can change what he has drawn and starts the movement phase.
+    /// Ends the preparation phase where the player can change their spread, activiating the tokens and starting the action phase.
     /// </summary>
-    public void ConfirmDraw()
+    public void LockInSpread()
     {
-        GameState = GameState.MovingPhase;
+        GameState = GameState.ActionPhase;
 
         // Set resources for moving phase
-        TotalMovingPhaseResources.Clear();
-        TotalMovingPhaseResources.IncrementMultiple(CurrentDraw.GetMovingPhaseResources()); // Add resources from tokens
-        RemainingMovingPhaseResources = new Dictionary<ResourceDef, int>(TotalMovingPhaseResources);
+        TotalActionPhaseResources.Clear();
+        TotalActionPhaseResources.IncrementMultiple(CurrentSpread.GetMovingPhaseResources()); // Add resources from tokens
+        RemainingActionPhaseResources = new Dictionary<ResourceDef, int>(TotalActionPhaseResources);
 
         // Prepare possible actions for player
         PrepareMovingPhasePlayerActions();
 
         // UI
-        GameUI.Instance.GameLoopButton.SetText("End\nTurn");
+        GameUI.Instance.TurnSpreadPanel.LockIn();
+        GameUI.Instance.GameLoopButton.RefreshTextAndTooltip();
         GameUI.Instance.TurnPhaseResources.Refresh();
     }
 
@@ -343,13 +345,13 @@ public class Game : MonoBehaviour
         ShowNextActionPrompt();
     }
 
-    public void EndTurn()
+    public void EndActionPhase()
     {
         GameState = GameState.PostTurn;
 
         // Disable game loop button
+        GameUI.Instance.GameLoopButton.RefreshTextAndTooltip();
         GameUI.Instance.GameLoopButton.Disable();
-        GameUI.Instance.TurnPhaseResources.Refresh();
 
         // Collect all tokens off the board
         StartCoroutine(TokenPhysicsManager.CollectTokens(this));
@@ -361,8 +363,9 @@ public class Game : MonoBehaviour
         // Rulebook
         Rulebook.OnTurnPassed();
 
-        // Tile interactions
+        // UI
         GameUI.Instance.TileInteractionMenu.Hide();
+        GameUI.Instance.TurnPhaseResources.Refresh();
 
         // Go through post turn action prompts
         ShowNextActionPrompt();
@@ -438,7 +441,7 @@ public class Game : MonoBehaviour
     public void ExecuteMovement(MovementOption movement)
     {
         // Resources
-        RemainingMovingPhaseResources[ResourceDefOf.MovementPoint] -= movement.Length;
+        RemainingActionPhaseResources[ResourceDefOf.MovementPoint] -= movement.Length;
 
         // Start moving
         MeepleMovementAnimator.AnimateMove(movement, onComplete: OnMovementDone);
@@ -576,33 +579,33 @@ public class Game : MonoBehaviour
     {
         if (RemainingRedraws == 0) return;
 
-        Token newDrawnToken = CurrentDraw.RedrawToken(thrownToken.Original);
+        Token newDrawnToken = CurrentSpread.RedrawToken(thrownToken.Original);
 
         if (newDrawnToken != null)
         {
             StartCoroutine(TokenPhysicsManager.LiftAndImplode(thrownToken));
             TokenPhysicsManager.ThrowToken(newDrawnToken);
 
-            RemainingDrawPhaseResources[ResourceDefOf.Redraw]--;
+            RemainingPreparationPhaseResources[ResourceDefOf.Redraw]--;
 
-            // Disable "Confirm Draw" button until all tokens are resting
+            // Disable game loop button until all tokens are resting
             GameUI.Instance.GameLoopButton.Disable();
 
             // UI
             GameUI.Instance.TurnPhaseResources.Refresh();
-            GameUI.Instance.TurnDraw.Refresh();
+            GameUI.Instance.TurnSpreadPanel.RefreshCurrentSpread();
         }
     }
 
     public void SetRolledTokenSurface(Token thrownToken, int index)
     {
-        CurrentDraw.SetRolledSurface(thrownToken.Original, thrownToken.Surfaces[index]);
+        CurrentSpread.SetRolledSurface(thrownToken.Original, thrownToken.Surfaces[index]);
 
         // Check if we can enable "Confirm Draw" Button
-        if(CurrentDraw.AreAllTokensResting()) GameUI.Instance.GameLoopButton.Enable();
+        if(CurrentSpread.AreAllTokensResting()) GameUI.Instance.GameLoopButton.Enable();
 
         // UI
-        GameUI.Instance.TurnDraw.Refresh();
+        GameUI.Instance.TurnSpreadPanel.RefreshCurrentSpread();
     }
 
     /// <summary>
@@ -664,7 +667,7 @@ public class Game : MonoBehaviour
     /// </summary>
     private void OnActionPromptsDone()
     {
-        if (GameState == GameState.MovingPhase) PrepareMovingPhasePlayerActions();
+        if (GameState == GameState.ActionPhase) PrepareMovingPhasePlayerActions();
         if (GameState == GameState.PostTurn) StartTurn();
     }
 
@@ -788,7 +791,7 @@ public class Game : MonoBehaviour
 
         // Select tokens to display
         List<Token> tokensToDisplay = new List<Token>();
-        if (GameState == GameState.DrawingPhase) tokensToDisplay = new List<Token>(CurrentDraw.PouchTokens);
+        if (GameState == GameState.PreparationPhase) tokensToDisplay = new List<Token>(CurrentSpread.PouchTokens);
         else tokensToDisplay = new List<Token>(TokenPouch);
 
         // pre‐generate non‐overlapping 2D offsets
@@ -883,8 +886,8 @@ public class Game : MonoBehaviour
         return 3;
     }
 
-    public int RemainingRedraws => RemainingDrawPhaseResources[ResourceDefOf.Redraw];
-    public int RemainingMovementPoints => RemainingMovingPhaseResources[ResourceDefOf.MovementPoint];
+    public int RemainingRedraws => RemainingPreparationPhaseResources[ResourceDefOf.Redraw];
+    public int RemainingMovementPoints => RemainingActionPhaseResources[ResourceDefOf.MovementPoint];
 
     #endregion
 }

@@ -88,6 +88,8 @@ public class Token : MonoBehaviour, IDraftable
 
     #region Getters
 
+    public bool HasAffinity => Affinity != null;
+
     public string Label
     {
         get

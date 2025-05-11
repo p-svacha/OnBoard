@@ -24,20 +24,20 @@ public class UI_TurnPhaseResources : MonoBehaviour
 
         // Identify which resources to show
         Dictionary<ResourceDef, int> resources = new Dictionary<ResourceDef, int>();
-        if (Game.Instance.GameState == GameState.DrawingPhase)
+        if (Game.Instance.GameState == GameState.PreparationPhase)
         {
-            List<ResourceDef> resourcesToShow = Game.Instance.TotalDrawPhaseResources.Keys.ToList();
+            List<ResourceDef> resourcesToShow = Game.Instance.TotalPreparationPhaseResources.Keys.ToList();
             foreach(ResourceDef resource in resourcesToShow)
             {
-                resources.Add(resource, Game.Instance.RemainingDrawPhaseResources[resource]);
+                resources.Add(resource, Game.Instance.RemainingPreparationPhaseResources[resource]);
             }
         }
-        else if (Game.Instance.GameState == GameState.MovingPhase)
+        else if (Game.Instance.GameState == GameState.ActionPhase)
         {
-            List<ResourceDef> resourcesToShow = Game.Instance.TotalMovingPhaseResources.Keys.ToList();
+            List<ResourceDef> resourcesToShow = Game.Instance.TotalActionPhaseResources.Keys.ToList();
             foreach (ResourceDef resource in resourcesToShow)
             {
-                resources.Add(resource, Game.Instance.RemainingMovingPhaseResources[resource]);
+                resources.Add(resource, Game.Instance.RemainingActionPhaseResources[resource]);
             }
         }
 
@@ -63,10 +63,10 @@ public class UI_TurnPhaseResources : MonoBehaviour
 
     private bool ShouldHide()
     {
-        if (Game.Instance.GameState != GameState.DrawingPhase && Game.Instance.GameState != GameState.MovingPhase) return true;
+        if (Game.Instance.GameState != GameState.PreparationPhase && Game.Instance.GameState != GameState.ActionPhase) return true;
 
-        if (Game.Instance.GameState == GameState.DrawingPhase && Game.Instance.TotalDrawPhaseResources.Count == 0) return true;
-        if (Game.Instance.GameState == GameState.MovingPhase && Game.Instance.TotalMovingPhaseResources.Count == 0) return true;
+        if (Game.Instance.GameState == GameState.PreparationPhase && Game.Instance.TotalPreparationPhaseResources.Count == 0) return true;
+        if (Game.Instance.GameState == GameState.ActionPhase && Game.Instance.TotalActionPhaseResources.Count == 0) return true;
 
         return false;
     }
