@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Pebble
-  m_Shader: {fileID: 4800000, guid: b54325766da059c489283038360f4731, type: 3}
+  m_Shader: {fileID: 4800000, guid: d9393476a80c50242965eeb35c84cb2b, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []

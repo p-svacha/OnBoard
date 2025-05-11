@@ -2,17 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TokenAffinityDefOf : MonoBehaviour
+[DefOf]
+public static class TokenAffinityDefOf
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    public static TokenAffinityDef Fury;
+    public static TokenAffinityDef Growth;
+    public static TokenAffinityDef Wealth;
+    public static TokenAffinityDef Flow;
 }

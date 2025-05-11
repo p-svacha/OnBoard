@@ -385,9 +385,9 @@ public class Game : MonoBehaviour
         return newMeeple;
     }
 
-    public Token AddTokenToPouch(TokenShapeDef shape, List<TokenSurface> surfaces, TokenSizeDef size)
+    public Token AddTokenToPouch(TokenShapeDef shape, List<TokenSurface> surfaces, TokenSizeDef size, TokenAffinityDef affinity = null)
     {
-        Token newToken = TokenGenerator.GenerateToken(shape, surfaces, size);
+        Token newToken = TokenGenerator.GenerateToken(shape, surfaces, size, affinity);
         AddTokenToPouch(newToken);
         return newToken;
     }

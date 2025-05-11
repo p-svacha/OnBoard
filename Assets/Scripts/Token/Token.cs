@@ -7,6 +7,7 @@ public class Token : MonoBehaviour, IDraftable
     public TokenShapeDef Shape { get; private set; }
     public List<TokenSurface> Surfaces { get; private set; }
     public TokenSizeDef Size { get; private set; }
+    public TokenAffinityDef Affinity { get; private set; }
 
     public int ModelId { get; private set; }
     private float Scale;
@@ -14,6 +15,7 @@ public class Token : MonoBehaviour, IDraftable
     public MeshRenderer Renderer;
     public Rigidbody Rigidbody;
     public Collider Collider;
+    public AffinityGlowFX AffinityGlow;
 
     /// <summary>
     /// If this token is in the player token pouch.
@@ -25,19 +27,20 @@ public class Token : MonoBehaviour, IDraftable
     /// </summary>
     public Token Original;
 
-    public void Init(TokenShapeDef shape, List<TokenSurface> surfaces, TokenSizeDef size, int modelId)
+    public void Init(TokenShapeDef shape, List<TokenSurface> surfaces, TokenSizeDef size, TokenAffinityDef affinity, int modelId, AffinityGlowFX affinityGlow)
     {
+        Renderer = GetComponent<MeshRenderer>();
+        Rigidbody = GetComponent<Rigidbody>();
+        Collider = GetComponent<MeshCollider>();
+        AffinityGlow = affinityGlow;
+
         Shape = shape;
         Surfaces = new List<TokenSurface>();
         for(int i = 0; i < surfaces.Count; i++) Surfaces.Add(new TokenSurface(this, surfaces[i].Color, shape.NumSurfaces == 1 ? Vector3.zero : Shape.SurfaceLocalNormals[i]));
         SetSize(size);
+        SetAffinity(affinity);
 
         ModelId = modelId;
-
-        Renderer = GetComponent<MeshRenderer>();
-        Rigidbody = GetComponent<Rigidbody>();
-        Collider = GetComponent<MeshCollider>();
-
         transform.localScale = new Vector3(Scale, Scale, Scale);
     }
 
@@ -47,15 +50,24 @@ public class Token : MonoBehaviour, IDraftable
         Scale = size.Scale + Random.Range(-TokenGenerator.MAX_SCALE_MODIFIER, TokenGenerator.MAX_SCALE_MODIFIER);
     }
 
+    public void SetAffinity(TokenAffinityDef affinity)
+    {
+        Affinity = affinity;
+        AffinityGlow.gameObject.SetActive(Affinity != null);
+        if (Affinity != null) AffinityGlow.GlowColor = Affinity.Color;
+    }
+
     public void Hide()
     {
         gameObject.SetActive(false);
+        AffinityGlow.gameObject.SetActive(false);
     }
 
     public void Show()
     {
         transform.localScale = new Vector3(Scale, Scale, Scale);
         gameObject.SetActive(true);
+        AffinityGlow.gameObject.SetActive(Affinity != null);
     }
 
     /// <summary>

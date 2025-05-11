@@ -9,13 +9,13 @@ public static class TokenGenerator
 
     public static Token GenerateTokenCopy(Token orig, bool randomModel = false, bool isStatic = false, bool hidden = true, bool frozen = false)
     {
-        Token token = GenerateToken(orig.Shape, orig.Surfaces, orig.Size, randomModel ? -1 : orig.ModelId, isStatic, hidden, frozen);
+        Token token = GenerateToken(orig.Shape, orig.Surfaces, orig.Size, orig.Affinity, randomModel ? -1 : orig.ModelId, isStatic, hidden, frozen);
         token.Original = orig;
         return token;
     }
 
 
-    public static Token GenerateToken(TokenShapeDef shape, List<TokenSurface> surfaces, TokenSizeDef size, int modelId = -1, bool isStatic = false, bool hidden = true, bool frozen = false)
+    public static Token GenerateToken(TokenShapeDef shape, List<TokenSurface> surfaces, TokenSizeDef size, TokenAffinityDef affinity = null, int modelId = -1, bool isStatic = false, bool hidden = true, bool frozen = false)
     {
         if (modelId == -1)
         {
@@ -49,9 +49,20 @@ public static class TokenGenerator
             rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
         }
 
+        // Child object for affinity fx
+        GameObject affinityObj = new GameObject("Affinity");
+        affinityObj.transform.SetParent(tokenObject.transform);
+        affinityObj.transform.localPosition = Vector3.zero;
+        affinityObj.transform.localScale = new Vector3(1.2f, 1.2f, 1.2f);
+        MeshFilter mf = affinityObj.AddComponent<MeshFilter>();
+        mf.mesh = tokenObject.GetComponent<MeshFilter>().mesh;
+        MeshRenderer mr = affinityObj.AddComponent<MeshRenderer>();
+        mr.material = ResourceManager.LoadMaterial("Materials/FX/AffinityGlow");
+        AffinityGlowFX glowFx = affinityObj.AddComponent<AffinityGlowFX>();
+
         // Token component
         Token newToken = tokenObject.AddComponent<Token>();
-        newToken.Init(shape, surfaces, size, modelId);
+        newToken.Init(shape, surfaces, size, affinity, modelId, glowFx);
 
         // Tooltip
         if (!isStatic)
@@ -60,7 +71,7 @@ public static class TokenGenerator
             tooltipTarget.Title = newToken.LabelCap;
             tooltipTarget.Text = newToken.Description;
         }
-        
+
         if (hidden) newToken.Hide();
         if (frozen) newToken.Freeze();
         return newToken;

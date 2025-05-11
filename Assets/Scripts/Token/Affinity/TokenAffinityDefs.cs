@@ -11,7 +11,7 @@ public static class TokenAffinityDefs
             DefName = "Fury",
             Label = "fury",
             Description = "An affinity related to combat and dealing damage.",
-            Color = new Color(0.75f, 0.25f, 0.25f),
+            Color = new Color(0.85f, 0.15f, 0.15f),
             Sprite = ResourceManager.LoadSprite("Sprites/Affinities/Fury"),
         },
 
