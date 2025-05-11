@@ -19,4 +19,9 @@ public abstract class BoardRegion : MonoBehaviour
         Tiles.Add(tile);
     }
 
+    public Tile GetRandomTile()
+    {
+        return Tiles.RandomElement();
+    }
+
 }

@@ -92,7 +92,7 @@ public class Tile : MonoBehaviour
     {
         TileFeature feature = TileGenerator.CreateTileFeature(this, def);
         feature.SetRandomParameters();
-        feature.InitVisuals();
+        feature.RefreshVisuals();
         Features.Add(feature);
         return feature;
     }
@@ -103,31 +103,11 @@ public class Tile : MonoBehaviour
         Features.Remove(feature);
     }
 
-    /// <summary>
-    /// Adds a feature that landing on this tile awards a specific token.
-    /// </summary>
-    public TileFeature_SpecificTokenGiver AddSpecificTokenGiverFeature(TokenShapeDef shape, List<TokenSurface> surfaces, TokenSizeDef size)
-    {
-        TileFeature_SpecificTokenGiver feature = TileGenerator.CreateTileFeature(this, TileFeatureDefOf.SpecificTokenGiver) as TileFeature_SpecificTokenGiver;
-        feature.InitToken(shape, surfaces, size);
-        feature.InitVisuals();
-        Features.Add(feature);
-        return feature;
-    }
-
-
-    public TileFeature_RedFlag AddRedFlag(QuestGoal_ReachRedFlag goal)
-    {
-        TileFeature_RedFlag feature = TileGenerator.CreateTileFeature(this, TileFeatureDefOf.RedFlag) as TileFeature_RedFlag;
-        feature.Init(goal);
-        feature.InitVisuals();
-        Features.Add(feature);
-        return feature;
-    }
-
     #endregion
 
     #region Getters
+
+    public bool HasFeature(TileFeatureDef featureDef) => Features.Any(f => f.Def == featureDef);
 
     /// <summary>
     /// Returns all tile interactions a player meeple can perform when standing on this tile.

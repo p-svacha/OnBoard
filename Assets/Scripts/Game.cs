@@ -200,7 +200,7 @@ public class Game : MonoBehaviour
     {
         // Tokens
         TokenPouch = new List<Token>();
-        AddTokenToPouch(TokenShapeDefOf.Pebble, new() { new(TokenColorDefOf.White) }, TokenSizeDefOf.Small, TokenAffinityDefOf.Flow);
+        AddTokenToPouch(TokenShapeDefOf.Pebble, new() { new(TokenColorDefOf.White) }, TokenSizeDefOf.Small);
         AddTokenToPouch(TokenShapeDefOf.Pebble, new() { new(TokenColorDefOf.White) }, TokenSizeDefOf.Small);
         AddTokenToPouch(TokenShapeDefOf.Pebble, new() { new(TokenColorDefOf.White) }, TokenSizeDefOf.Small);
         AddTokenToPouch(TokenShapeDefOf.Pebble, new() { new(TokenColorDefOf.White) }, TokenSizeDefOf.Small);
@@ -295,8 +295,14 @@ public class Game : MonoBehaviour
 
         // Set resources for moving phase
         TotalActionPhaseResources.Clear();
-        TotalActionPhaseResources.IncrementMultiple(CurrentSpread.GetMovingPhaseResources()); // Add resources from tokens
+        TotalActionPhaseResources.IncrementMultiple(CurrentSpread.GetMovingPhaseResources()); 
         RemainingActionPhaseResources = new Dictionary<ResourceDef, int>(TotalActionPhaseResources);
+
+        // Add collectable resources
+        foreach(var res in CurrentSpread.GetCollectableResources())
+        {
+            AddResource(res.Key, res.Value);
+        }
 
         // Prepare possible actions for player
         PrepareMovingPhasePlayerActions();

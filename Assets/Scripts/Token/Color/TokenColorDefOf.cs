@@ -7,4 +7,5 @@ public static class TokenColorDefOf
 {
     public static TokenColorDef White;
     public static TokenColorDef Black;
+    public static TokenColorDef Gold;
 }

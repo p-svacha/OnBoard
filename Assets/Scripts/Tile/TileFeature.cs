@@ -27,8 +27,9 @@ public abstract class TileFeature : MonoBehaviour
     /// <summary>
     /// Function used when initializing a feature to make it visually more interesting.
     /// </summary>
-    public void InitVisuals()
+    public void RefreshVisuals()
     {
+        HelperFunctions.DestroyAllChildredImmediately(gameObject);
         OnInitVisuals();
         AddCollidersAndTooltipToChildren(gameObject);
     }

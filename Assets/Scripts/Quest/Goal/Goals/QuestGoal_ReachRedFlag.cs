@@ -10,7 +10,8 @@ public class QuestGoal_ReachRedFlag : QuestGoal
     protected override void OnInit()
     {
         Tile flagTile = Board.Instance.GetRandomTile();
-        RedFlag = flagTile.AddRedFlag(this);
+        RedFlag = (TileFeature_RedFlag)flagTile.AddFeature(TileFeatureDefOf.RedFlag);
+        RedFlag.Init(this);
     }
 
     public override void OnRemoved()

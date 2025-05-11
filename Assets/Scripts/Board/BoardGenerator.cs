@@ -1,6 +1,7 @@
 using MeshBuilding;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public static class BoardGenerator
@@ -47,6 +48,23 @@ public static class BoardGenerator
 
         BoardRegion region = GenerateBoardRegion(chosenDef);
         region.Tiles[0].AddFeature(TileFeatureDefOf.Start);
+
+        // Make sure there is at least one gold token giver
+        int numGoldTokenGivers = region.Tiles.Where(t => t.Features.Any(f => f is TileFeature_SpecificTokenGiver giver && giver.AwardedToken.Surfaces.Any(s => s.Color == TokenColorDefOf.Gold))).Count();
+        if (numGoldTokenGivers == 0)
+        {
+            List<Tile> candidates = region.Tiles.Where(t => !t.HasFeature(TileFeatureDefOf.SpecificTokenGiver)).ToList();
+            Tile targetTile = candidates.RandomElement();
+
+            TileFeature_SpecificTokenGiver newGiver = (TileFeature_SpecificTokenGiver)targetTile.AddFeature(TileFeatureDefOf.SpecificTokenGiver);
+            newGiver.SetAnyColorTo(TokenColorDefOf.Gold);
+        }
+
+        // Make sure there is at least one upgrade stand
+        if (!region.Tiles.Any(t => t.HasFeature(TileFeatureDefOf.UpgradeStand)))
+        {
+            region.GetRandomTile().AddFeature(TileFeatureDefOf.UpgradeStand);
+        }
 
         // Add region to board
         Board.AddRegion(region);

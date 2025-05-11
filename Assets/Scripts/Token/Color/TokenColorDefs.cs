@@ -22,6 +22,16 @@ public static class TokenColorDefs
             Color = new Color(0.9f, 0.9f, 0.9f),
             Resource = ResourceDefOf.MovementPoint,
             ResourceBaseAmount = 1,
-        }
+        },
+
+        new TokenColorDef()
+        {
+            DefName = "Gold",
+            Label = "gold",
+            Description = "Gives gold.",
+            Color = new Color(1f, 0.84f, 0f),
+            Resource = ResourceDefOf.Gold,
+            ResourceBaseAmount = 1,
+        },
     };
 }

@@ -125,4 +125,8 @@ public class Spread
     {
         return Resources.Where(x => x.Key.Type == ResourceType.MovingPhaseResource).ToDictionary(x => x.Key, x => x.Value);
     }
+    public Dictionary<ResourceDef, int> GetCollectableResources()
+    {
+        return Resources.Where(x => x.Key.Type == ResourceType.Collectable).ToDictionary(x => x.Key, x => x.Value);
+    }
 }

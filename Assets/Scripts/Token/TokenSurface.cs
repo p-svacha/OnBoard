@@ -15,11 +15,16 @@ public class TokenSurface
     public TokenSurface(Token token, TokenColorDef color, Vector3 normalDirection)
     {
         Token = token;
-        Color = color;
+        SetColor(color);
         NormalDirection = normalDirection;
     }
 
     public TokenSurface(TokenColorDef color)
+    {
+        SetColor(color);
+    }
+
+    public void SetColor(TokenColorDef color)
     {
         Color = color;
     }
