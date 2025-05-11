@@ -19,6 +19,15 @@ public static class HelperFunctions
         obj.transform.rotation = Quaternion.Euler(Random.Range(0f, 360f), Random.Range(0f, 360f), Random.Range(0f, 360f));
     }
 
+    public static GameObject GetChild(GameObject parent, string name)
+    {
+        for(int i = 0; i < parent.transform.childCount; i++)
+        {
+            if (parent.transform.GetChild(i).gameObject.name == name) return parent.transform.GetChild(i).gameObject;
+        }
+        return null;
+    }
+
     #endregion
 
     #region Enum

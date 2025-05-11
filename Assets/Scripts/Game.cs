@@ -417,6 +417,10 @@ public class Game : MonoBehaviour
         else if (token.Size == TokenSizeDefOf.Medium) token.SetSize(TokenSizeDefOf.Big);
         else if (token.Size == TokenSizeDefOf.Big) token.SetSize(TokenSizeDefOf.Large);
     }
+    public void InfuseTokenAffinity(Token token, TokenAffinityDef affinity)
+    {
+        token.SetAffinity(affinity);
+    }
 
     public void AddItem(Item item)
     {
