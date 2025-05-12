@@ -49,6 +49,11 @@ public class Rulebook
         GameUI.Instance.Rulebook.Refresh();
     }
 
+    public void OnLockInSpread(Spread spread)
+    {
+        foreach (Rule r in ActiveRules) r.OnLockInSpread(spread);
+    }
+
     /// <summary>
     /// Gets executed at the end of every turn.
     /// </summary>

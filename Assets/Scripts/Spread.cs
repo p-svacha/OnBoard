@@ -78,10 +78,11 @@ public class Spread
     /// <summary>
     /// Discards a specific table token.
     /// </summary>
-    private void DiscardToken(Token token)
+    public void DiscardToken(Token token)
     {
         DiscardedTokens.Add(token);
         TableTokens.Remove(token);
+        UpdateResult();
     }
 
     public void SetRolledSurface(Token token, TokenSurface surface)

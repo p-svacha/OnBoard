@@ -290,6 +290,9 @@ public class Game : MonoBehaviour
     {
         GameState = GameState.ActionPhase;
 
+        // Rules
+        Rulebook.OnLockInSpread(CurrentSpread);
+
         // Set resources for moving phase
         TotalActionPhaseResources.Clear();
         TotalActionPhaseResources.IncrementMultiple(CurrentSpread.GetMovingPhaseResources()); 
@@ -302,7 +305,7 @@ public class Game : MonoBehaviour
         }
 
         // Prepare possible actions for player
-        PrepareMovingPhasePlayerActions();
+        ShowNextActionPrompt();
 
         // UI
         GameUI.Instance.TurnSpreadPanel.LockIn();
@@ -606,6 +609,17 @@ public class Game : MonoBehaviour
         }
     }
 
+    public void DiscardToken(Token thrownToken)
+    {
+        // Discard
+        CurrentSpread.DiscardToken(thrownToken.Original);
+        StartCoroutine(TokenPhysicsManager.LiftAndImplode(thrownToken));
+
+        // UI
+        GameUI.Instance.TurnPhaseResources.Refresh();
+        GameUI.Instance.TurnSpreadPanel.RefreshCurrentSpread();
+    }
+
     public void SetRolledTokenSurface(Token thrownToken, int index)
     {
         CurrentSpread.SetRolledSurface(thrownToken.Original, thrownToken.Surfaces[index]);
@@ -620,8 +634,10 @@ public class Game : MonoBehaviour
     /// <summary>
     /// Reduces that many half hearts from the health.
     /// </summary>
-    public void TakeDamage(int amount, List<DamageTag> tags)
+    public void TakeDamage(int amount, List<DamageTag> tags = null)
     {
+        if (tags == null) tags = new List<DamageTag>();
+
         // Rule modifiers
         foreach(DamageTag tag in tags)
         {
@@ -895,8 +911,8 @@ public class Game : MonoBehaviour
         return 3;
     }
 
-    public int RemainingRedraws => RemainingPreparationPhaseResources[ResourceDefOf.Redraw];
-    public int RemainingMovementPoints => RemainingActionPhaseResources[ResourceDefOf.MovementPoint];
+    public int RemainingRedraws => RemainingPreparationPhaseResources.TryGetValue(ResourceDefOf.Redraw, out int value) ? value : 0;
+    public int RemainingMovementPoints => RemainingActionPhaseResources.TryGetValue(ResourceDefOf.MovementPoint, out int value) ? value : 0;
 
     #endregion
 }

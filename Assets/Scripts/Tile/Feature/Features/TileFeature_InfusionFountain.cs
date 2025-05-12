@@ -22,31 +22,11 @@ public class TileFeature_InfusionFountain : TileFeature
     {
         return new List<TileInteraction>()
         {
-            new TileInteraction(
-                Infuse, Tile, this, "Infuse", $"Pay to infuse a drafted token with the affinity {Affinity.Label}.",
-                resourceCost: new Dictionary<ResourceDef, int>() { { ResourceDefOf.Gold, 2 } }
-            ),
+            CreateTileInteraction(TileInteractionDefOf.InfuseToken),
         };
     }
 
-    public void Infuse()
-    {
-        Game.Instance.QueueActionPrompt(new ActionPrompt_DraftToken("Infusion Fountain", $"Choose which token to infuse with {Affinity.Label}", GetDraftOptions(), OnDrafted));
-    }
-
-    private List<Token> GetDraftOptions()
-    {
-        List<Token> candidates = Game.Instance.TokenPouch.Where(t => t.Affinity != Affinity).ToList();
-        return candidates.RandomElements(Game.Instance.GetDraftOptionsAmount());
-    }
-
-    private void OnDrafted(List<IDraftable> draftResult)
-    {
-        foreach (Token token in draftResult.Select(d => (Token)d))
-        {
-            Game.Instance.InfuseTokenAffinity(token, Affinity);
-        }
-    }
+    
 
     public override string Label => $"{Affinity.Label} fountain";
     public override string Description => $"Pay 2 gold to infuse a drafted token with the affinity {Affinity.Label}.";

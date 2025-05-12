@@ -50,8 +50,7 @@ public static class ListExtensions
         if (amount < 0)
             throw new System.ArgumentOutOfRangeException(nameof(amount), "Amount must be non-negative.");
 
-        if (amount > list.Count)
-            throw new System.ArgumentException("Amount cannot be greater than the number of elements in the list.", nameof(amount));
+        if (amount > list.Count) amount = list.Count;
 
         // Shuffle a copy and take the first 'amount' elements
         var shuffled = list.GetShuffledList();

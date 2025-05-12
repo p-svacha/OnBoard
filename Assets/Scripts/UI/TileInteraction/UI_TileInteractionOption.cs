@@ -26,14 +26,14 @@ public class UI_TileInteractionOption : MonoBehaviour
         Tooltip.Title = interaction.Label;
         Tooltip.Text = interaction.Description;
 
-        if (!Interaction.IsAvailable)
+        if (!Interaction.CanExecute(out string unavailableReason))
         {
-            Tooltip.Text += $"\n\n<color=\"red\">{Interaction.GetUnavailableReason()}</color>";
+            Tooltip.Text += $"\n\n<color=\"red\">{unavailableReason}</color>";
             Button.interactable = false;
         }
 
         // Cost
-        if(interaction.ResourceCost.Count == 0)
+        if(interaction.GetResourceCosts().Count == 0)
         {
             CostContainer.SetActive(false);
         }
@@ -41,7 +41,7 @@ public class UI_TileInteractionOption : MonoBehaviour
         {
             CostContainer.SetActive(true);
             HelperFunctions.DestroyAllChildredImmediately(CostContainer);
-            foreach(var res in interaction.ResourceCost)
+            foreach(var res in interaction.GetResourceCosts())
             {
                 UI_ResourceDisplay display = GameObject.Instantiate(ResourceCostPrefab, CostContainer.transform);
                 display.Init(res);
@@ -53,7 +53,7 @@ public class UI_TileInteractionOption : MonoBehaviour
 
     private void OnClick()
     {
-        if (Interaction.IsAvailable) Interaction.Execute();
+        if (Interaction.CanExecute(out _)) Interaction.Execute();
     }
 
     private void Update()

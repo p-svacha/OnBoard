@@ -18,6 +18,20 @@ public static class RuleDefs
                 "Spikes deal an additional half heart damage. Immediately spawn 5 spikes across the board.",
                 "Spikes deal an additional half heart damage. Immediately spawn 5 spikes across the board.",
             },
-        }
+        },
+
+        new RuleDef()
+        {
+            DefName = "ForcedAffinity",
+            Label = "forced affinity",
+            RuleClass = typeof(Rule_ForcedAffinity),
+            MaxLevel = 3,
+            LevelDescriptions = new List<string>()
+            {
+                "If your token spread contains no affinities, lose half a heart.",
+                "Affinity infusions at infusion fountains cost +1 Gold.",
+                "Tokens without an affinity have no effect when drawn.",
+            },
+        },
     };
 }

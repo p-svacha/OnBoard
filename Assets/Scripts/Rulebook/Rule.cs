@@ -32,6 +32,8 @@ public abstract class Rule : IDraftable
 
     #region Rule Effects
 
+    public virtual void OnLockInSpread(Spread spread) { }
+
     public virtual Dictionary<TileFeatureDef, float> GetTileFeatureProbabilityModifiers()
     {
         return new Dictionary<TileFeatureDef, float>();
@@ -40,6 +42,11 @@ public abstract class Rule : IDraftable
     public virtual Dictionary<DamageTag, int> GetDamageModifiers()
     {
         return new Dictionary<DamageTag, int>();
+    }
+
+    public virtual Dictionary<TileInteractionDef, Dictionary<ResourceDef, int>> GetTileInteractionCostModifiers()
+    {
+        return new Dictionary<TileInteractionDef, Dictionary<ResourceDef, int>>();
     }
 
     #endregion

@@ -8,5 +8,5 @@ public class QuestGoalDef : Def
     /// <summary>
     /// The class that will be instantiated when creating a quest goal of this type.
     /// </summary>
-    public Type GoalClass { get; init; } = typeof(QuestGoal);
+    public System.Type GoalClass { get; init; } = typeof(QuestGoal);
 }
