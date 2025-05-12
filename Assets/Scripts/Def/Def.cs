@@ -72,6 +72,10 @@ public abstract class Def
     {
         throw new Exception(LoadingErrorPrefix + msg);
     }
-        
+
+    public override string ToString()
+    {
+        return DefName;
+    }
 }
 

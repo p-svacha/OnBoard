@@ -6,16 +6,16 @@ public abstract class ChapterGoal
 {
     public ChapterGoalDef Def { get; private set; }
 
-    public void Init(ChapterGoalDef def)
+    public void Init(ChapterGoalDef def, int chapter)
     {
         Def = def;
-        OnInit();
+        OnInit(chapter);
     }
 
     /// <summary>
-    /// Gets executed when this chapter goal gets created.
+    /// Gets executed when this chapter goal gets created for chapter X.
     /// </summary>
-    protected virtual void OnInit() { }
+    protected virtual void OnInit(int chapter) { }
 
     /// <summary>
     /// Gets executed when the chapter with this goal is started.
@@ -26,6 +26,11 @@ public abstract class ChapterGoal
     /// Gets executed when the chapter with this goal is completed.
     /// </summary>
     public virtual void OnCompleted() { }
+
+    /// <summary>
+    /// Gets executed once per turn when the spread is locked in between the preparation and action phase.
+    /// </summary>
+    public virtual void OnLockInSpread(Spread spread) { }
 
     public virtual string Description => Def.Description;
 }

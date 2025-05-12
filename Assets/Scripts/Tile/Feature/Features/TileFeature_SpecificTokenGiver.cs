@@ -81,5 +81,6 @@ public class TileFeature_SpecificTokenGiver : TileFeature
         Game.Instance.QueueActionPrompt(new ActionPrompt_ReceiveToken(AwardedToken));
     }
 
+    public override string Label => $"{AwardedToken.Label}s";
     public override string Description => $"When landing here, receive a <b>{AwardedToken.Label}</b>.";
 }

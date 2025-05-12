@@ -106,14 +106,7 @@ public class Spread
             Token token = t.Key;
             TokenSurface surface = t.Value;
 
-            if (surface == null) continue; // Surface not yet determined because token is still in movement
-
-            // Add resource from color and size
-            if(surface.Color.Resource != null)
-            {
-                int amount = surface.Color.ResourceBaseAmount * token.Size.EffectMultiplier;
-                Resources.Increment(surface.Color.Resource, amount);
-            }
+            Resources.IncrementMultiple(token.GetResources(surface));
         }
     }
 

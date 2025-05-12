@@ -10,7 +10,14 @@ public static class ChapterGoalDefs
         {
             DefName = "Offering",
             Description = "Deliver a specific kind of token to a designated altar tile.",
-            GoalClass = typeof(ChapterGoal_Offering)
-        }
+            GoalClass = typeof(ChapterGoal_Offering),
+        },
+
+        new ChapterGoalDef()
+        {
+            DefName = "AffinityTokens",
+            Description = "Lock in a spread with at least some amount of tokens of a specific affinity.",
+            GoalClass = typeof(ChapterGoal_AffinityTokens),
+        },
     };
 }

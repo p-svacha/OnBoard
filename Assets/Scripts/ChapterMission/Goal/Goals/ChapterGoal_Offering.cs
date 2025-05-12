@@ -10,14 +10,14 @@ public class ChapterGoal_Offering : ChapterGoal
 
     public TileFeature_Altar TargetAltar { get; private set; }
 
-    protected override void OnInit()
+    protected override void OnInit(int chapter)
     {
         // Generate the kind of token that needs to be delivered
         Shape = DefDatabase<TokenShapeDef>.AllDefs.RandomElement();
         Color = DefDatabase<TokenColorDef>.AllDefs.RandomElement();
         Size = DefDatabase<TokenSizeDef>.AllDefs.RandomElement();
     }
-
+    
     public override void OnStarted()
     {
         // Place alter

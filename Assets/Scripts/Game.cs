@@ -293,6 +293,9 @@ public class Game : MonoBehaviour
         // Rules
         Rulebook.OnLockInSpread(CurrentSpread);
 
+        // Chapter
+        CurrentChapterGoal.OnLockInSpread(CurrentSpread);
+
         // Set resources for moving phase
         TotalActionPhaseResources.Clear();
         TotalActionPhaseResources.IncrementMultiple(CurrentSpread.GetMovingPhaseResources()); 
@@ -622,7 +625,8 @@ public class Game : MonoBehaviour
 
     public void SetRolledTokenSurface(Token thrownToken, int index)
     {
-        CurrentSpread.SetRolledSurface(thrownToken.Original, thrownToken.Surfaces[index]);
+        Token original = thrownToken.Original;
+        CurrentSpread.SetRolledSurface(original, original.Surfaces[index]);
 
         // Check if we can enable "Confirm Draw" Button
         if(CurrentSpread.AreAllTokensResting()) GameUI.Instance.GameLoopButton.Enable();

@@ -88,6 +88,34 @@ public class Token : MonoBehaviour, IDraftable
 
     #region Getters
 
+    /// <summary>
+    /// Returns the resources this token provides when the given surface of it is in the spread.
+    /// </summary>
+    /// <returns></returns>
+    public Dictionary<ResourceDef, int> GetResources(TokenSurface surface)
+    {
+        // Validate
+        if (surface == null) return new(); // Surface not yet determined because token is still in movement
+        if (!Surfaces.Contains(surface)) throw new System.Exception("The given surface is not a surface of this token.");
+
+        // Base resources from color and size
+        Dictionary<ResourceDef, int> resources = new Dictionary<ResourceDef, int>();
+        if (surface.Color.Resource != null)
+        {
+            int amount = surface.Color.ResourceBaseAmount * Size.EffectMultiplier;
+            resources.Increment(surface.Color.Resource, amount);
+        }
+
+        // Resources from items
+        foreach(Item item in Game.Instance.Items)
+        {
+            resources.IncrementMultiple(item.GetTokenResourceModifiers(this));
+        }
+
+        // Final result
+        return resources;
+    }
+
     public bool HasAffinity => Affinity != null;
 
     public string Label
@@ -100,7 +128,8 @@ public class Token : MonoBehaviour, IDraftable
                 string surfaces = "";
                 foreach (TokenSurface surf in Surfaces) surfaces += $"{surf.Label}/";
                 surfaces = surfaces.TrimEnd('/');
-                return $"{Size.Label} {surfaces} {Shape.Label}";
+                string affinity = Affinity != null ? $"{Affinity.Label} " : "";
+                return $"{Size.Label} {surfaces} {affinity}{Shape.Label}";
             }
         }
     }

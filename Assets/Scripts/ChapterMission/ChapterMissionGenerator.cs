@@ -9,7 +9,7 @@ public static class ChapterMissionGenerator
         // Choose a goal
         ChapterGoalDef chosenGoalDef = DefDatabase<ChapterGoalDef>.AllDefs.RandomElement();
         ChapterGoal goal = (ChapterGoal)System.Activator.CreateInstance(chosenGoalDef.GoalClass);
-        goal.Init(chosenGoalDef);
+        goal.Init(chosenGoalDef, chapter);
 
         return goal;
     }

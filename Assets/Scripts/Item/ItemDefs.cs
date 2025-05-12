@@ -10,9 +10,18 @@ public static class ItemDefs
         {
             DefName = "LuckyScarf",
             Label = "lucky scarf",
-            Description = "+1 Redraw per turn",
+            Description = "+1 redraw per turn",
             ItemClass = typeof(Item_LuckyScarf),
             Rarity = ItemRarity.Common,
-        }
+        },
+
+        new ItemDef()
+        {
+            DefName = "GlovesOfGreed",
+            Label = "gloves of greed",
+            Description = "Wealth tokens give +1 gold",
+            ItemClass = typeof(Item_GlovesOfGreed),
+            Rarity = ItemRarity.Common,
+        },
     };
 }

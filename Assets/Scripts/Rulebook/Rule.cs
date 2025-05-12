@@ -32,6 +32,9 @@ public abstract class Rule : IDraftable
 
     #region Rule Effects
 
+    /// <summary>
+    /// Gets executed once per turn when the spread is locked in between the preparation and action phase.
+    /// </summary>
     public virtual void OnLockInSpread(Spread spread) { }
 
     public virtual Dictionary<TileFeatureDef, float> GetTileFeatureProbabilityModifiers()

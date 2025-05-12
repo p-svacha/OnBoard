@@ -19,6 +19,10 @@ public class Item
     {
         return new Dictionary<ResourceDef, int>();
     }
+    public virtual Dictionary<ResourceDef, int> GetTokenResourceModifiers(Token t)
+    {
+        return new Dictionary<ResourceDef, int>();
+    }
 
     public Sprite Sprite { get; private set; }
     public virtual string Label => Def.Label;
