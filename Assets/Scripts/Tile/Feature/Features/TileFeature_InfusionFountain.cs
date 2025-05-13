@@ -18,16 +18,6 @@ public class TileFeature_InfusionFountain : TileFeature
         Affinity = DefDatabase<TokenAffinityDef>.AllDefs.RandomElement();
     }
 
-    public override List<TileInteraction> GetInteractions()
-    {
-        return new List<TileInteraction>()
-        {
-            CreateTileInteraction(TileInteractionDefOf.InfuseToken),
-        };
-    }
-
-    
-
     public override string Label => $"{Affinity.Label} fountain";
     public override string Description => $"Pay 2 gold to infuse a drafted token with the affinity {Affinity.Label}.";
 }

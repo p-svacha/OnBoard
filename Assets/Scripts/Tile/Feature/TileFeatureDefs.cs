@@ -54,6 +54,10 @@ public static class TileFeatureDefs
             Description = "A place where offerings are made.",
             TileFeatureClass = typeof(TileFeature_Altar),
             MeepleCanStopOn = true,
+            Interactions = new List<TileInteractionDef>()
+            {
+                TileInteractionDefOf.OfferToken,
+            },
         },
 
         new TileFeatureDef()
@@ -62,6 +66,10 @@ public static class TileFeatureDefs
             Label = "upgrade stand",
             Description = "A stand where you can pay 2 gold to ugrade the size of a drafted token from your pouch.",
             TileFeatureClass = typeof(TileFeature_UpgradeStand),
+            Interactions = new List<TileInteractionDef>()
+            {
+                TileInteractionDefOf.UpgradeToken,
+            },
         },
 
         new TileFeatureDef()
@@ -70,6 +78,10 @@ public static class TileFeatureDefs
             Label = "infusion fountain",
             Description = "A fountain dedicated to a specific affinity. By paying the cost, you may draft one of your pouch tokens to permanently infuse it with an affinity.",
             TileFeatureClass = typeof(TileFeature_InfusionFountain),
+            Interactions = new List<TileInteractionDef>()
+            {
+                TileInteractionDefOf.InfuseToken,
+            },
         },
     };
 }

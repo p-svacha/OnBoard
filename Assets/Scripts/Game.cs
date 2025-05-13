@@ -388,7 +388,7 @@ public class Game : MonoBehaviour
 
     public Meeple AddPlayerMeeple(Tile tile)
     {
-        GameObject meeplePrefab = ResourceManager.LoadPrefab("Prefabs/Meeple");
+        GameObject meeplePrefab = ResourceManager.LoadPrefab("Prefabs/Meeples/Meeple");
         GameObject meepleObject = GameObject.Instantiate(meeplePrefab);
         Meeple newMeeple = meepleObject.GetComponent<Meeple>();
         newMeeple.Init(this);

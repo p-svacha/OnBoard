@@ -5,7 +5,7 @@ using UnityEngine;
 public class ChapterGoalDef : Def
 {
     /// <summary>
-    /// The class that will be instantiated when creating a chapter goal of this type.
+    /// The class that will be instantiated when creating a chapter goal of this def.
     /// </summary>
     public System.Type GoalClass { get; init; } = typeof(ChapterGoal);
 }

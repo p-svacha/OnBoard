@@ -86,9 +86,15 @@ public abstract class TileFeature : MonoBehaviour
     /// <summary>
     /// Returns all possible actions a meeple can do during the moving phase when standing on a tile with this feature.
     /// </summary>
-    public virtual List<TileInteraction> GetInteractions()
+    public List<TileInteraction> GetInteractions()
     {
-        return new List<TileInteraction>();
+        List<TileInteraction> interactions = new List<TileInteraction>();
+        foreach(TileInteractionDef interactionDef in Def.Interactions)
+        {
+            TileInteraction interaction = CreateTileInteraction(interactionDef);
+            interactions.Add(interaction);
+        };
+        return interactions;
     }
 
     protected TileInteraction CreateTileInteraction(TileInteractionDef def)

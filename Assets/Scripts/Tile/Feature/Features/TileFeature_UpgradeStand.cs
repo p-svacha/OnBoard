@@ -9,14 +9,4 @@ public class TileFeature_UpgradeStand : TileFeature
     {
         PlaceObjectAroundTile("Prefabs/TileFeatures/ShopStand", offsetDistance: Tile.TILE_RADIUS * 1.6f, angleOffset: 180f);
     }
-
-    public override List<TileInteraction> GetInteractions()
-    {
-        return new List<TileInteraction>()
-        {
-            CreateTileInteraction(TileInteractionDefOf.UpgradeToken),
-        };
-    }
-
-
 }

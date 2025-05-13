@@ -20,12 +20,4 @@ public class TileFeature_Altar : TileFeature
         Color = color;
         Size = size;
     }
-
-    public override List<TileInteraction> GetInteractions()
-    {
-        return new List<TileInteraction>()
-        {
-           CreateTileInteraction(TileInteractionDefOf.OfferToken)
-        };
-    }
 }

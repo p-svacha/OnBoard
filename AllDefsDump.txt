@@ -42,6 +42,13 @@ Class: ChapterGoalDef
         LabelCap: ""
         Description: "Deliver a specific kind of token to a designated altar tile."
 
+    - AffinityTokens ()
+        GoalClass: ChapterGoal_AffinityTokens
+        DefName: "AffinityTokens"
+        Label: ""
+        LabelCap: ""
+        Description: "Lock in a spread with at least some amount of tokens of a specific affinity."
+
 Class: ChapterRewardDef
 
   Members:
