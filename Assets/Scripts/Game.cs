@@ -18,7 +18,7 @@ public class Game : MonoBehaviour
     /// <summary>
     /// List of all meeples the player controls.
     /// </summary>
-    public List<Meeple> Meeples;
+    public Meeple PlayerMeeple;
 
     /// <summary>
     /// Amount of tokens drawn in a turn.
@@ -130,6 +130,11 @@ public class Game : MonoBehaviour
     /// </summary>
     public Rulebook Rulebook { get; private set; }
 
+    /// <summary>
+    /// List of all meeples on the board not controlled by the player.
+    /// </summary>
+    public List<NpcMeeple> NpcMeeples { get; private set; }
+
     // Visual
     private List<Tile> CurrentlyHighlightedMovementTargets;
 
@@ -172,7 +177,7 @@ public class Game : MonoBehaviour
         AddStartingMeeple();
         AddStartingContent();
         InitializeFirstChapter();
-        CameraHandler.Instance.SetPosition(Meeples[0].transform.position);
+        CameraHandler.Instance.SetPosition(PlayerMeeple.transform.position);
 
         StartTurn();
     }
@@ -186,11 +191,17 @@ public class Game : MonoBehaviour
 
     private void AddStartingMeeple()
     {
-        AddPlayerMeeple(Board.StartTile);
+        GameObject meeplePrefab = ResourceManager.LoadPrefab("Prefabs/Meeples/Meeple");
+        GameObject meepleObject = GameObject.Instantiate(meeplePrefab);
+        PlayerMeeple = meepleObject.GetComponent<Meeple>();
+        TeleportMeeple(PlayerMeeple, Board.StartTile);
+
         MaxHealth = 6;
         Health = 6;
         Items = new List<Item>();
         GameUI.Instance.HealthDisplay.Refresh();
+
+        AddNpcMeeple(MeepleDefOf.Merchant, Board.GetRandomTile());
     }
 
     private void AddStartingContent()
@@ -347,6 +358,8 @@ public class Game : MonoBehaviour
     /// </summary>
     public void OnMovementDone(MovementOption move)
     {
+        if (!move.IsPlayerMovement) return;
+
         // Exectute OnLandEffect of arrived tile
         move.TargetTile.OnLand();
 
@@ -364,6 +377,9 @@ public class Game : MonoBehaviour
 
         // Collect all tokens off the board
         StartCoroutine(TokenPhysicsManager.CollectTokens(this));
+
+        // NPC meeples
+        foreach (NpcMeeple meeple in NpcMeeples) meeple.OnEndTurn();
 
         // Quests
         foreach (Quest quest in ActiveQuests) quest.OnTurnPassed();
@@ -385,19 +401,6 @@ public class Game : MonoBehaviour
     #endregion
 
     #region Game Actions
-
-    public Meeple AddPlayerMeeple(Tile tile)
-    {
-        GameObject meeplePrefab = ResourceManager.LoadPrefab("Prefabs/Meeples/Meeple");
-        GameObject meepleObject = GameObject.Instantiate(meeplePrefab);
-        Meeple newMeeple = meepleObject.GetComponent<Meeple>();
-        newMeeple.Init(this);
-        Meeples.Add(newMeeple);
-
-        TeleportMeeple(newMeeple, tile);
-
-        return newMeeple;
-    }
 
     public Token AddTokenToPouch(TokenShapeDef shape, List<TokenSurface> surfaces, TokenSizeDef size, TokenAffinityDef affinity = null)
     {
@@ -448,6 +451,13 @@ public class Game : MonoBehaviour
         GameUI.Instance.ResourcesPanel.Refresh();
     }
 
+    public void AddNpcMeeple(MeepleDef def, Tile tile)
+    {
+        NpcMeeple meeple = MeepleGenerator.GenerateNpcMeeple(def);
+        TeleportMeeple(meeple, tile);
+        NpcMeeples.Add(meeple);
+    }
+
     public void TeleportMeeple(Meeple meeple, Tile tile)
     {
         meeple.SetPosition(tile);
@@ -456,13 +466,13 @@ public class Game : MonoBehaviour
     public void ExecuteMovement(MovementOption movement)
     {
         // Resources
-        RemainingActionPhaseResources[ResourceDefOf.MovementPoint] -= movement.Length;
+        if (movement.IsPlayerMovement) RemainingActionPhaseResources[ResourceDefOf.MovementPoint] -= movement.Length;
 
         // Start moving
         MeepleMovementAnimator.AnimateMove(movement, onComplete: OnMovementDone);
 
         // FX
-        UnhighlightAllMovementOptionTargets();
+        if (movement.IsPlayerMovement) UnhighlightAllMovementOptionTargets();
 
         // UI
         GameUI.Instance.TurnPhaseResources.Refresh();
@@ -707,74 +717,24 @@ public class Game : MonoBehaviour
     private void UpdateCurrentMovementOptions()
     {
         MovementOptions.Clear();
-
-        foreach(Meeple meeple in Meeples)
-        {
-            MovementOptions.AddRange(GetMeepleMovementOptions(meeple));
-        }
+        MovementOptions.AddRange(GetMeepleMovementOptions(PlayerMeeple, RemainingMovementPoints));
     }
 
-    private List<MovementOption> GetMeepleMovementOptions(Meeple meeple)
+    public List<MovementOption> GetMeepleMovementOptions(Meeple meeple, int numTiles, bool allowStops = true)
     {
+        bool isPlayerMovement = (meeple == PlayerMeeple);
         List<MovementOption> options = new List<MovementOption>();
 
         Tile startTile = meeple.Tile;
-        List<List<Tile>> paths = GetPaths(startTile, prevPosition: null, RemainingMovementPoints);
+        List<List<Tile>> paths = Pathfinder.GetPaths(startTile, prevPosition: null, numTiles, allowStops);
         foreach(List<Tile> path in paths)
         {
             Tile target = path.Last();
             path.Remove(target);
-            options.Add(new MovementOption(meeple, startTile, new List<Tile>(path), target));
+            options.Add(new MovementOption(meeple, startTile, new List<Tile>(path), target, isPlayerMovement));
         }
 
         return options;
-    }
-
-    /// <summary>
-    /// Returns all possible movement paths starting from `position`.  
-    /// - Any path that uses up exactly `remainingMovementPoints` steps, **or**
-    /// - Any shorter path that ends on a tile where CanMeepleStopHere() is true  
-    /// never immediately back‑tracks to `prevPosition`.
-    /// </summary>
-    private List<List<Tile>> GetPaths(Tile position, Tile prevPosition, int remainingMovementPoints)
-    {
-        var paths = new List<List<Tile>>();
-
-        // No movement points → no valid paths
-        if (remainingMovementPoints <= 0)
-            return paths;
-
-        foreach (Tile next in position.ConnectedTiles)
-        {
-            // don't immediately reverse
-            if (prevPosition != null && next == prevPosition)
-                continue;
-
-            // 1) full‑length paths (use your last movement point here)
-            if (remainingMovementPoints == 1)
-            {
-                paths.Add(new List<Tile> { next });
-            }
-            else
-            {
-                // 2) early‑stop paths: you can stop here any time if allowed
-                if (next.CanMeepleStopHere())
-                {
-                    paths.Add(new List<Tile> { next });
-                }
-
-                // 3) longer paths: spend one point and recurse
-                var subPaths = GetPaths(next, position, remainingMovementPoints - 1);
-                foreach (var sub in subPaths)
-                {
-                    var path = new List<Tile> { next };
-                    path.AddRange(sub);
-                    paths.Add(path);
-                }
-            }
-        }
-
-        return paths;
     }
 
     private void HighlightAllMovementOptionTargets()
@@ -900,13 +860,7 @@ public class Game : MonoBehaviour
     public List<TileInteraction> GetAllPossibleTileInteractions()
     {
         List<TileInteraction> list = new List<TileInteraction>();
-
-        foreach (Meeple meeple in Game.Instance.Meeples)
-        {
-            Tile tile = meeple.Tile;
-            list.AddRange(tile.GetInteractions());
-        }
-
+        list.AddRange(PlayerMeeple.Tile.GetInteractions());
         return list;
     }
 

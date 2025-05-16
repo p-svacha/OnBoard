@@ -184,11 +184,9 @@ public static class DefDumpUtility
             var members = props.Concat(fields).ToList();
 
             writer.WriteLine("  Members:");
-            object dummy = null;
             foreach (var m in members)
             {
-                string name, typeName, summary, text;
-                object rawVal = null;
+                string name, typeName, summary;
 
                 if (m is PropertyInfo pi)
                 {

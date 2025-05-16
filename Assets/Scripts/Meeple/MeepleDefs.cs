@@ -10,8 +10,14 @@ public static class MeepleDefs
         {
             DefName = "Merchant",
             Label = "merchant",
-            Description = "A neutral meeple who wanders the boards. If you're on the same tile, you can interact to trade tokens or resources.",
+            Description = "A neutral meeple who wanders the board. If you're on the same tile, you can interact to trade tokens or resources.",
             MeepleClass = typeof(Meeple_Merchant),
+            Interactions = new List<TileInteractionDef>()
+            {
+
+            },
+            MovementSpeedMin = 1,
+            MovementSpeedMax = 2,
         }
     };
 }

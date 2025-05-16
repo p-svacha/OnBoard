@@ -4,13 +4,7 @@ using UnityEngine;
 
 public class Meeple : MonoBehaviour
 {
-    public Game Game { get; private set; }
     public Tile Tile { get; private set; }
-
-    public void Init(Game game)
-    {
-        Game = game;
-    }
 
     public void SetPosition(Tile tile)
     {

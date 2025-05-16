@@ -13,4 +13,14 @@ public class MeepleDef : Def
     /// The list of interactions that can be performed when on the same tile as this meeple.
     /// </summary>
     public List<TileInteractionDef> Interactions { get; init; } = new();
+
+    /// <summary>
+    /// The minimum amount of tiles the meeple moves at the end of the turn.
+    /// </summary>
+    public int MovementSpeedMin { get; init; }
+
+    /// <summary>
+    /// The maximum amount of tiles the meeple moves at the end of the turn.
+    /// </summary>
+    public int MovementSpeedMax { get; init; }
 }
