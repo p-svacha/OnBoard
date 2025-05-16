@@ -201,6 +201,7 @@ public class Game : MonoBehaviour
         Items = new List<Item>();
         GameUI.Instance.HealthDisplay.Refresh();
 
+        NpcMeeples = new List<NpcMeeple>();
         AddNpcMeeple(MeepleDefOf.Merchant, Board.GetRandomTile());
     }
 
