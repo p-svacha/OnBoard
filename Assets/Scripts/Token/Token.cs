@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Token : MonoBehaviour, IDraftable
+public class Token : MonoBehaviour, IDraftable, ITradable
 {
     public TokenShapeDef Shape { get; private set; }
     public List<TokenSurface> Surfaces { get; private set; }
@@ -117,6 +117,11 @@ public class Token : MonoBehaviour, IDraftable
     }
 
     public bool HasAffinity => Affinity != null;
+
+    public int GetMarketValue()
+    {
+        return 10;
+    }
 
     public string Label
     {

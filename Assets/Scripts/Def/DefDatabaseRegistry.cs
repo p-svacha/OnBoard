@@ -24,8 +24,8 @@ public static class DefDatabaseRegistry
     {
         ClearAllDatabases();
         DefDatabase<ResourceDef>.AddDefs(ResourceDefs.Defs);
-        DefDatabase<MeepleDef>.AddDefs(MeepleDefs.Defs);
         DefDatabase<TileInteractionDef>.AddDefs(TileInteractionDefs.Defs);
+        DefDatabase<MeepleDef>.AddDefs(MeepleDefs.Defs);
         DefDatabase<TileFeatureDef>.AddDefs(TileFeatureDefs.Defs);
         DefDatabase<TokenShapeDef>.AddDefs(TokenShapeDefs.Defs);
         DefDatabase<TokenColorDef>.AddDefs(TokenColorDefs.Defs);

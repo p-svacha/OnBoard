@@ -32,16 +32,50 @@ public class UI_TradeWindow : UI_Window
 
         TitleText.text = TradingSession.TraderName;
 
-        PlayerInventory.Init(TradingSession.SellOptions);
-        TraderInventory.Init(TradingSession.BuyOptions);
-        PlayerSelling.Clear();
-        TraderBuying.Clear();
+        PlayerInventory.Init(TradingSession.SellOptions, TradingSession.SellValueModifier, StageToSell);
+        TraderInventory.Init(TradingSession.BuyOptions, TradingSession.BuyValueModifier, UnstageToSell);
+        PlayerSelling.Init(new(), TradingSession.SellValueModifier, StageToBuy);
+        TraderBuying.Init(new(), TradingSession.BuyValueModifier, UnstageToBuy);
+    }
+
+    private void StageToSell(ITradable tradable)
+    {
+        PlayerInventory.RemoveEntry(tradable);
+        PlayerSelling.AddEntry(tradable);
+        TradingSession.StageToSell(tradable);
+        UpdateSummaryText();
+    }
+    private void UnstageToSell(ITradable tradable)
+    {
+        PlayerSelling.RemoveEntry(tradable);
+        PlayerInventory.AddEntry(tradable);
+        TradingSession.UnstageToSell(tradable);
+        UpdateSummaryText();
+    }
+    private void StageToBuy(ITradable tradable)
+    {
+        TraderInventory.RemoveEntry(tradable);
+        TraderBuying.AddEntry(tradable);
+        TradingSession.StageToBuy(tradable);
+        UpdateSummaryText();
+    }
+    private void UnstageToBuy(ITradable tradable)
+    {
+        TraderBuying.RemoveEntry(tradable);
+        TraderInventory.AddEntry(tradable);
+        TradingSession.UnstageToBuy(tradable);
+        UpdateSummaryText();
+    }
+
+    private void UpdateSummaryText()
+    {
+        if (TradingSession.FinalTradeValue >= 0) SummaryText.text = $"You will receive <b>{TradingSession.FinalTradeValue} Gold</b>.";
+        else SummaryText.text = $"You will pay <b>{-TradingSession.FinalTradeValue} Gold</b>.";
     }
 
     private void Confirm()
     {
-
-
+        TradingSession.Apply();
         Close();
     }
 

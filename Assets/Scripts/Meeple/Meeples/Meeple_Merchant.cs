@@ -6,6 +6,8 @@ public class Meeple_Merchant : NpcMeeple
 {
     public TradingSession GetNewTradingSession()
     {
-        return new TradingSession("Merchant", 0.8f, 1.2f, new List<ITradable>(), new List<ITradable>());
+        List<ITradable> sellOptions = new List<ITradable>();
+        sellOptions.AddRange(Game.Instance.TokenPouch);
+        return new TradingSession("Merchant", 0.8f, 1.2f, sellOptions, new List<ITradable>());
     }
 }

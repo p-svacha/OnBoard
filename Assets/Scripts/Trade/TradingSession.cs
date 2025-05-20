@@ -53,4 +53,40 @@ public class TradingSession
         SellOptions = sellOptions;
         BuyOptions = buyOptions;
     }
+
+    public void StageToSell(ITradable tradable)
+    {
+        ToSell.Add(tradable);
+        UpdateFinalTradeValue();
+    }
+    public void UnstageToSell(ITradable tradable)
+    {
+        ToSell.Remove(tradable);
+        UpdateFinalTradeValue();
+    }
+    public void StageToBuy(ITradable tradable)
+    {
+        ToBuy.Add(tradable);
+        UpdateFinalTradeValue();
+    }
+    public void UnstageToBuy(ITradable tradable)
+    {
+        ToBuy.Remove(tradable);
+        UpdateFinalTradeValue();
+    }
+
+    private void UpdateFinalTradeValue()
+    {
+        FinalTradeValue = 0;
+        foreach (ITradable sold in ToSell) FinalTradeValue -= Mathf.RoundToInt(sold.GetMarketValue() * SellValueModifier);
+        foreach (ITradable bought in ToBuy) FinalTradeValue += Mathf.RoundToInt(bought.GetMarketValue() * BuyValueModifier);
+    }
+
+    /// <summary>
+    /// Executes the trade in its current state.
+    /// </summary>
+    public void Apply()
+    {
+
+    }
 }
