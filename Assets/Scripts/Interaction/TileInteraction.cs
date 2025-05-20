@@ -8,6 +8,23 @@ using System;
 /// </summary>
 public abstract class TileInteraction
 {
+    public TileInteractionDef Def { get; private set; }
+
+    /// <summary>
+    /// The tile this interaction belongs to.
+    /// </summary>
+    public Tile Tile { get; private set; }
+
+    /// <summary>
+    /// The tile feature this interaction belongs to. May be null.
+    /// </summary>
+    public TileFeature Feature { get; private set; }
+
+    /// <summary>
+    /// The meeple this interaction belongs to. May be null.
+    /// </summary>
+    public Meeple Meeple { get; private set; }
+
     /// <summary>
     /// The action that gets executed when the player clicks the button to perform this interaction.
     /// </summary>
@@ -50,28 +67,17 @@ public abstract class TileInteraction
         return true;
     }
 
-    public TileInteractionDef Def { get; private set; }
-
-    /// <summary>
-    /// The tile this interaction belongs to.
-    /// </summary>
-    public Tile Tile { get; private set; }
-
-    /// <summary>
-    /// The tile feature this interaction belongs to. May be null.
-    /// </summary>
-    public TileFeature Feature { get; private set; }
-
     /// <summary>
     /// How much resources need to be spent to perform this interaction.
     /// </summary>
     protected virtual Dictionary<ResourceDef, int> ResourceCost => Def.ResourceCost;
 
-    public void Init(TileInteractionDef def, Tile tile, TileFeature feature)
+    public void Init(TileInteractionDef def, Tile tile, TileFeature feature, Meeple meeple)
     {
         Def = def;
         Tile = tile;
         Feature = feature;
+        Meeple = meeple;
     }
 
     public void Execute()

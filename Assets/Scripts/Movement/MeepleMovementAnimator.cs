@@ -76,7 +76,7 @@ public static class MeepleMovementAnimator
             tf.rotation = upright;
 
             // logical update
-            meeple.SetPosition(pathTiles[i]);
+            meeple.SetTile(pathTiles[i]);
         }
 
         onComplete?.Invoke(option);

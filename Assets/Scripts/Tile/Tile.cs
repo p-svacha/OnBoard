@@ -8,6 +8,7 @@ public class Tile : MonoBehaviour
     public Game Game { get; private set; }
 
     public List<TileFeature> Features;
+    public List<Meeple> Meeples;
 
     // Graph
     public Vector3 WorldPosition;
@@ -25,6 +26,7 @@ public class Tile : MonoBehaviour
         Game = game;
         ConnectedTiles = new List<Tile>();
         Features = new List<TileFeature>();
+        Meeples = new List<Meeple>();
 
         WorldPosition = worldPosition;
         ForwardAngle = forwardAngle;
@@ -103,6 +105,15 @@ public class Tile : MonoBehaviour
         Features.Remove(feature);
     }
 
+    public void AddMeeple(Meeple meeple)
+    {
+        Meeples.Add(meeple);
+    } 
+    public void RemoveMeeple(Meeple meeple)
+    {
+        Meeples.Remove(meeple);
+    }
+
     #endregion
 
     #region Getters
@@ -119,6 +130,10 @@ public class Tile : MonoBehaviour
         foreach(TileFeature feature in Features)
         {
             interactions.AddRange(feature.GetInteractions());
+        }
+        foreach(Meeple meeple in Meeples)
+        {
+            interactions.AddRange(meeple.GetInteractions());
         }
 
         return interactions;

@@ -14,7 +14,7 @@ public static class MeepleDefs
             MeepleClass = typeof(Meeple_Merchant),
             Interactions = new List<TileInteractionDef>()
             {
-
+                TileInteractionDefOf.Trade
             },
             MovementSpeedMin = 1,
             MovementSpeedMax = 2,

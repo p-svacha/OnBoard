@@ -37,5 +37,13 @@ public static class TileInteractionDefs
                 { ResourceDefOf.Gold, 2 }
             },
         },
+
+        new TileInteractionDef()
+        {
+            DefName = "Trade",
+            Label = "trade",
+            Description = "Buy and sell things.",
+            InteractionClass = typeof(TileInteraction_Trade),
+        },
     };
 }

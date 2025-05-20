@@ -23,6 +23,7 @@ public class GameUI : MonoBehaviour
 
     [Header("Windows")]
     public UI_DraftWindow DraftWindow;
+    public UI_TradeWindow TradeWindow;
 
     private void Awake()
     {

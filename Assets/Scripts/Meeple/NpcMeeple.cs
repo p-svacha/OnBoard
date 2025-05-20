@@ -9,7 +9,10 @@ public abstract class NpcMeeple : Meeple
     public void Init(MeepleDef def)
     {
         Def = def;
+        OnInit();
     }
+
+    protected virtual void OnInit() { }
 
     /// <summary>
     /// Gets executed at the end of the turn.
@@ -20,6 +23,17 @@ public abstract class NpcMeeple : Meeple
         List<MovementOption> movementOptions = Game.Instance.GetMeepleMovementOptions(this, movementSpeed, allowStops: false);
         MovementOption movement = movementOptions.RandomElement();
         Game.Instance.ExecuteMovement(movement);
+    }
+
+    public override List<TileInteraction> GetInteractions()
+    {
+        List<TileInteraction> interactions = base.GetInteractions();
+        foreach (TileInteractionDef interactionDef in Def.Interactions)
+        {
+            TileInteraction interaction = CreateTileInteraction(interactionDef);
+            interactions.Add(interaction);
+        };
+        return interactions;
     }
 
     public virtual string Label => Def.Label;

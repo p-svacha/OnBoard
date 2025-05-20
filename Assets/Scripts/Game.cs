@@ -359,13 +359,18 @@ public class Game : MonoBehaviour
     /// </summary>
     public void OnMovementDone(MovementOption move)
     {
-        if (!move.IsPlayerMovement) return;
+        // Set new position
+        move.Meeple.SetTile(move.TargetTile);
 
-        // Exectute OnLandEffect of arrived tile
-        move.TargetTile.OnLand();
+        // Effects for player meeples
+        if (move.IsPlayerMovement)
+        {
+            // Exectute OnLandEffect of arrived tile
+            move.TargetTile.OnLand();
 
-        // Show action prompts
-        ShowNextActionPrompt();
+            // Show action prompts
+            ShowNextActionPrompt();
+        }
     }
 
     public void EndActionPhase()
@@ -461,7 +466,8 @@ public class Game : MonoBehaviour
 
     public void TeleportMeeple(Meeple meeple, Tile tile)
     {
-        meeple.SetPosition(tile);
+        meeple.transform.position = tile.transform.position;
+        meeple.SetTile(tile);
     }
 
     public void ExecuteMovement(MovementOption movement)
