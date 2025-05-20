@@ -22,8 +22,6 @@ public class GameUI : MonoBehaviour
     public UI_TileInteractionMenu TileInteractionMenu;
 
     [Header("Windows")]
-    public UI_Window_TokenReceived ItemReceivedDisplay;
-    public UI_Window_TokenDraft TokenDraftDisplay;
     public UI_DraftWindow DraftWindow;
 
     private void Awake()

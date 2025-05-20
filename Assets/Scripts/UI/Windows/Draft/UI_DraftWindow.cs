@@ -5,6 +5,9 @@ using UnityEngine.UI;
 using TMPro;
 using System.Linq;
 
+/// <summary>
+/// Modular window for drafting or displaying any amount of IDraftables.
+/// </summary>
 public class UI_DraftWindow : UI_Window
 {
     [Header("Elements")]

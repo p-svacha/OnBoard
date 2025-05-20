@@ -25,6 +25,6 @@ public class ActionPrompt_ReceiveToken : ActionPrompt
     public override void OnShow()
     {
         Token newToken = Game.Instance.AddTokenToPouch(Shape, Surfaces, Size);
-        GameUI.Instance.ItemReceivedDisplay.ShowTokenReceived(newToken);
+        GameUI.Instance.DraftWindow.Show("You received a new token", "", new() { newToken }, isDraft: false);
     }
 }
