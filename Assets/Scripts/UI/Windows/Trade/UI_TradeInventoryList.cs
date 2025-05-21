@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using TMPro;
 
 public class UI_TradeInventoryList : MonoBehaviour
 {
@@ -11,6 +12,7 @@ public class UI_TradeInventoryList : MonoBehaviour
     private System.Action<ITradable> OnClickAction; // What happens when the player clicks on a tradable in this list
 
     [Header("Elements")]
+    public TextMeshProUGUI TitleText;
     public GameObject Container;
 
     [Header("Prefabs")]
@@ -22,10 +24,11 @@ public class UI_TradeInventoryList : MonoBehaviour
         HelperFunctions.DestroyAllChildredImmediately(Container);
     }
 
-    public void Init(List<ITradable> items, float valueModifier, System.Action<ITradable> onClickAction)
+    public void Init(List<ITradable> items, float valueModifier, System.Action<ITradable> onClickAction, string titleOverride = "")
     {
         ValueModifier = valueModifier;
         OnClickAction = onClickAction;
+        if (titleOverride != "") TitleText.text = titleOverride;
 
         Clear();
         foreach(ITradable item in items) AddEntry(item);

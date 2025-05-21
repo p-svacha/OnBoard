@@ -50,13 +50,7 @@ public class TileFeature_SpecificTokenGiver : TileFeature
 
         float affinityProbability = 0.05f;
 
-        TokenShapeDef shape = shapeProbabilities.GetWeightedRandomElement();
-        List<TokenSurface> tokenSurfaces = new List<TokenSurface>();
-        for (int i = 0; i < shape.NumSurfaces; i++) tokenSurfaces.Add(new TokenSurface(colorProbabilities.GetWeightedRandomElement()));
-        TokenSizeDef size = sizeProbabilities.GetWeightedRandomElement();
-        TokenAffinityDef affinity = (Random.value < affinityProbability) ? DefDatabase<TokenAffinityDef>.AllDefs.RandomElement() : null;
-
-        AwardedToken = TokenGenerator.GenerateToken(shape, tokenSurfaces, size, affinity);
+        AwardedToken = TokenGenerator.GenerateRandomToken(shapeProbabilities, colorProbabilities, sizeProbabilities, affinityProbability);
     }
 
     protected override void OnInitVisuals()

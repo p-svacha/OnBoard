@@ -7,7 +7,10 @@ using UnityEngine;
 /// </summary>
 public class TradingSession
 {
-    public string TraderName { get; private set; }
+    /// <summary>
+    /// The trader the player is trading with in this session.
+    /// </summary>
+    public ITrader Trader { get; private set; }
 
     /// <summary>
     /// The the market value modifier applies to sold tradables resulting in the gold received.
@@ -45,13 +48,16 @@ public class TradingSession
     /// </summary>
     public int FinalTradeValue { get; private set; }
 
-    public TradingSession(string traderName, float sellValueModifier, float buyValueModifier, List<ITradable> sellOptions, List<ITradable> buyOptions)
+    public TradingSession(ITrader trader, float sellValueModifier, float buyValueModifier, List<ITradable> sellOptions, List<ITradable> buyOptions)
     {
-        TraderName = traderName;
+        Trader = trader;
         SellValueModifier = sellValueModifier;
         BuyValueModifier = buyValueModifier;
         SellOptions = sellOptions;
         BuyOptions = buyOptions;
+
+        ToSell = new List<ITradable>();
+        ToBuy = new List<ITradable>();
     }
 
     public void StageToSell(ITradable tradable)
@@ -78,8 +84,15 @@ public class TradingSession
     private void UpdateFinalTradeValue()
     {
         FinalTradeValue = 0;
-        foreach (ITradable sold in ToSell) FinalTradeValue -= Mathf.RoundToInt(sold.GetMarketValue() * SellValueModifier);
-        foreach (ITradable bought in ToBuy) FinalTradeValue += Mathf.RoundToInt(bought.GetMarketValue() * BuyValueModifier);
+        foreach (ITradable sold in ToSell) FinalTradeValue += Mathf.RoundToInt(sold.GetMarketValue() * SellValueModifier);
+        foreach (ITradable bought in ToBuy) FinalTradeValue -= Mathf.RoundToInt(bought.GetMarketValue() * BuyValueModifier);
+    }
+
+    public bool CanApply()
+    {
+        UpdateFinalTradeValue();
+        if (FinalTradeValue < 0 && Game.Instance.Resources[ResourceDefOf.Gold] < Mathf.Abs(FinalTradeValue)) return false;
+        return true;
     }
 
     /// <summary>
@@ -87,6 +100,32 @@ public class TradingSession
     /// </summary>
     public void Apply()
     {
+        UpdateFinalTradeValue();
 
+        // Sold stuff
+        foreach (ITradable soldTradable in ToSell)
+        {
+            // Remove sold stuff from player inventory
+            if (soldTradable is Token token) Game.Instance.RemoveTokenFromPouch(token);
+            else throw new System.Exception($"Type {soldTradable.GetType()} not handled for selling the tradable of that type.");
+
+            // Add sold stuff to trader inventory
+            Trader.GetTradeInventory().Add(soldTradable);
+        }
+
+        // Bought stuff
+        foreach (ITradable boughtTradable in ToBuy)
+        {
+            // Add bought stuff to player inventory
+            if (boughtTradable is Token token) Game.Instance.AddTokenToPouch(token);
+            else throw new System.Exception($"Type {boughtTradable.GetType()} not handled for buying the tradable of that type.");
+
+            // Remove bought stuff from trader inventory
+            Trader.GetTradeInventory().Remove(boughtTradable);
+        }
+
+        // Payment
+        if (FinalTradeValue < 0) Game.Instance.RemoveResource(ResourceDefOf.Gold, -FinalTradeValue);
+        if (FinalTradeValue > 0) Game.Instance.AddResource(ResourceDefOf.Gold, FinalTradeValue);
     }
 }

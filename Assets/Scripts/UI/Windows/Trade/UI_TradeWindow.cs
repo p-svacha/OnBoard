@@ -30,12 +30,14 @@ public class UI_TradeWindow : UI_Window
 
         TradingSession = tradingSession;
 
-        TitleText.text = TradingSession.TraderName;
+        TitleText.text = TradingSession.Trader.Label;
 
         PlayerInventory.Init(TradingSession.SellOptions, TradingSession.SellValueModifier, StageToSell);
-        TraderInventory.Init(TradingSession.BuyOptions, TradingSession.BuyValueModifier, UnstageToSell);
-        PlayerSelling.Init(new(), TradingSession.SellValueModifier, StageToBuy);
+        TraderInventory.Init(TradingSession.BuyOptions, TradingSession.BuyValueModifier, StageToBuy, titleOverride: $"{tradingSession.Trader.Label} Inventory");
+        PlayerSelling.Init(new(), TradingSession.SellValueModifier, UnstageToSell);
         TraderBuying.Init(new(), TradingSession.BuyValueModifier, UnstageToBuy);
+
+        UpdateSummaryText();
     }
 
     private void StageToSell(ITradable tradable)
@@ -70,11 +72,17 @@ public class UI_TradeWindow : UI_Window
     private void UpdateSummaryText()
     {
         if (TradingSession.FinalTradeValue >= 0) SummaryText.text = $"You will receive <b>{TradingSession.FinalTradeValue} Gold</b>.";
-        else SummaryText.text = $"You will pay <b>{-TradingSession.FinalTradeValue} Gold</b>.";
+        else
+        {
+            SummaryText.text = $"You will pay <b>{-TradingSession.FinalTradeValue} Gold</b>.";
+            if (!TradingSession.CanApply()) SummaryText.text = $"<color=red>{SummaryText.text}";
+        }
     }
 
     private void Confirm()
     {
+        if (!TradingSession.CanApply()) return;
+
         TradingSession.Apply();
         Close();
     }

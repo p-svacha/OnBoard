@@ -14,8 +14,30 @@ public static class TokenGenerator
         return token;
     }
 
+    public static Token GenerateRandomToken(Dictionary<TokenShapeDef, float> shapeProbabilities = null, Dictionary<TokenColorDef, float> colorProbabilities = null, Dictionary<TokenSizeDef, float> sizeProbabilities = null, float affinityProbability = 0.05f)
+    {
+        // Shape
+        TokenShapeDef shape = DefDatabase<TokenShapeDef>.AllDefs.RandomElement();
+        if(shapeProbabilities != null) shape = shapeProbabilities.GetWeightedRandomElement();
 
-    public static Token GenerateToken(TokenShapeDef shape, List<TokenSurface> surfaces, TokenSizeDef size, TokenAffinityDef affinity = null, int modelId = -1, bool isStatic = false, bool hidden = true, bool frozen = false)
+        // Color
+        List<TokenSurface> tokenSurfaces = new List<TokenSurface>();
+        for (int i = 0; i < shape.NumSurfaces; i++)
+        {
+            TokenColorDef color = colorProbabilities == null ? DefDatabase<TokenColorDef>.AllDefs.RandomElement() : colorProbabilities.GetWeightedRandomElement();
+            tokenSurfaces.Add(new TokenSurface(color));
+        }
+
+        // Size
+        TokenSizeDef size = sizeProbabilities == null ? DefDatabase<TokenSizeDef>.AllDefs.RandomElement() : sizeProbabilities.GetWeightedRandomElement();
+
+        // Affinity
+        TokenAffinityDef affinity = (Random.value < affinityProbability) ? DefDatabase<TokenAffinityDef>.AllDefs.RandomElement() : null;
+
+        return GenerateToken(shape, tokenSurfaces, size, affinity);
+    }
+
+    public static Token GenerateToken(TokenShapeDef shape, List<TokenSurface> surfaces, TokenSizeDef size, TokenAffinityDef affinity = null, int modelId = -1, bool isDisplayOnly = false, bool hidden = true, bool frozen = false)
     {
         if (modelId == -1)
         {
@@ -43,7 +65,7 @@ public static class TokenGenerator
         }
 
         // Rigidbody
-        if (!isStatic)
+        if (!isDisplayOnly)
         {
             Rigidbody rb = tokenObject.AddComponent<Rigidbody>();
             rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
@@ -65,7 +87,7 @@ public static class TokenGenerator
         newToken.Init(shape, surfaces, size, affinity, modelId, glowFx);
 
         // Tooltip
-        if (!isStatic)
+        if (!isDisplayOnly)
         {
             TooltipTarget3D tooltipTarget = tokenObject.AddComponent<TooltipTarget3D>();
             tooltipTarget.Title = newToken.LabelCap;

@@ -252,6 +252,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19fc10b2b43134e429df811c78e4aefa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  TitleText: {fileID: 3758595081376034873}
   Container: {fileID: 674652378224900858}
   InventoryItemPrefab: {fileID: 4152820531186561107, guid: 153070447a3118543940477ba3c64e9d, type: 3}
 --- !u!1 &4190119319866531997
