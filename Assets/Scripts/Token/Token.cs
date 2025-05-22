@@ -127,13 +127,13 @@ public class Token : MonoBehaviour, IDraftable, ITradable
     {
         get
         {
-            if(Surfaces.Count == 1) return $"{Size.Label} {Surfaces[0].Label} {Shape.Label}";
+            string affinity = Affinity != null ? $"{Affinity.Label} " : "";
+            if (Surfaces.Count == 1) return $"{Size.Label} {Surfaces[0].Label} {affinity}{Shape.Label}";
             else
             {
                 string surfaces = "";
                 foreach (TokenSurface surf in Surfaces) surfaces += $"{surf.Label}/";
                 surfaces = surfaces.TrimEnd('/');
-                string affinity = Affinity != null ? $"{Affinity.Label} " : "";
                 return $"{Size.Label} {surfaces} {affinity}{Shape.Label}";
             }
         }
