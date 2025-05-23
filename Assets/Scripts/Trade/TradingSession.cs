@@ -106,7 +106,7 @@ public class TradingSession
         foreach (ITradable soldTradable in ToSell)
         {
             // Remove sold stuff from player inventory
-            if (soldTradable is Token token) Game.Instance.RemoveTokenFromPouch(token);
+            if (soldTradable is Token token) Game.Instance.RemoveTokenFromPouch(token, destroyToken: false);
             else throw new System.Exception($"Type {soldTradable.GetType()} not handled for selling the tradable of that type.");
 
             // Add sold stuff to trader inventory

@@ -9,6 +9,7 @@ public abstract class TileFeature : MonoBehaviour
 {
     public Tile Tile { get; private set; }
     public TileFeatureDef Def { get; private set; }
+    public Dictionary<TileInteractionDef, int> InteractionsUsedThisTurn { get; private set; }
 
     /// <summary>
     /// Use this to initialize the feature on a tile.
@@ -17,6 +18,7 @@ public abstract class TileFeature : MonoBehaviour
     {
         Tile = tile;
         Def = def;
+        InteractionsUsedThisTurn = new Dictionary<TileInteractionDef, int>();
     }
 
     /// <summary>
@@ -35,6 +37,11 @@ public abstract class TileFeature : MonoBehaviour
     }
 
     protected virtual void OnInitVisuals() { }
+
+    public virtual void OnStartTurn()
+    {
+        InteractionsUsedThisTurn.Clear();
+    }
 
     /// <summary>
     /// The effect that gets executed when landing on this feature.
@@ -100,10 +107,11 @@ public abstract class TileFeature : MonoBehaviour
     private TileInteraction CreateTileInteraction(TileInteractionDef def)
     {
         TileInteraction interaction = (TileInteraction)System.Activator.CreateInstance(def.InteractionClass);
-        interaction.Init(def, Tile, this, null);
+        bool noRemainingUses = def.MaxUsesPerTurn > 0 && InteractionsUsedThisTurn.TryGetValue(def, out int uses) && uses >= def.MaxUsesPerTurn;
+        interaction.Init(def, Tile, this, null, noRemainingUses);
         return interaction;
     }
-
+    
     protected GameObject PlaceObjectAroundTile(string prefabPath, float offsetDistance, float angleOffset = 0)
     {
         GameObject prefab = ResourceManager.LoadPrefab(prefabPath);

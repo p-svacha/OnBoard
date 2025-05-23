@@ -24,6 +24,7 @@ public static class TileInteractionDefs
             {
                 { ResourceDefOf.Gold, 2 }
             },
+            MaxUsesPerTurn = 1,
         },
 
         new TileInteractionDef()
@@ -36,6 +37,7 @@ public static class TileInteractionDefs
             {
                 { ResourceDefOf.Gold, 2 }
             },
+            MaxUsesPerTurn = 1,
         },
 
         new TileInteractionDef()

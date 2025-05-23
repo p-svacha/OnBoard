@@ -13,4 +13,9 @@ public class TileInteractionDef : Def
     /// The resource cost of performing this interaction.
     /// </summary>
     public Dictionary<ResourceDef, int> ResourceCost { get; init; } = new();
+
+    /// <summary>
+    /// If greater than 0, this defines the maximum times the interaction can be used in a turn.
+    /// </summary>
+    public int MaxUsesPerTurn { get; init; } = -1;
 }

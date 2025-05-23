@@ -262,6 +262,15 @@ public class Game : MonoBehaviour
             ActiveQuests.Add(QuestGenerator.GenerateQuest());
         }
 
+        // Hooks
+        foreach(Tile tile in Board.Tiles)
+        {
+            foreach(TileFeature featuren in tile.Features)
+            {
+                featuren.OnStartTurn();
+            }
+        }
+
         // UI
         GameUI.Instance.TurnSpreadPanel.ShowPreTurnText();
         GameUI.Instance.TurnPhaseResources.Refresh();
@@ -418,11 +427,11 @@ public class Game : MonoBehaviour
         TokenPouch.AddToken(token);
         token.IsInPouch = true;
     }
-    public void RemoveTokenFromPouch(Token token)
+    public void RemoveTokenFromPouch(Token token, bool destroyToken = true)
     {
         TokenPouch.RemoveToken(token);
         token.IsInPouch = false;
-        GameObject.Destroy(token);
+        if(destroyToken) GameObject.Destroy(token);
     }
     public void UpgradeTokenSize(Token token)
     {

@@ -60,7 +60,7 @@ public class TokenSurface : IDraftable
                 {
                     desc += $"{res.Value} {res.Key.LabelDynamicCap(res.Value)}\n";
                 }
-                desc.TrimEnd('\n');
+                desc = desc.TrimEnd('\n');
             }
             return desc;
         }

@@ -164,7 +164,7 @@ public class Token : MonoBehaviour, IDraftable, ITradable
             for(int i = 0; i < Surfaces.Count; i++)
             {
                 desc += Surfaces[i].Description;
-                if (i < Surfaces.Count - 1) desc += "\nOR\n";
+                if (i < Surfaces.Count - 1) desc += "\n - OR - \n";
             }
             return desc;
         }

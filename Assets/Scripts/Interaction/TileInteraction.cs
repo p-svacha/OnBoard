@@ -25,6 +25,8 @@ public abstract class TileInteraction
     /// </summary>
     public Meeple Meeple { get; private set; }
 
+    public bool NoRemainingUsesThisTurn { get; private set; }
+
     /// <summary>
     /// The action that gets executed when the player clicks the button to perform this interaction.
     /// </summary>
@@ -46,6 +48,14 @@ public abstract class TileInteraction
                 unavailableReason = $"Not enough {res.Key.LabelPlural}";
                 return false;
             }
+        }
+
+        // Check remaining uses
+        if (NoRemainingUsesThisTurn)
+        {
+            string limit = Def.MaxUsesPerTurn == 1 ? "once" : $"{Def.MaxUsesPerTurn} times";
+            unavailableReason = $"Can't be used more than {limit} per turn.";
+            return false;
         }
 
         // Check custom checks
@@ -72,12 +82,13 @@ public abstract class TileInteraction
     /// </summary>
     protected virtual Dictionary<ResourceDef, int> ResourceCost => Def.ResourceCost;
 
-    public void Init(TileInteractionDef def, Tile tile, TileFeature feature, Meeple meeple)
+    public void Init(TileInteractionDef def, Tile tile, TileFeature feature, Meeple meeple, bool noUsesRemaining = false)
     {
         Def = def;
         Tile = tile;
         Feature = feature;
         Meeple = meeple;
+        NoRemainingUsesThisTurn = noUsesRemaining;
     }
 
     public void Execute()
@@ -87,6 +98,9 @@ public abstract class TileInteraction
         {
             Game.Instance.RemoveResource(res.Key, res.Value);
         }
+
+        // Log usage
+        if (Feature != null) Feature.InteractionsUsedThisTurn.Increment(Def);
 
         // Execute interaction
         OnExecute();
