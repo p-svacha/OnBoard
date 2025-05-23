@@ -6,7 +6,7 @@ using UnityEngine;
 public class Game : MonoBehaviour
 {
     public static Game Instance;
-    public GameObject TokenPouchObject;
+    
 
     #region Static Rules
 
@@ -26,9 +26,9 @@ public class Game : MonoBehaviour
     public int DrawAmount;
 
     /// <summary>
-    /// The contents of the token pouch.
+    /// The pouch containing all player tokens.
     /// </summary>
-    public List<Token> TokenPouch;
+    public TokenPouch TokenPouch;
 
     /// <summary>
     /// The collecion of all board segments that make up the board.
@@ -143,7 +143,7 @@ public class Game : MonoBehaviour
     private void Awake()
     {
         Instance = this;
-        TokenPouchObject = GameObject.Find("TokenPouch");
+        TokenPouch = GameObject.Find("TokenPouch").GetComponent<TokenPouch>();
     }
 
     void Start()
@@ -208,8 +208,7 @@ public class Game : MonoBehaviour
     private void AddStartingContent()
     {
         // Tokens
-        TokenPouch = new List<Token>();
-        AddTokenToPouch(TokenShapeDefOf.Pebble, new() { new(TokenColorDefOf.White, TokenSurfacePatternDefOf.Rippled) }, TokenSizeDefOf.Small);
+        AddTokenToPouch(TokenShapeDefOf.Pebble, new() { new(TokenColorDefOf.White) }, TokenSizeDefOf.Small);
         AddTokenToPouch(TokenShapeDefOf.Pebble, new() { new(TokenColorDefOf.White) }, TokenSizeDefOf.Small);
         AddTokenToPouch(TokenShapeDefOf.Pebble, new() { new(TokenColorDefOf.White) }, TokenSizeDefOf.Small);
         AddTokenToPouch(TokenShapeDefOf.Pebble, new() { new(TokenColorDefOf.White) }, TokenSizeDefOf.Small);
@@ -416,13 +415,12 @@ public class Game : MonoBehaviour
     }
     public void AddTokenToPouch(Token token)
     {
-        TokenPouch.Add(token);
+        TokenPouch.AddToken(token);
         token.IsInPouch = true;
-        token.transform.SetParent(TokenPouchObject.transform);  
     }
     public void RemoveTokenFromPouch(Token token)
     {
-        TokenPouch.Remove(token);
+        TokenPouch.RemoveToken(token);
         token.IsInPouch = false;
         GameObject.Destroy(token);
     }
@@ -432,7 +430,11 @@ public class Game : MonoBehaviour
         else if (token.Size == TokenSizeDefOf.Medium) token.SetSize(TokenSizeDefOf.Big);
         else if (token.Size == TokenSizeDefOf.Big) token.SetSize(TokenSizeDefOf.Large);
     }
-    public void InfuseTokenAffinity(Token token, TokenAffinityDef affinity)
+    public void SetTokenSurfacePattern(TokenSurface surface, TokenSurfacePatternDef pattern)
+    {
+        surface.SetPattern(pattern);
+    }
+    public void SetTokenAffinity(Token token, TokenAffinityDef affinity)
     {
         token.SetAffinity(affinity);
     }
@@ -551,16 +553,16 @@ public class Game : MonoBehaviour
     {
         // Show draft window
         string title = $"Quest complete !";
-        string subtitle = "Enjoy your reward";
-        List<IDraftable> options = new List<IDraftable>() { quest.Reward };
-        GameUI.Instance.DraftWindow.Show(title, subtitle, options, isDraft: false, callback: OnQuestRewardChosen);
+        string subtitle = quest.Reward.RewardDraftTitle;
+        List<IDraftable> options = quest.Reward.GetRewardOptions();
+        GameUI.Instance.DraftWindow.Show(title, subtitle, options, isDraft: quest.Reward.IsDraft, callback: chosenOptions => OnQuestRewardChosen(quest, chosenOptions));
     }
 
-    private void OnQuestRewardChosen(List<IDraftable> chosenOptions)
+    private void OnQuestRewardChosen(Quest quest, List<IDraftable> chosenOptions)
     {
-        foreach(QuestReward reward in chosenOptions.Select(o => (QuestReward)o))
+        foreach(IDraftable rewardOption in chosenOptions)
         {
-            reward.ApplyReward();
+            quest.Reward.ApplyReward(rewardOption);
         }
     }
 
@@ -788,7 +790,7 @@ public class Game : MonoBehaviour
         // Select tokens to display
         List<Token> tokensToDisplay = new List<Token>();
         if (GameState == GameState.PreparationPhase) tokensToDisplay = new List<Token>(CurrentSpread.PouchTokens);
-        else tokensToDisplay = new List<Token>(TokenPouch);
+        else tokensToDisplay = new List<Token>(TokenPouch.Tokens);
 
         // pre‐generate non‐overlapping 2D offsets
         var offsets2D = new List<Vector2>();

@@ -14,7 +14,7 @@ public class TileInteraction_InfuseToken : TileInteraction
 
     private List<Token> GetDraftOptions()
     {
-        List<Token> candidates = Game.Instance.TokenPouch.Where(t => t.Affinity != Affinity).ToList();
+        List<Token> candidates = Game.Instance.TokenPouch.GetTokensExcept(Affinity);
         return candidates.RandomElements(Game.Instance.GetDraftOptionsAmount());
     }
 
@@ -22,7 +22,7 @@ public class TileInteraction_InfuseToken : TileInteraction
     {
         foreach (Token token in draftResult.Select(d => (Token)d))
         {
-            Game.Instance.InfuseTokenAffinity(token, Affinity);
+            Game.Instance.SetTokenAffinity(token, Affinity);
         }
     }
 }

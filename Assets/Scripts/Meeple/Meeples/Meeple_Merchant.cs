@@ -26,7 +26,7 @@ public class Meeple_Merchant : NpcMeeple, ITrader
     public TradingSession GetNewTradingSession()
     {
         List<ITradable> sellOptions = new List<ITradable>();
-        sellOptions.AddRange(Game.Instance.TokenPouch);
+        sellOptions.AddRange(Game.Instance.TokenPouch.Tokens);
         return new TradingSession(this, SELL_VALUE_MODIFIER, BUY_VALUE_MODIFIER, sellOptions, new List<ITradable>(TradeInventory));
     }
 

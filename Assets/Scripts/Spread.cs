@@ -53,9 +53,9 @@ public class Spread
     private void DrawInitialTokens()
     {
         int drawAmount = Game.Instance.DrawAmount;
-        int pouchSize = Game.Instance.TokenPouch.Count();
+        int pouchSize = Game.Instance.TokenPouch.Size;
         if (drawAmount > pouchSize) drawAmount = pouchSize;
-        PouchTokens = new List<Token>(Game.Instance.TokenPouch);
+        PouchTokens = new List<Token>(Game.Instance.TokenPouch.Tokens);
         TableTokens = new Dictionary<Token, TokenSurface>();
         DiscardedTokens = new List<Token>();
         for (int i = 0; i < drawAmount; i++)

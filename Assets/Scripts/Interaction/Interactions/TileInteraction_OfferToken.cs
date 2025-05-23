@@ -45,6 +45,6 @@ public class TileInteraction_OfferToken : TileInteraction
 
     private List<Token> GetEligibleTokens()
     {
-        return Game.Instance.TokenPouch.Where(t => t.Shape == Altar.Shape && t.Size == Altar.Size && t.Surfaces.Any(s => s.Color == Altar.Color)).ToList();
+        return Game.Instance.TokenPouch.Tokens.Where(t => t.Shape == Altar.Shape && t.Size == Altar.Size && t.Surfaces.Any(s => s.Color == Altar.Color)).ToList();
     }
 }

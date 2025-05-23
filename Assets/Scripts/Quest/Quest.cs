@@ -24,7 +24,7 @@ public class Quest
     /// </summary>
     public void OnTurnPassed()
     {
-        if (Game.Instance.Turn >= DeadlineTurn - 1)
+        if (DeadlineTurn > 0 && Game.Instance.Turn >= DeadlineTurn - 1)
         {
             Game.Instance.FailQuest(this);
         }

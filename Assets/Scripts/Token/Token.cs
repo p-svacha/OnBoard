@@ -89,6 +89,8 @@ public class Token : MonoBehaviour, IDraftable, ITradable
 
     #region Getters
 
+    public Token GetCopy() => TokenGenerator.GenerateTokenCopy(this);
+
     /// <summary>
     /// Returns the resources this token provides when the given surface of it is in the spread.
     /// </summary>

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,9 +12,14 @@ public class QuestReward_ReceiveToken : QuestReward
         RewardToken = TokenGenerator.GenerateToken(TokenShapeDefOf.Pebble, new() { new(TokenColorDefOf.White) }, TokenSizeDefOf.Small, hidden: true, frozen: true);
     }
 
-    public override void ApplyReward()
+    public override List<IDraftable> GetRewardOptions()
     {
-        Game.Instance.QueueActionPrompt(new ActionPrompt_ReceiveToken(RewardToken));
+        return new List<IDraftable>() { RewardToken };
+    }
+
+    public override void ApplyReward(IDraftable reward)
+    {
+        Game.Instance.AddTokenToPouch(((Token)reward).GetCopy());
     }
 
     public override void OnRemoved()

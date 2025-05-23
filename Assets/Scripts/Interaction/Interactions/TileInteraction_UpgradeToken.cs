@@ -20,7 +20,7 @@ public class TileInteraction_UpgradeToken : TileInteraction
 
     private List<Token> GetDraftOptions()
     {
-        List<Token> candidates = Game.Instance.TokenPouch.Where(t => t.Size != TokenSizeDefOf.Large).ToList();
+        List<Token> candidates = Game.Instance.TokenPouch.GetTokensExcept(TokenSizeDefOf.Large).ToList();
         return candidates.RandomElements(Game.Instance.GetDraftOptionsAmount());
     }
 }

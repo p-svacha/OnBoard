@@ -6,7 +6,7 @@ using UnityEngine;
 /// A token surface represents a possible effect when "rolling" a token. A token is rolled when drawn and can be rerolled during the drawing phase through different ways.
 /// <br/>A surface consists of a color that defines the main effect, and possible additional modifiers.
 /// </summary>
-public class TokenSurface
+public class TokenSurface : IDraftable
 {
     public Token Token { get; private set; }
     public TokenColorDef Color { get; private set; }
@@ -66,4 +66,9 @@ public class TokenSurface
         }
     }
 
+    // IDraftable
+    public string DraftDisplay_Title => GetFullLabel(secondLineFontSize: 16);
+    public string DraftDisplay_Text => null;
+    public Sprite DraftDisplay_Sprite => null;
+    public GameObject DraftDisplay_Spinning3DObject => Token.gameObject;
 }

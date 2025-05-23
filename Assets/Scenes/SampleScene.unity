@@ -1314,6 +1314,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 496155803}
+  - component: {fileID: 496155804}
   m_Layer: 0
   m_Name: TokenPouch
   m_TagString: Untagged
@@ -1336,6 +1337,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &496155804
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 496155802}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1768f67a2a841b342ae7923690916d2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TokenPouchObject: {fileID: 0}
+  Tokens: []
 --- !u!1 &601186095
 GameObject:
   m_ObjectHideFlags: 0
@@ -3892,10 +3907,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df863f02b6f548d4ca15538bc811fa3d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TokenPouchObject: {fileID: 0}
   PlayerMeeple: {fileID: 0}
   DrawAmount: 0
-  TokenPouch: []
+  TokenPouch: {fileID: 0}
   Board: {fileID: 0}
 --- !u!4 &1176241171
 Transform:

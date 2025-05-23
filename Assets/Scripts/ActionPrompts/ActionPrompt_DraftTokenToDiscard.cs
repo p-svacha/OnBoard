@@ -9,7 +9,7 @@ public class ActionPrompt_DraftTokenToDiscard : ActionPrompt
     {
         // Options
         List<Token> options = new List<Token>();
-        List<Token> candidates = new List<Token>(Game.Instance.TokenPouch);
+        List<Token> candidates = new List<Token>(Game.Instance.TokenPouch.Tokens);
         int drawAmount = Game.Instance.GetDraftOptionsAmount();
         for (int i = 0; i < drawAmount; i++)
         {

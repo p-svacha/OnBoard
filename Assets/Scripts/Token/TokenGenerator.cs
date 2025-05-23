@@ -64,8 +64,8 @@ public static class TokenGenerator
             if(surface.Pattern != null)
             {
                 surfaceMaterial.SetTexture("_PatternTex", ResourceManager.LoadTexture($"Textures/TokenSurfacePattern/{surface.Pattern.DefName}"));
-                surfaceMaterial.SetFloat("_PatternAlpha", 0.85f);
-                surfaceMaterial.SetFloat("_PatternScale", 0.1f);
+                surfaceMaterial.SetFloat("_PatternAlpha", 0.75f);
+                surfaceMaterial.SetFloat("_PatternScale", 0.15f);
             }
         }
 
