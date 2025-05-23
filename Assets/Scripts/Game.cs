@@ -209,7 +209,7 @@ public class Game : MonoBehaviour
     {
         // Tokens
         TokenPouch = new List<Token>();
-        AddTokenToPouch(TokenShapeDefOf.Pebble, new() { new(TokenColorDefOf.White) }, TokenSizeDefOf.Small);
+        AddTokenToPouch(TokenShapeDefOf.Pebble, new() { new(TokenColorDefOf.White, TokenSurfacePatternDefOf.Rippled) }, TokenSizeDefOf.Small);
         AddTokenToPouch(TokenShapeDefOf.Pebble, new() { new(TokenColorDefOf.White) }, TokenSizeDefOf.Small);
         AddTokenToPouch(TokenShapeDefOf.Pebble, new() { new(TokenColorDefOf.White) }, TokenSizeDefOf.Small);
         AddTokenToPouch(TokenShapeDefOf.Pebble, new() { new(TokenColorDefOf.White) }, TokenSizeDefOf.Small);

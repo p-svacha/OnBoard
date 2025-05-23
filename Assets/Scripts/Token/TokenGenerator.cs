@@ -54,7 +54,19 @@ public static class TokenGenerator
         if (surfaces.Count != shape.NumSurfaces) throw new System.Exception($"The token shape {shape.DefName} requires {shape.NumSurfaces} surfaces, but {surfaces.Count} were provided.");
         for(int i = 0; i < surfaces.Count; i++)
         {
-            renderer.materials[shape.SurfaceMaterialIndices[i]].color = surfaces[i].Color.Color;
+            TokenSurface surface = surfaces[i];
+            Material surfaceMaterial = renderer.materials[shape.SurfaceMaterialIndices[i]];
+
+            // Color
+            surfaceMaterial.color = surface.Color.Color;
+
+            // Pattern
+            if(surface.Pattern != null)
+            {
+                surfaceMaterial.SetTexture("_PatternTex", ResourceManager.LoadTexture($"Textures/TokenSurfacePattern/{surface.Pattern.DefName}"));
+                surfaceMaterial.SetFloat("_PatternAlpha", 0.85f);
+                surfaceMaterial.SetFloat("_PatternScale", 0.1f);
+            }
         }
 
         // MeshCollider

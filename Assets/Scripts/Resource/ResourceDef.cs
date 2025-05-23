@@ -14,6 +14,15 @@ public class ResourceDef : Def
     public string LabelPlural { get; init; }
     public string LabelPluralCap => LabelPlural.CapitalizeFirst();
 
+    /// <summary>
+    /// Returns either the singular or plural label based on the value.
+    /// </summary>
+    public string LabelDynamicCap(int value)
+    {
+        if (value == 1) return LabelCap;
+        else return LabelPluralCap;
+    }
+
     private Sprite _Sprite;
     public override Sprite Sprite
     {

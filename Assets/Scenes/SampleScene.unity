@@ -587,6 +587,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: DefaultTooltip
       objectReference: {fileID: 0}
+    - target: {fileID: 8166874710276754929, guid: c6bb36633ec87d1458156d238f32157c, type: 3}
+      propertyPath: m_text
+      value: 'Title
+
+        <size=16>maybe new line'
+      objectReference: {fileID: 0}
     - target: {fileID: 8166874710276754930, guid: c6bb36633ec87d1458156d238f32157c, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Token : MonoBehaviour, IDraftable, ITradable
@@ -36,7 +37,7 @@ public class Token : MonoBehaviour, IDraftable, ITradable
 
         Shape = shape;
         Surfaces = new List<TokenSurface>();
-        for(int i = 0; i < surfaces.Count; i++) Surfaces.Add(new TokenSurface(this, surfaces[i].Color, shape.NumSurfaces == 1 ? Vector3.zero : Shape.SurfaceLocalNormals[i]));
+        for(int i = 0; i < surfaces.Count; i++) Surfaces.Add(new TokenSurface(this, surfaces[i].Color, shape.NumSurfaces == 1 ? Vector3.zero : Shape.SurfaceLocalNormals[i], surfaces[i].Pattern));
         SetSize(size);
         SetAffinity(affinity);
 
@@ -94,22 +95,34 @@ public class Token : MonoBehaviour, IDraftable, ITradable
     /// <returns></returns>
     public Dictionary<ResourceDef, int> GetResources(TokenSurface surface)
     {
+        Dictionary<ResourceDef, int> resources = new Dictionary<ResourceDef, int>();
+
         // Validate
         if (surface == null) return new(); // Surface not yet determined because token is still in movement
         if (!Surfaces.Contains(surface)) throw new System.Exception("The given surface is not a surface of this token.");
 
-        // Base resources from color and size
-        Dictionary<ResourceDef, int> resources = new Dictionary<ResourceDef, int>();
+        // Base resource from surface color
         if (surface.Color.Resource != null)
         {
-            int amount = surface.Color.ResourceBaseAmount * Size.EffectMultiplier;
-            resources.Increment(surface.Color.Resource, amount);
+            resources.Increment(surface.Color.Resource, surface.Color.ResourceBaseAmount);
+        }
+
+        // Scale by size
+        foreach (ResourceDef resource in resources.Keys.ToList()) resources[resource] *= Size.EffectMultiplier;
+
+        // Apply pattern offset and modifier
+        if (surface.Pattern != null)
+        {
+            foreach (ResourceDef resource in resources.Keys.ToList()) resources[resource] *= Mathf.RoundToInt(surface.Pattern.GlobalResourceFactor);
         }
 
         // Resources from items
-        foreach(Item item in Game.Instance.Items)
+        if (Game.Instance.Items != null)
         {
-            resources.IncrementMultiple(item.GetTokenResourceModifiers(this));
+            foreach (Item item in Game.Instance.Items)
+            {
+                resources.IncrementMultiple(item.GetTokenResourceModifiers(this));
+            }
         }
 
         // Final result
@@ -127,17 +140,18 @@ public class Token : MonoBehaviour, IDraftable, ITradable
     {
         get
         {
-            string affinity = Affinity != null ? $"{Affinity.Label} " : "";
-            if (Surfaces.Count == 1) return $"{Size.Label} {Surfaces[0].Label} {affinity}{Shape.Label}";
+            if (Surfaces.Count == 1) return $"{Size.Label} {Surfaces[0].Label} {AffinityLabel}{Shape.Label}";
             else
             {
                 string surfaces = "";
                 foreach (TokenSurface surf in Surfaces) surfaces += $"{surf.Label}/";
                 surfaces = surfaces.TrimEnd('/');
-                return $"{Size.Label} {surfaces} {affinity}{Shape.Label}";
+                return $"{Size.Label} {surfaces} {AffinityLabel}{Shape.Label}";
             }
         }
     }
+    private string AffinityLabel => Affinity != null ? $"{Affinity.Label} " : "";
+    public string LabelNoSurface => $"{Size.Label} {AffinityLabel}{Shape.Label}";
     public string LabelCap => Label.CapitalizeFirst();
 
     public string Description

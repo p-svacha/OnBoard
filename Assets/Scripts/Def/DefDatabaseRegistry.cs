@@ -29,6 +29,7 @@ public static class DefDatabaseRegistry
         DefDatabase<TileFeatureDef>.AddDefs(TileFeatureDefs.Defs);
         DefDatabase<TokenShapeDef>.AddDefs(TokenShapeDefs.Defs);
         DefDatabase<TokenColorDef>.AddDefs(TokenColorDefs.Defs);
+        DefDatabase<TokenSurfacePatternDef>.AddDefs(TokenSurfacePatternDefs.Defs);
         DefDatabase<TokenSizeDef>.AddDefs(TokenSizeDefs.Defs);
         DefDatabase<TokenAffinityDef>.AddDefs(TokenAffinityDefs.Defs);
         DefDatabase<ItemDef>.AddDefs(ItemDefs.Defs);
