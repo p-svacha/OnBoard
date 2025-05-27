@@ -10,6 +10,11 @@ public enum ResourceType
     Collectable,
 
     /// <summary>
+    /// Abstract resources describe non-material states that track some kind of passive player state.
+    /// </summary>
+    Abstract,
+
+    /// <summary>
     /// Drawing phase resources are abstract non-material resources that only show up and can only be used during the drawing phase to manipulate the draw.
     /// </summary>
     DrawingPhaseResource,

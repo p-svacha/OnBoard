@@ -11,6 +11,10 @@ public class UI_ResourceDisplay : MonoBehaviour
     public TextMeshProUGUI Label;
     public TooltipTarget Tooltip;
 
+    public void Init(ResourceDef res)
+    {
+        Init(res, Game.Instance.Resources[res]);
+    }
     public void Init(KeyValuePair<ResourceDef, int> res)
     {
         Init(res.Key, res.Value);

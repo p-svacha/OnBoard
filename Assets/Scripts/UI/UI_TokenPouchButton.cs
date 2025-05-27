@@ -9,6 +9,7 @@ public class UI_TokenPouchButton : MonoBehaviour, IPointerEnterHandler, IPointer
     [Header("Elements")]
     public Button Button;
     public Image Image;
+    public UI_ResourceDisplay DrawSize;
 
     private void Start()
     {
@@ -29,5 +30,10 @@ public class UI_TokenPouchButton : MonoBehaviour, IPointerEnterHandler, IPointer
     public void OnPointerExit(PointerEventData eventData)
     {
         if (!Game.Instance.IsTokenPouchOpen) Image.sprite = ResourceManager.LoadSprite("Sprites/TokenPouch/TokenPouchClosed");
+    }
+
+    public void UpdateDrawSize()
+    {
+        DrawSize.Init(ResourceDefOf.DrawSize);
     }
 }

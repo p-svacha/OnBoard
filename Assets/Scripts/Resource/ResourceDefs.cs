@@ -31,6 +31,15 @@ public static class ResourceDefs
             LabelPlural = "gold",
             Description = "A versatile currency used for various interactions, upgrades, and opportunities. You'll never have quite enough.",
             Type = ResourceType.Collectable,
+        },
+
+        new ResourceDef()
+        {
+            DefName = "DrawSize",
+            Label = "draw size",
+            LabelPlural = "draw size",
+            Description = "The amount of tokens drawn at the start of the preparation phase.",
+            Type = ResourceType.Abstract
         }
     };
 }

@@ -23,7 +23,7 @@ public class Game : MonoBehaviour
     /// <summary>
     /// Amount of tokens drawn in a turn.
     /// </summary>
-    public int DrawAmount;
+    public int DrawAmount => Resources[ResourceDefOf.DrawSize];
 
     /// <summary>
     /// The pouch containing all player tokens.
@@ -215,13 +215,17 @@ public class Game : MonoBehaviour
         AddTokenToPouch(TokenShapeDefOf.Pebble, new() { new(TokenColorDefOf.Black) }, TokenSizeDefOf.Small);
         AddTokenToPouch(TokenShapeDefOf.Pebble, new() { new(TokenColorDefOf.Black) }, TokenSizeDefOf.Small);
         AddTokenToPouch(TokenShapeDefOf.Coin, new() { new(TokenColorDefOf.White), new(TokenColorDefOf.Black) }, TokenSizeDefOf.Small);
-        DrawAmount = 4;
-
+        
         // Items
         AddItem(ItemGenerator.GenerateRandomItem());
 
         // Resources
         Resources = new Dictionary<ResourceDef, int>();
+
+        //  > Abstract
+        IncreaseDrawSize(4);
+
+        //  > Material
         AddResource(ResourceDefOf.Gold, 5);
     }
 
@@ -473,6 +477,12 @@ public class Game : MonoBehaviour
         NpcMeeple meeple = MeepleGenerator.GenerateNpcMeeple(def);
         TeleportMeeple(meeple, tile);
         NpcMeeples.Add(meeple);
+    }
+
+    public void IncreaseDrawSize(int amount)
+    {
+        Resources.Increment(ResourceDefOf.DrawSize, amount);
+        GameUI.Instance.TokenPouchButton.UpdateDrawSize();
     }
 
     public void TeleportMeeple(Meeple meeple, Tile tile)
