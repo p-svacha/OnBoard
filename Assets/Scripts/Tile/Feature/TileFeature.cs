@@ -33,7 +33,7 @@ public abstract class TileFeature : MonoBehaviour
     {
         HelperFunctions.DestroyAllChildredImmediately(gameObject);
         OnInitVisuals();
-        AddCollidersAndTooltipToChildren(gameObject);
+        InitAllChildren(gameObject);
     }
 
     protected virtual void OnInitVisuals() { }
@@ -62,9 +62,9 @@ public abstract class TileFeature : MonoBehaviour
     }
 
     /// <summary>
-    /// Adds a mesh collider and 3D tooltip to all children.
+    /// Sets the layer and adds a mesh collider and 3D tooltip to all children.
     /// </summary>
-    private void AddCollidersAndTooltipToChildren(GameObject obj, bool includeRoot = true)
+    private void InitAllChildren(GameObject obj, bool includeRoot = true)
     {
         if (includeRoot)
         {
@@ -75,10 +75,11 @@ public abstract class TileFeature : MonoBehaviour
                 tooltip.Title = LabelCap;
                 tooltip.Text = Description;
             }
+            obj.layer = WorldManager.Layer_TileFeature;
         }
         for (int i = 0; i < obj.transform.childCount; i++)
         {
-            AddCollidersAndTooltipToChildren(obj.transform.GetChild(i).gameObject);
+            InitAllChildren(obj.transform.GetChild(i).gameObject);
         }
     }
 

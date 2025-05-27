@@ -19,6 +19,7 @@ public static class WorldManager
     public static GameObject HoveredObject { get; private set; }
     public static Meeple HoveredMeeple { get; private set; }
     public static Tile HoveredBoardTile { get; private set; }
+    public static TileFeature HoveredTileFeature { get; private set; }
     public static Token HoveredThrownToken { get; private set; }
 
     public static void Initialize()
@@ -35,7 +36,8 @@ public static class WorldManager
     {
         GameObject newHoveredObject = null;
         Meeple newHoveredMeeple = null;
-        Tile newHoveredBoardTile = null;
+        Tile newHoveredTile = null;
+        TileFeature newHoveredTileFeature = null;
         Token newHoveredThrownToken = null;
 
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -49,11 +51,11 @@ public static class WorldManager
             {
                 newHoveredMeeple = newHoveredObject.GetComponent<Meeple>();
             }
-            if (newHoveredObject.layer == Layer_BoardTile)
+            else if (newHoveredObject.layer == Layer_BoardTile)
             {
-                newHoveredBoardTile = newHoveredObject.GetComponent<Tile>();
+                newHoveredTile = newHoveredObject.GetComponent<Tile>();
             }
-            if (newHoveredObject.layer == Layer_Token)
+            else if (newHoveredObject.layer == Layer_Token)
             {
                 Token token = newHoveredObject.GetComponent<Token>();
                 if (token.Original.IsInPouch)
@@ -61,11 +63,18 @@ public static class WorldManager
                     newHoveredThrownToken = token;
                 }
             }
+            else if (newHoveredObject.layer == Layer_TileFeature)
+            {
+                newHoveredTileFeature = newHoveredObject.GetComponent<TileFeature>();
+                if (newHoveredTileFeature == null) newHoveredTileFeature = newHoveredObject.GetComponentInParent<TileFeature>();
+                newHoveredTile = newHoveredTileFeature.Tile;
+            }
         }
 
         HoveredObject = newHoveredObject;
         HoveredMeeple = newHoveredMeeple;
-        HoveredBoardTile = newHoveredBoardTile;
+        HoveredBoardTile = newHoveredTile;
+        HoveredTileFeature = newHoveredTileFeature;
         HoveredThrownToken = newHoveredThrownToken;
     }
 }

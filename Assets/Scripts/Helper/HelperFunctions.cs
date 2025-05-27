@@ -28,6 +28,21 @@ public static class HelperFunctions
         return null;
     }
 
+    /// <summary>
+    /// Recursively sets the layer of the given GameObject and all of its children.
+    /// </summary>
+    /// <param name="root">The root GameObject whose layer (and all descendants’) will be changed.</param>
+    /// <param name="layer">The layer index to assign.</param>
+    public static void SetLayerRecursively(GameObject root, int layer)
+    {
+        if (root == null) return;
+        root.layer = layer;
+        foreach (Transform child in root.transform)
+        {
+            SetLayerRecursively(child.gameObject, layer);
+        }
+    }
+
     #endregion
 
     #region Enum
