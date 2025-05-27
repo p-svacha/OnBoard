@@ -30,4 +30,35 @@ public class GameUI : MonoBehaviour
     {
         Instance = this;
     }
+
+    public void HideAllElements()
+    {
+        TurnSpreadPanel.gameObject.SetActive(false);
+        TokenPouchButton.gameObject.SetActive(false);
+        GameLoopButton.gameObject.SetActive(false);
+        TurnPhaseResources.gameObject.SetActive(false);
+        ChapterDisplay.gameObject.SetActive(false);
+        QuestPanel.gameObject.SetActive(false);
+        ResourcesPanel.gameObject.SetActive(false);
+        HealthDisplay.gameObject.SetActive(false);
+        ItemPanel.gameObject.SetActive(false);
+        Rulebook.gameObject.SetActive(false);
+        TileInteractionMenu.gameObject.SetActive(false);
+        SelectionPanel.gameObject.SetActive(false);
+    }
+
+    public void ShowAllElements()
+    {
+        TurnSpreadPanel.gameObject.SetActive(true);
+        TokenPouchButton.gameObject.SetActive(true);
+        GameLoopButton.gameObject.SetActive(true);
+        TurnPhaseResources.gameObject.SetActive(true);
+        ChapterDisplay.gameObject.SetActive(true);
+        QuestPanel.Refresh();
+        ResourcesPanel.Refresh();
+        HealthDisplay.gameObject.SetActive(true);
+        ItemPanel.gameObject.SetActive(true);
+        Rulebook.gameObject.SetActive(true);
+        TileInteractionMenu.gameObject.SetActive(true);
+    }
 }

@@ -12,6 +12,7 @@ public class Game : MonoBehaviour
 
     private const int NEW_QUEST_INTERVAL = 6;
     private const int FIRST_NEW_QUEST_TURN = 3;
+    private const int CHAPTERS_TO_WIN = 10; // This many chapter need to be completed to win the game
 
     #endregion
 
@@ -517,6 +518,14 @@ public class Game : MonoBehaviour
     /// </summary>
     public void DoCompleteChapter()
     {
+        // Check if final chapter
+        if (Chapter == CHAPTERS_TO_WIN)
+        {
+            QueueActionPrompt(new ActionPrompt_WinGame());
+            CompleteCurrentActionPrompt(); // end "ChapterComplete" prompt
+            return;
+        }
+
         // Queue draft window
         string title = $"Chapter {Chapter} complete !";
         string subtitle = "Choose a reward";
@@ -535,6 +544,11 @@ public class Game : MonoBehaviour
 
         // Set new goal
         SetNextChapterGoal();
+    }
+
+    public void DoWinGame()
+    {
+        GameState = GameState.GameOver;
     }
 
     private void OnChapterRewardChosen(List<IDraftable> chosenOptions)

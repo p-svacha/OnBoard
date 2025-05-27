@@ -61,11 +61,26 @@ public static class ResourceManager
         return loadedSprite;
     }
 
+    private static Dictionary<string, AudioClip> CachedAudioClips = new Dictionary<string, AudioClip>();
+    public static AudioClip LoadAudioClip(string resourcePath)
+    {
+        // cached
+        if (CachedAudioClips.TryGetValue(resourcePath, out AudioClip obj)) return obj;
+
+        // not yet cached
+        AudioClip loadedAudioClip = Resources.Load<AudioClip>(resourcePath);
+        if (loadedAudioClip == null) throw new System.Exception($"Failed to load AudioClip {resourcePath}.");
+        CachedAudioClips.Add(resourcePath, loadedAudioClip);
+        return loadedAudioClip;
+    }
+
     public static void ClearCache()
     {
         CachedMaterials.Clear();
         CachedTextures.Clear();
         CachedPrefabs.Clear();
+        CachedSprites.Clear();
+        CachedAudioClips.Clear();
     }
 }
 

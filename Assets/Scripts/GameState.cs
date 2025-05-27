@@ -8,5 +8,6 @@ public enum GameState
     PreTurn,
     PreparationPhase,
     ActionPhase,
-    PostTurn
+    PostTurn,
+    GameOver
 }
