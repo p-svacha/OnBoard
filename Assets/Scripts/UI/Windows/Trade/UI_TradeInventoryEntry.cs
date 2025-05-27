@@ -15,6 +15,6 @@ public class UI_TradeInventoryEntry : MonoBehaviour
     {
         LabelText.text = tradable.Label;
         CostText.text = Mathf.RoundToInt(tradable.GetMarketValue() * valueModifier).ToString();
-        Button.onClick.AddListener(() => onClickAction.Invoke(tradable));
+        if (onClickAction != null) Button.onClick.AddListener(() => onClickAction.Invoke(tradable));
     }
 }

@@ -24,7 +24,7 @@ public class UI_TradeInventoryList : MonoBehaviour
         HelperFunctions.DestroyAllChildredImmediately(Container);
     }
 
-    public void Init(List<ITradable> items, float valueModifier, System.Action<ITradable> onClickAction, string titleOverride = "")
+    public void Init(List<ITradable> items, float valueModifier, System.Action<ITradable> onClickAction = null, string titleOverride = "")
     {
         ValueModifier = valueModifier;
         OnClickAction = onClickAction;

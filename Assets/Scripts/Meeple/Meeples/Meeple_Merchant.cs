@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Meeple_Merchant : NpcMeeple, ITrader
+public class Meeple_Merchant : NpcMeeple, ITrader, ISelectable
 {
     public const int MIN_TOKENS_TO_SELL = 2;
     public const int MAX_TOKENS_TO_SELL = 5;
@@ -32,4 +32,11 @@ public class Meeple_Merchant : NpcMeeple, ITrader
 
     // ITradable
     public List<ITradable> GetTradeInventory() => TradeInventory;
+
+    // ISelectable
+    public GameObject SelectionWindow => GameUI.Instance.SelectionPanel.Content_Merchant;
+    public void OnSelect()
+    {
+        SelectionWindow.GetComponentInChildren<UI_TradeInventoryList>().Init(TradeInventory, BUY_VALUE_MODIFIER);
+    }
 }

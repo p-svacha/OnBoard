@@ -18,6 +18,22 @@ public static class InputHandler
     {
         if (HelperFunctions.IsMouseOverUi()) return;
 
+        // Selection
+        GameUI.Instance.SelectionPanel.Deselect();
+        if (WorldManager.HoveredObject != null)
+        {
+            // Check if hovered object is a Selectable
+            ISelectable selectable = WorldManager.HoveredObject.GetComponent<ISelectable>();
+            if (selectable == null) selectable = WorldManager.HoveredObject.GetComponentInParent<ISelectable>();
+
+            // Apply selection
+            if (selectable != null)
+            {
+                GameUI.Instance.SelectionPanel.ApplySelection(selectable);
+            }
+        }
+
+        // Actions
         if (WorldManager.HoveredBoardTile != null) LeftClickBoardTile();
         if (WorldManager.HoveredThrownToken != null) LeftClickThrownToken();
     }
