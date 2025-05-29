@@ -33,5 +33,21 @@ public static class RuleDefs
                 "Tokens without an affinity have no effect when drawn.",
             },
         },
+
+        new RuleDef()
+        {
+            DefName = "ThePursuer",
+            Label = "the pursuer",
+            RuleClass = typeof(Rule_ThePursuer),
+            MaxLevel = 5,
+            LevelDescriptions = new List<string>()
+            {
+                "A Pursuer spawns on a random tile far from the player. Each turn, it moves 1 tile toward the player meeple. If at the end of turn it is on the same tile as the player, take 1 damage.",
+                "The pursuer moves an additional tile per turn.",
+                "The pursuer also deals damage when on an adjacent tile of the player.",
+                "Another pursuer spawns.",
+                "Pursuers move an additional tile per turn.",
+            }
+        }
     };
 }

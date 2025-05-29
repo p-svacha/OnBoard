@@ -55,7 +55,7 @@ public class GameUI : MonoBehaviour
         TurnPhaseResources.gameObject.SetActive(true);
         ChapterDisplay.gameObject.SetActive(true);
         QuestPanel.Refresh();
-        ResourcesPanel.Refresh();
+        ResourcesPanel.gameObject.SetActive(true);
         HealthDisplay.gameObject.SetActive(true);
         ItemPanel.gameObject.SetActive(true);
         Rulebook.gameObject.SetActive(true);
