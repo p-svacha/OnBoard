@@ -18,6 +18,7 @@ public static class MeepleDefs
             },
             MovementSpeedMin = 1,
             MovementSpeedMax = 2,
+            MovementType = MeepleMovementType.RandomWander,
         },
 
         new MeepleDef()
@@ -26,6 +27,7 @@ public static class MeepleDefs
             Label = "the pursuer",
             Description = "A meeple that always chases you. Don't let it reach you or you'll take damage.",
             MeepleClass = typeof(Meeple_Pursuer),
+            MovementType = MeepleMovementType.ChasePlayer,
         },
     };
 }

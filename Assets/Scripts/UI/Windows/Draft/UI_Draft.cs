@@ -6,7 +6,7 @@ using TMPro;
 
 public class UI_Draft : MonoBehaviour
 {
-    private static int MAX_OPTIONS_PER_ROW = 4;
+    private static int MAX_OPTIONS_PER_ROW = 5;
 
     [Header("Elements")]
     public TextMeshProUGUI Title;

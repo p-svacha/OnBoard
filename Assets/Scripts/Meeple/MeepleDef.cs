@@ -23,4 +23,9 @@ public class MeepleDef : Def
     /// The maximum amount of tiles the meeple moves at the end of the turn.
     /// </summary>
     public int MovementSpeedMax { get; init; }
+
+    /// <summary>
+    /// The behaviour of how and where this meeple moves.
+    /// </summary>
+    public MeepleMovementType MovementType { get; init; } = MeepleMovementType.RandomWander;
 }
