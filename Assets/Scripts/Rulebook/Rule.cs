@@ -28,6 +28,10 @@ public abstract class Rule : IDraftable
         Level++;
     }
 
+    /// <summary>
+    /// Gets executed when the given level of the rule starts being active.
+    /// </summary>
+    public virtual void OnActivate(int level) { }
 
 
     #region Rule Effects

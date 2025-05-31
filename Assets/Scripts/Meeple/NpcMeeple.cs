@@ -15,15 +15,22 @@ public abstract class NpcMeeple : Meeple
     protected virtual void OnInit() { }
 
     /// <summary>
-    /// Gets executed at the end of the turn.
+    /// Executes the movement for this meeple for this turn.
     /// </summary>
-    public virtual void OnEndTurn()
+    public void Move()
     {
-        int movementSpeed = Random.Range(Def.MovementSpeedMin, Def.MovementSpeedMax + 1);
-        List<MovementOption> movementOptions = Game.Instance.GetMeepleMovementOptions(this, movementSpeed, allowStops: false);
-        MovementOption movement = movementOptions.RandomElement();
-        Game.Instance.ExecuteMovement(movement);
+        List<MovementOption> movementOptions = Game.Instance.GetMeepleMovementOptions(this, MovementSpeed, allowStops: false);
+        if (movementOptions.Count > 0)
+        {
+            MovementOption movement = movementOptions.RandomElement();
+            Game.Instance.ExecuteMovement(movement);
+        }
     }
+
+    /// <summary>
+    /// Gets executed at the end of the turn after moving.
+    /// </summary>
+    public virtual void OnTurnPassed() { }
 
     public override List<TileInteraction> GetInteractions()
     {
@@ -36,6 +43,7 @@ public abstract class NpcMeeple : Meeple
         return interactions;
     }
 
+    protected virtual int MovementSpeed => Random.Range(Def.MovementSpeedMin, Def.MovementSpeedMax + 1);
     public virtual string Label => Def.Label;
     public string LabelCap => Label.CapitalizeFirst();
     public virtual string Description => Def.Description;

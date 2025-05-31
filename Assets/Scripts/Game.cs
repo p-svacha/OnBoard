@@ -203,7 +203,7 @@ public class Game : MonoBehaviour
         GameUI.Instance.HealthDisplay.Refresh();
 
         NpcMeeples = new List<NpcMeeple>();
-        AddNpcMeeple(MeepleDefOf.Merchant, Board.GetRandomTile());
+        DoAddNpcMeeple(MeepleDefOf.Merchant, Board.GetRandomTile());
     }
 
     private void AddStartingContent()
@@ -398,7 +398,8 @@ public class Game : MonoBehaviour
         StartCoroutine(TokenPhysicsManager.CollectTokens(this));
 
         // NPC meeples
-        foreach (NpcMeeple meeple in NpcMeeples) meeple.OnEndTurn();
+        foreach (NpcMeeple meeple in NpcMeeples) meeple.Move();
+        foreach (NpcMeeple meeple in NpcMeeples) meeple.OnTurnPassed();
 
         // Quests
         foreach (Quest quest in ActiveQuests) quest.OnTurnPassed();
@@ -473,11 +474,105 @@ public class Game : MonoBehaviour
         GameUI.Instance.ResourcesPanel.Refresh();
     }
 
-    public void AddNpcMeeple(MeepleDef def, Tile tile)
+    /// <summary>
+    /// Spawns a new NPC Meeple at the given tile.
+    /// If playAnimation==false, just adds immediately.
+    /// If playAnimation==true, runs a short camera‐pan + drop animation, then returns camera and ends the prompt.
+    /// </summary>
+    public void DoAddNpcMeeple(MeepleDef def, Tile tile, bool playAnimation = false)
     {
-        NpcMeeple meeple = MeepleGenerator.GenerateNpcMeeple(def);
-        TeleportMeeple(meeple, tile);
-        NpcMeeples.Add(meeple);
+        if (!playAnimation)
+        {
+            NpcMeeple meeple = MeepleGenerator.GenerateNpcMeeple(def);
+            TeleportMeeple(meeple, tile);
+            NpcMeeples.Add(meeple);
+        }
+        else
+        {
+            StartCoroutine(AddNpcMeepleSequence(def, tile));
+        }
+    }
+
+    /// <summary>
+    /// Coroutine that, in order:
+    ///  1) Freezes camera & stores its old focus.
+    ///  2) Pans camera to the target tile.
+    ///  3) Spawns the Meeple a bit above, then lerps it down (“drop”).
+    ///  4) Pans camera back to its original focus.
+    ///  5) Unfreezes camera and completes this action‐prompt.
+    /// </summary>
+    private IEnumerator AddNpcMeepleSequence(MeepleDef def, Tile tile)
+    {
+        // 1) Freeze camera controls so player cannot move it mid‐pan.
+        CameraHandler.Instance.Freeze();
+
+        // Store original camera "focus" (CurrentPosition) so we can return later.
+        Vector3 originalCamFocus = CameraHandler.Instance.CurrentPosition;
+
+        // Compute target tile world‐position:
+        Vector3 tilePos = tile.transform.position;
+
+        // 2) PAN camera to the tile: use PanTo with callback.
+        bool panToTileFinished = false;
+        float panDuration = 1.5f; // you can tweak how long the pan takes
+        CameraHandler.Instance.PanTo(
+            panDuration,
+            tilePos,
+            postPanFollowEntity: null,    // after panning, we do NOT want it to follow anything
+            unbreakableFollow: false,
+            callback: () => panToTileFinished = true
+        );
+
+        // Wait until the first pan is complete
+        while (!panToTileFinished)
+            yield return null;
+
+        // 3) Spawn the Meeple above the tile and “drop” it.
+        //    We instantiate it slightly above and then lerp down over dropTime.
+        NpcMeeple newMeeple = MeepleGenerator.GenerateNpcMeeple(def);
+
+        // Set its tile immediately so that newMeeple.Tile = tile (for game logic).
+        newMeeple.SetTile(tile);
+        NpcMeeples.Add(newMeeple);
+
+        // Put it 5 units above the tile, then drop in 0.6 seconds:
+        float dropHeight = 5f;
+        float dropTime = 0.6f;
+
+        Vector3 startPos = tilePos + Vector3.up * dropHeight;
+        Vector3 endPos = tilePos;
+        newMeeple.transform.position = startPos;
+
+        float t = 0f;
+        while (t < dropTime)
+        {
+            t += Time.deltaTime;
+            float alpha = Mathf.Clamp01(t / dropTime);
+            newMeeple.transform.position = Vector3.Lerp(startPos, endPos, alpha);
+            yield return null;
+        }
+        // make sure final position is exactly tilePos:
+        newMeeple.transform.position = endPos;
+
+        // (Optional) small pause so player can see the Meeple “land.”
+        yield return new WaitForSeconds(0.3f);
+
+        // 4) PAN camera back to original focus:
+        bool panBackFinished = false;
+        CameraHandler.Instance.PanTo(
+            panDuration,
+            originalCamFocus,
+            postPanFollowEntity: null,
+            unbreakableFollow: false,
+            callback: () => panBackFinished = true
+        );
+
+        while (!panBackFinished)
+            yield return null;
+
+        // 5) Unfreeze camera controls and finish this action prompt:
+        CameraHandler.Instance.Unfreeze();
+        CompleteCurrentActionPrompt();
     }
 
     public void IncreaseDrawSize(int amount)

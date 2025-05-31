@@ -49,6 +49,11 @@ public class Rulebook
         GameUI.Instance.Rulebook.Refresh();
     }
 
+    public Rule GetRule(RuleDef ruleDef)
+    {
+        return ActiveRules.First(r => r.Def == ruleDef);
+    }
+
     public void OnLockInSpread(Spread spread)
     {
         foreach (Rule r in ActiveRules) r.OnLockInSpread(spread);
@@ -91,6 +96,9 @@ public class Rulebook
             string subtitle = rule.LabelCap;
             List<IDraftable> options = rule.Levels.Select(l => (IDraftable)l).ToList();
             GameUI.Instance.DraftWindow.Show(title, subtitle, options, isDraft: false);
+
+            // Hook
+            rule.OnActivate(1);
         }
 
         // Level increase 
@@ -103,6 +111,9 @@ public class Rulebook
             string subtitle = rule.LabelCap;
             List<IDraftable> options = rule.Levels.Select(l => (IDraftable)l).ToList();
             GameUI.Instance.DraftWindow.Show(title, subtitle, options, isDraft: false);
+
+            // Hook
+            rule.OnActivate(rule.Level);
         }
 
         // Setup next rulebook expansion

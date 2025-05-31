@@ -6,4 +6,5 @@ using UnityEngine;
 public class MeepleDefOf
 {
     public static MeepleDef Merchant;
+    public static MeepleDef Pursuer;
 }
