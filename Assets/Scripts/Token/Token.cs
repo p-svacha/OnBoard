@@ -76,7 +76,7 @@ public class Token : MonoBehaviour, IDraftable, ITradable
     /// </summary>
     public void Freeze()
     {
-        Rigidbody.velocity = Vector3.zero;
+        Rigidbody.linearVelocity = Vector3.zero;
         Rigidbody.isKinematic = true;
 
         Collider.enabled = false;

@@ -59,7 +59,7 @@ public static class TokenPhysicsManager
             }
 
             // 2) if it's still moving or spinning, keep waiting
-            if (copy.Rigidbody.velocity.sqrMagnitude > 0.02f ||
+            if (copy.Rigidbody.linearVelocity.sqrMagnitude > 0.02f ||
                 copy.Rigidbody.angularVelocity.sqrMagnitude > 0.02f)
             {
                 yield return new WaitForFixedUpdate();
@@ -81,7 +81,7 @@ public static class TokenPhysicsManager
         copy.transform.rotation = Random.rotation;
 
         var rb = copy.Rigidbody;
-        rb.velocity = Vector3.zero;
+        rb.linearVelocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
 
         ApplySpawnImpulses(rb);
